@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+  <meta charset="utf-8">
+  <title>Reprojection with EPSG.io Search</title>
+  <style>
+    #map {
+      width: 100%;
+      height: 800px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map" class="map"></div>
+  <form class="form-inline">
+    <label for="epsg-query">Search projection : </label>
+    <input type="text" id="epsg-query" placeholder="4326, 27700, US National Atlas, Swiss, France, ..." class="form-control" size="50" />
+    <button id="epsg-search" class="btn">Search</button>
+    <span id="epsg-result"></span>
+    <div>
+      <label for="render-edges">Render reprojection edges</label>
+      <input type="checkbox" id="render-edges">
+    </div>
+  </form>
+  <p>This example shows client-side raster reprojection capabilities from OSM (EPSG:3857) to arbitrary projection by searching in EPSG.io database.</p>
+  <P>이 예제는 EPSG.io 데이터베이스에서 검색하여 OSM(EPSG:3857)에서 임의 투영에 이르기까지 클라이언트 측 래스터 재투영 기능을 보여줌.<br>정상적으로 뜨는 나라나 도시가 좀 드물음. london, berlin, korea, germany, UK 정도는 되는듯.</P>
+  <script type="text/javascript" src="index.js"></script>
+</body>
+</html>
