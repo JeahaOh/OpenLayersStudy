@@ -27,6 +27,8 @@ Temporary Items
 .apdisk
 
 ### Node ###
+/dist
+
 # Logs
 logs
 *.log
