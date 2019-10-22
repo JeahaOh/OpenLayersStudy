@@ -1,0 +1,20 @@
+{
+  "name": "ol_study_raster_reprojection",
+  "version": "1.0.0",
+  "description": "OpenLayers Study - Raster Reprojection",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html",
+    "build": "parcel build --experimental-scope-hoisting --public-url . index.html"
+  },
+  "author": "Jeaha Oh",
+  "license": "ISC",
+  "dependencies": {
+    "ol": "^6.0.1",
+    "proj4": "^2.5.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
+}
