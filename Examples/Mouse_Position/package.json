@@ -1,0 +1,19 @@
+{
+  "name": "mouse_position",
+  "version": "1.0.0",
+  "description": "OpenLayers Mouse Position Example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html",
+    "build": "parcel build --experimental-scope-hoisting --public-url . index.html"
+  },
+  "author": "Jeaha",
+  "license": "ISC",
+  "dependencies": {
+    "ol": "^6.0.1"
+  },
+  "devDependencies": {
+    "parcel": "^1.12.4"
+  }
+}

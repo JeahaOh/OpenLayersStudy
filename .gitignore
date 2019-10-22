@@ -28,7 +28,7 @@ Temporary Items
 
 ### Node ###
 # dist 폴더는 npm start 하면 build 되니 올리지 않아도 되지 않을까?
-*/dist
+dist/
 
 # Logs
 logs
