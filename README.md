@@ -1,5 +1,5 @@
 # OpenLayersStudy
-Open Layers를 학습해 보자.
+Open Layers
 
 ## 실행 환경
 - VS Code latest
