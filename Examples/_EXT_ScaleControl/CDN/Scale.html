@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+  <meta charset="utf-8">
+  <title>OL-EXT : Scale Control</title>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <style>
+    #map {
+      width: 100%;
+      height: 800px;
+    }
+  </style>
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+</head>
+<body>
+  <h1>ol-ext: Scale Control</h1>
+  <div id="map" class="map"></div>
+  <div class="options">
+    <ul>
+      <li>
+        <label for="ppi">Screen PPI : </label>
+        <input type="number" id="ppi" onchange="ctrl.set('ppi', this.value); ctrl.setScale();" value="96" />
+      </li>
+      <li>
+        <label for="diagonal">or Your Screen Diagonal : </label>
+        <select id="diagonal" onchange="setDiagonal(this.value);">
+          <option value="0">Diagonal</option>
+          <option value="7">7</option>
+          <option value="11.6">11.6</option>
+          <option value="13.3">13.3</option>
+          <option value="14">14</option>
+          <option value="15.6">15.6</option>
+          <option value="17.3">17.3</option>
+          <option value="21">21</option>
+          <option value="24">24</option>
+          <option value="27">27</option>
+        </select>
+      </li>
+    </ul>
+  </div>
+  <div class="info">
+      <p>
+        <i>ol.control.Scale</i> displays the scale of the map in a control. 
+      <br>
+        <b>NB:</b> Some projections and specialy the default Mercator projection preserve angles but not the distance. 
+        This means that the scale is not the same on the whole map :(
+        <br>
+        The control display the projection on the center on the map and it may change when moving on the earth.
+        Just move from equator to the pole and see the ScaleLine length growing. 
+        <br>
+        <b>NB:</b> The control needs to know the <a href="https://en.wikipedia.org/wiki/Pixel_density">screen PPI</a> (or DPI) to calculate the right scale.
+        Be aware the PPI depends on the device (screen, printer) your are using and may be quite different form one to another depending on the resolution of the device.
+        <br>
+        The default value is 96.
+      </p>
+      <ul><li>
+        <i>ol/control/Scale.setScale()</i> function can change the current map scale
+      </li><li>
+         The <i>editable</i> option is used to make the scale input editable.
+      </li></ul>
+    </div>
+  <script type="text/javascript" src="Scale.js"></script>
+</body>
+</html>
