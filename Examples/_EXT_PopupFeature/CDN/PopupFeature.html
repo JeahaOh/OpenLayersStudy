@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+  <meta charset="utf-8">
+  <title>OL-EXT : PopupFeature Control</title>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <style>
+    .ol-popup h1 {
+      font-size: 1em;
+      background-size: 2em;
+      padding-left: 3em;
+    }
+  </style>
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+</head>
+<body>
+  <h1>ol-ext: PopupFeature Control</h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+
+  <div class="options">
+    <h2>Options : </h2>
+    <i>Click on the map to select features</i>
+  </div>
+
+  <div class="info">
+    <i>ol/Overlay/PopupFeature</i> is a popup to show the content of features on the map.
+    <ul>
+      <li>
+        You can pass a <i>ol.interaction.Select</i> in the <i>select</i> option to show popup on select.
+      </li>
+      <li>
+        You can use the <i>show()</i> to show the popup associated to a feature.
+      </li>
+    </ul>
+  </div>
+  <script type="text/javascript" src="PopupFeature.js"></script>
+</body>
+</html>
