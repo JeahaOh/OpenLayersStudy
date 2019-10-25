@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+  <meta charset="utf-8">
+  <title>OL-EXT : Overview Control</title>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+	<style>
+    .oview {
+      color: #fff;
+      background: #369;
+      padding: 0.5em;
+      display: inline-block;
+      margin-right: 0.5em;
+    }
+  </style>
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+</head>
+<body>
+  <h1>ol-ext: Overview Control</h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+  <!-- 
+  <div class="oview">
+    External Overview
+    <div class="overview" style="width: 200px; height: 200px;">    </div>
+  </div>
+  -->
+  <div class="options">
+    <ul>
+      <li>
+        <label for="minzoon">Zoom Min : </label>
+        <input type="number" id="minzoon"  value="8" style="width: 4em;" />
+      </li>
+      <li>
+        <label for="maxzoon">Zoom Max : </label>
+        <input type="number" id="maxzoom" value="12" style="width: 3em;" />
+      </li>
+      <li>
+        <label for="layer">Layer : </label>
+        <select id="layer" onchange="setOVLayer(this);">
+          <option value="0">OSM</option>
+          <option value="1" selected>Stamen</option>
+        </select>
+      </li>
+      <li>
+        <label for="rotate">Rotate Over View Map : </label>
+        <input type="checkbox" id="rotate" />
+      </li>
+      <li>
+        <label for="align">Position : </label>
+        <select id="align" onchange="ov.setPosition(this.value);">
+          <option value="bottom-left">Bottom-Left</option>
+          <option value="bottom-right">Bottom-Right</option>
+          <option value="top-left">Top-Left</option>
+          <option value="top-right">Top-Right</option>
+        </select>
+      </li>
+    </ul>
+  </div>
+  <div class="info">
+    The <i>ol.control.Overview</i> create an overview similar to the <i>ol.control.overview</i>.
+    <br>
+    The main differences is that you can limit the zoom level on the overview and force the overview to be oriented north.
+    <ul>
+      <li>
+        Limiting the min zoom of the overview will magnify the map.
+      </li>
+      <li>
+        Limiting the max zoom avoid to zoom in the overview and draw the position as a point on it when extent is too small.
+      </li>
+      <li>
+        You can use the <i>style</i> option to choose the style of the box drawn on the overview. 
+        If the box is too small a point will be drawn instead (ol.style.Image of the style).
+      </li>
+    </ul>
+    Click on the overview map to move the center of the map to that point. 
+    The <i>elastic</i> option move the map with an elastic animation.
+    <p>
+      External Overview는 굳이 사용할 필요는 없고 map 내에 띄우는게 제일 좋은듯 함.<br>
+      position은 약간 에러가 있는듯 함.<br>
+      오버뷰의 레이어는 현재 뜨는 기본값이 제일 깔끔함.<br>
+      Rotate Over View 기능은.... 때에다라 사용이 다르겠지만 사용 안하는게 나은듯.
+    </p>
+  </div>
+  <script type="text/javascript" src="Overview.js"></script>
+</body>
+</html>

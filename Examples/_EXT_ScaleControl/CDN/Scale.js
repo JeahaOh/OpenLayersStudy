@@ -10,7 +10,8 @@ const map = new ol.Map({
     zoom: 14,
     center: [ 270701, 6247637 ]
   }),
-  layers: [ stamen ]
+  //  layers: [ stamen ]
+  layers : [ new ol.layer.Tile({ source: new ol.source.OSM() }) ]
 });
 
 //  Control
