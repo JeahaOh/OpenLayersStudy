@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+  <meta charset="utf-8">
+  <title>OL-EXT : Notification Control</title>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+</head>
+<body>
+  <h1>ol-ext: Notification Control</h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+  <div class="options">
+    <input type="text" value="Hell The OpenLayers!" />
+    <button onclick="notification.show( $(this).prev().val() )">Show Message</button>
+    <p>
+      <i>Click on the map to add a point / click on the notification to cancel.</i>
+    </p>
+  </div>
+  <div class="info">
+    <i>ol/control/notification</i> is a control to display a notification on the map.
+    <br>
+    In this example the notation is used to display a message to cancel an operation.
+  </div>
+  <script type="text/javascript" src="Notification.js"></script>
+</body>
+</html>
