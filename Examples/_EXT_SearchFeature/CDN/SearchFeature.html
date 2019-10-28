@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+  <meta charset="utf-8">
+  <title>OL-EXT : Search Feature Control</title>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <style>
+    .ol-popup h1 {
+      font-size: 1em;
+      background-size: 2em;
+      padding-left: 3em;
+    }
+  </style>
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+</head>
+<body>
+  <h1>ol-ext: Search Feature Control</h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+
+  <div class="options">
+    <h2>Options : </h2>
+    <ul>
+      <li>
+        <label for="max_item">Max Input : </label>
+        <input type="number" id="max_item" onchange="search.set('maxItems', Number(this.value));" style="width: 3em;" value="10" />
+      </li>
+      <li>
+        <label for="property">Search Property : </label>
+        <select id="property" onchange="search.set('property', this.value); search.search();">
+          <option value="commune">commune</option>
+          <option value="region">region</option>
+          <option value="text">text</option>
+        </select>
+      </li>
+    </ul>
+    <i>Use the search control to start a new search.</i>
+  </div>
+
+  <div class="info">
+    <i>ol.control.SearchFeature</i> is a control to search features in a source.
+    <ul>
+      <li>
+        You have to define a <i>ol.source.Vector</i> to search in.
+      </li>
+      <li>
+        You can define a <i>property</i> that will be used to search in or define a getTitle/getSearchString function.
+      </li>
+      <li>
+        You can define a <i>getTitle</i> to get the string that will be displayed in the menu
+      </li>
+      <li>
+        You can define a <i>getSearchString</i> function that will take a feature and
+        return a string to search in.
+      </li>
+    </ul>
+    <br/>
+    <i>ol.control.SearchFeature</i> use the <a href="map.control.search.html">ol.control.Search</a> control.
+  </div>
+  <script type="text/javascript" src="./SearchFeature.js"></script>
+</body>
+</html>
