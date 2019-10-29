@@ -1,8 +1,8 @@
-const Map = new ol.Map();
-//const View = new ol.View();
-// const TileLayer = new ol.layer.Tile();
-// const OSM = new ol.source.OSM()
-// const TileDebug = new ol.source.TileDebug();
+//  const Map = new ol.Map();
+//  const View = new ol.View();
+//  const TileLayer = new ol.layer.Tile();
+//  const OSM = new ol.source.OSM()
+//  const TileDebug = new ol.source.TileDebug();
 
 const map = new ol.Map({
   layers: [
