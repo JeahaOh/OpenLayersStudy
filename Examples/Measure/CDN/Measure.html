@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="kor">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <style>
+      .map {
+        width: 100%;
+        height:400px;
+      }
+      .ol-tooltip {
+        position: relative;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        color: white;
+        padding: 4px 8px;
+        opacity: 0.7;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+      .ol-tooltip-measure {
+        opacity: 1;
+        font-weight: bold;
+      }
+      .ol-tooltip-static {
+        background-color: #ffcc33;
+        color: black;
+        border: 1px solid white;
+      }
+      .ol-tooltip-measure:before,
+      .ol-tooltip-static:before {
+        border-top: 6px solid rgba(0, 0, 0, 0.5);
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        margin-left: -7px;
+        left: 50%;
+      }
+      .ol-tooltip-static:before {
+        border-top-color: #ffcc33;
+      }
+    </style>
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+  <title>  Measure  </title>
+</head>
+
+<body>
+  <h1>  Measure  </h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+  
+  <form class="form-inline">
+    <label for="type">Measurement type&nbsp;:&nbsp;</label>
+    <select id="type">
+      <option value="None">None</option>
+      <option value="length">Length (LineString)</option>
+      <option value="area">Area (Polygon)</option>
+    </select>
+  </form>
+  
+  <div class="row-fluid">
+    <div class="span12">
+      <p id="shortdesc">Using a draw interaction to measure lengths and areas.</p>
+      <div id="docs">
+        <p>The <code>getLength()</code> and <code>getArea()</code> functions calculate spherical lengths and areas for
+          geometries. Lengths are calculated by assuming great circle segments between geometry coordinates. Areas are
+          calculated as if edges of polygons were great circle segments.</p>
+        <p>Note that the <code>geometry.getLength()</code> and <code>geometry.getArea()</code> methods return measures
+          of projected (planar) geometries. These can be very different than on-the-ground measures in certain
+          situations — in northern and southern latitudes using Web Mercator for example. For better results, use the
+          functions in the <code>ol/sphere</code> module.</p>
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript" src="./Measure.js"></script>
+</body>
+
+</html>
