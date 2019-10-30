@@ -230,7 +230,24 @@ function addInteraction() {
     });
 
   draw.on('drawend',
-    function () {
+    function ( evt ) {
+      console.group( 'drawend' );
+      console.log( `evt : ` );
+      console.log( evt );
+
+      console.log( `evt.feature : ` );
+      console.log( evt.feature );
+
+      console.log( `evt.feature.getGeometry() : ` );
+      console.log( evt.feature.getGeometry() );
+
+      console.log( `evt.feature.getGeometry().getCoordinates() : ` );
+      console.log( evt.feature.getGeometry().getCoordinates() );
+
+      let id = Math.floor(Math.random() * 1000);
+      evt.feature.setId(id); 
+      evt.feature.setProperties({"DevDefineProps" : 'feature - ' + id, "ASDF": '뭐지'});
+
       measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
       measureTooltip.setOffset([0, -7]);
       // unset sketch
@@ -239,6 +256,39 @@ function addInteraction() {
       measureTooltipElement = null;
       createMeasureTooltip();
       unByKey(listener);
+
+      console.log( `vector : ` );
+      console.log( vector );
+
+      console.log( `vector.getSource() : ` );
+      console.log( vector.getSource() );
+
+      console.log( `vector.getSource().getFeatures() : ` );
+      console.log( vector.getSource().getFeatures() );
+      
+      let feat = vector.getSource().getFeatures();
+      console.log( `feat : `);
+      console.log( feat );
+
+      console.group( '$.each' );
+      console.log( 'FOR EACH : ');
+      $.each(feat, function( idx ){
+        console.log( `feat[idx]` );
+        console.log( feat[idx] );
+
+        console.log( `feat[idx].getId()` );
+        console.log( feat[idx].getId() );
+
+        console.log( `feat[idx].get('DevDefineProps')` );
+        console.log( feat[idx].get('DevDefineProps') );
+
+        if( feat[idx].getId() == id ) {
+          console.log("This Guy...");
+        }
+      })
+      console.log( 'FOR EACH END ');
+      console.groupEnd();
+      console.groupEnd();
     });
 }
 
