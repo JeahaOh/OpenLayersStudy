@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="kor">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <title>  Layer Zoom Limits  </title>
+</head>
+
+<body>
+  <h1>  Layer Zoom Limits  </h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+  
+  <p>
+    Layers support <code>minZoom</code> and <code>maxZoom</code> options for controlling visibility based on the view's zoom level.<br />
+    If min or max zoom are set, the layer will only be visible at zoom levels greater than the <code>minZoom</code> and less than or equal to the <code>maxZoom</code>.<br />
+    After construction, the layer's <code>setMinZoom</code> and <code>setMaxZoom</code> can be used to set limits.<br />
+    This example shows an OSM layer at zoom levels 14 and lower and a USGS layer at zoom levels higher than 14.
+  </p>
+
+  <script type="text/javascript" src="index.js"></script>
+</body>
+
+</html>
