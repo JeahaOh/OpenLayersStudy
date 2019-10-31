@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="kor">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+  <title>  Snap Interaction  </title>
+</head>
+
+<body>
+  <h1>  Snap Interaction  </h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+
+  <form id="options-form" automplete="off">
+    
+      <div class="radio">
+        <label for="draw">Draw &nbsp;</label>
+        <input type="radio" id="draw" name="interaction" value="draw" checked>
+      </div>
+      <div class="radio">
+        <label for="modify">Modify &nbsp;</label>
+        <input type="radio" id="modify" name="interaction" value="modify">
+      </div>
+  
+      <div class="form-group">
+        <label for="draw-type">Draw type &nbsp;</label>
+        <select name="draw-type" id="draw-type">
+          <option value="Point">Point</option>
+          <option value="LineString">LineString</option>
+          <option value="Polygon">Polygon</option>
+          <option value="Circle">Circle</option>
+        </select>
+      </div>
+  
+    </form>
+  
+    <p>
+      Example of using the snap interaction together with draw and modify interactions.<br />
+      The snap interaction must be added last, as it needs to be the first to handle the <code>pointermove</code> event.</p>
+    </p>
+  <script type="text/javascript" src="./SnapInteraction.js"></script>
+</body>
+
+</html>
