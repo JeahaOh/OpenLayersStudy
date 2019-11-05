@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="kor">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  <script type="text/javascript">
+    /* Disable minification (remove `.min` from URL path) for more info */
+    (function(undefined) {}).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+  </script>
+
+  <link rel="stylesheet" href="ol_4.6.5.css">
+
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="ol_4.6.5.js"></script>
+  <!-- <script type="text/javascript" src="copier.js"></script> -->
+  
+  <title>  Effective Range  </title>
+</head>
+
+<body>
+  <h1>  Effective Range  </h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+  
+  <form class="form-inline">
+    <label for="effective_range_distance">유효 범위 거리</label>
+    <input type="number" name="effective_range_distance" id="effective_range_distance" value="1" min="1" max="10" />
+    <div class="effective_range_distance_unit">
+      <label for="unit_km">km</label>
+      <input type="radio" name="effective_range_unit" id="unit_km" value="km" checked />
+      <label for="unit_mile">mile</label>
+      <input type="radio" name="effective_range_unit" id="unit_mile" value="mile" />
+    </div>
+    <input type="button" value="Create Feature" onclick="createEffectiveRange()" />
+  </form>
+  
+  <script type="text/javascript" src="./EffectiveRange.js"></script>
+</body>
+
+</html>
