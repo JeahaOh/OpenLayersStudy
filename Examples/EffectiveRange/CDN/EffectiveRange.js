@@ -35,7 +35,6 @@ let map = new ol.Map({
   ],
   target: 'map',
   view: new ol.View({
-    // projection: 'EPSG:4326',
     center: ol.proj.fromLonLat([128.4, 35.7]),
     zoom: 7
     
