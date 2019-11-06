@@ -11,7 +11,7 @@ let vector = new ol.layer.Vector({
       color: 'rgba(255, 255, 255, 0.2)'
     }),
     stroke: new ol.style.Stroke({
-      color: '#ffcc33',
+      color: '#ffeeee',
       width: 2
     }),
     image: new ol.style.Circle({

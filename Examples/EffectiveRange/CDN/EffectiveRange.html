@@ -37,6 +37,40 @@
   </form>
   
   <script type="text/javascript" src="./EffectiveRange.js"></script>
+  <pre>
+<b>Kor : </b>
+저는 OpenLayers를 사용해서 Feature 두개를 그리는 로직을 만들어야 합니다.
+사용자가 Feature A를 그리고 나면,
+그 Feature A 바깥을 둘러 싸는 Feature B를 그리는 로직이 필요합니다.
+
+1. 지도에 Feature A를 그립니다. (image Step 01)
+2. Feature A가 그려지고 나면 시스템은 Feature A를 둘러 싸는 Feature B를 만들어야 합니다. (image Step 02)
+3. 최종 결과는 Image Step 03 과 같은 결과가 나와야 합니다.
+
+전제 조건
+1. Feature가 3 - 6개의 각을 가질 수 있다.
+2. 각 변의 길이는 예측 할 수 없다.
+3. 각 변의 내각은 예측 할 수 없다.
+4. Feature B의 모든 변은 Feature A의 모든 변으로 부터 사용자가 지정한 거리를 가지고 만들어야 합니다.
+이 문제를 어떻게 해결 해야 할까요??
+
+<b>Eng : </b>
+I have to use OpenLayers to create a logic that draws two Features.
+After the user draws Feature A,
+We need logic to draw Feature B that surrounds the Feature A outside.
+
+1. Draw Feature A on a map (image Step 01)
+2. After Feature A is drawn, the system must create Feature B that surrounds Feature A (image Step 02).
+3. The final result should be the same as Image Step 03.
+
+PRECONDITION
+1. Feature can have 3 - 6 angles.
+2. The length of each side is unpredictable.
+3. The angle of each side is unpredictable.
+4. All sides of Feature B must be made from all sides of Feature A with the distance specified by the user.
+How do we solve this problem?
+  </pre>
 </body>
 
 </html>
+
