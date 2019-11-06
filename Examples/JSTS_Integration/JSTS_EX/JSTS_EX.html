@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  <script
+    src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL">
+  </script>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+  <script type="text/javascript" src="../CDN/jsts_2.0.2.min.js"></script>
+  <title>JSTS EX</title>
+</head>
+
+<body>
+  <canvas id="canvas" width="500" height="500"></canvas>
+  <script>
+    function Vector2(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+    var poly = [
+      new Vector2(150, 170),
+      new Vector2(400, 120),
+      new Vector2(200, 270),
+      new Vector2(350, 400),
+      new Vector2(210, 470)
+    ];
+
+    // Regular rectangle
+    var poly_rect = [
+      new Vector2(50, 50),
+      new Vector2(125, 50),
+      new Vector2(125, 100),
+      new Vector2(50, 100)
+    ];
+    // Regular rectangle
+
+    // Rotated rectangle
+    var rotated_poly_rect = [
+      new Vector2(250, 20),
+      new Vector2(300, 70),
+      new Vector2(250, 120),
+      new Vector2(200, 70)
+    ];
+    // Rotated rectangle
+
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+
+    function draw(param) {
+      console.log(param)
+      ctx.beginPath();
+      ctx.moveTo(param[0].x, param[0].y);
+      for (var i = 1; i < param.length; i++) {
+        ctx.lineTo(param[i].x, param[i].y);
+      }
+      ctx.strokeStyle = "#000000";
+      ctx.closePath();
+      ctx.stroke();
+    }
+    
+    function vectorCoordinates2JTS(polygon) {
+      var coordinates = [];
+
+      for (var i = 0; i < polygon.length; i++) {
+        coordinates.push(new jsts.geom.Coordinate(polygon[i].x, polygon[i].y));
+      }
+      return coordinates;
+    }
+
+    function inflatePolygon(poly, spacing) {
+      var geoInput = vectorCoordinates2JTS(poly);
+      geoInput.push(geoInput[0]);
+
+      var geometryFactory = new jsts.geom.GeometryFactory();
+
+      var shell = geometryFactory.createPolygon(geoInput);
+      var bufParams = new jsts.operation.buffer.BufferParameters();
+      bufParams.setJoinStyle(jsts.operation.buffer.BufferParameters.JOIN_MITRE)
+      var polygon = shell.buffer(spacing, bufParams);
+
+      var inflatedCoordinates = [];
+      var oCoordinates;
+
+      oCoordinates = polygon._shell._points._coordinates;
+      for (i = 0; i < oCoordinates.length; i++) {
+        var oItem;
+        oItem = oCoordinates[i];
+        inflatedCoordinates.push(new Vector2(Math.ceil(oItem.x), Math.ceil(oItem.y)));
+      }
+      return inflatedCoordinates;
+    }
+
+    draw(poly);
+    draw(inflatePolygon(poly, 10));
+
+    draw(poly_rect);
+    draw(inflatePolygon(poly_rect, 10));
+
+    draw(rotated_poly_rect);
+    draw(inflatePolygon(rotated_poly_rect, 10));
+  </script>
+</body>
+
+</html>
