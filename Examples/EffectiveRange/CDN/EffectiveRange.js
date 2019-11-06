@@ -69,6 +69,7 @@ let squareFunction = function( coordinates, geometry ) {
 let doInteraction = function(dist, unit) {
   draw = new ol.interaction.Draw({
     source: source,
+    // type: 'Polygon'
     type: 'LineString',
     geometryFunction: squareFunction,
     maxPoints: 2
@@ -110,11 +111,13 @@ let doInteraction = function(dist, unit) {
     console.group('Draw End');
 
     let currentFeature = evt.feature;
-    let borderFeature = currentFeature.clone();
+    
+    // currentFeature를 복제.
+    // let borderFeature = currentFeature.clone();
     
     console.log(`currentFeature : `);
     console.log(currentFeature);
-    console.log(borderFeature);
+    // console.log(borderFeature);
     
 
     
@@ -142,15 +145,28 @@ let doInteraction = function(dist, unit) {
     map.removeInteraction( draw );
     map.removeInteraction( snap );
     console.groupEnd('Draw End');
-  });
-}
+  }); //  drawend
+}   //  doInteraction
 
 const createEffectiveRange = function(){
-  let unit = $('input[name=effective_range_unit]:checked').val();
-  let dist = $('#effective_range_distance').val();
+  // let unit = $('input[name=effective_range_unit]:checked').val();
+  let unit = document.querySelector('input[name=effective_range_unit]:checked').value;
+  // let dist = $('#effective_range_distance').val();
+  let dist = document.getElementById('effective_range_distance').value;
   console.log( dist + unit );
   // if( confirm('유효범위의 광구와의 거리는 ' + dist + unit + '입니다.') ) {
   //   doInteraction(dist, unit);
   // }
   doInteraction(dist, unit);
+}
+
+
+// Miles 단위를 Kilometers 단위로 변환.
+const mTk = function(miles) {
+  return miles * 1.6;
+}
+
+// Kilometers 단위를 Miles 단위로 변환.
+const kTm = function(km) {
+  return km / 1.6;
 }

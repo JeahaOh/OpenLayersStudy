@@ -11,11 +11,11 @@
     (function(undefined) {}).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
   </script>
 
-  <link rel="stylesheet" href="ol_4.6.5.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.css">
+  <!-- <link rel="stylesheet" href="ol_4.6.5.css"> -->
 
-  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
-  <script type="text/javascript" src="ol_4.6.5.js"></script>
-  <!-- <script type="text/javascript" src="copier.js"></script> -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
+  <!-- <script type="text/javascript" src="ol_4.6.5.js"></script> -->
   
   <title>  Effective Range  </title>
 </head>
@@ -29,9 +29,9 @@
     <input type="number" name="effective_range_distance" id="effective_range_distance" value="1" min="1" max="10" />
     <div class="effective_range_distance_unit">
       <label for="unit_km">km</label>
-      <input type="radio" name="effective_range_unit" id="unit_km" value="km" checked />
+      <input type="radio" name="effective_range_unit" id="unit_km" value="kilometers" checked />
       <label for="unit_mile">mile</label>
-      <input type="radio" name="effective_range_unit" id="unit_mile" value="mile" />
+      <input type="radio" name="effective_range_unit" id="unit_mile" value="miles" />
     </div>
     <input type="button" value="Create Feature" onclick="createEffectiveRange()" />
   </form>
