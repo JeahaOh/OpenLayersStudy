@@ -1,4 +1,5 @@
-let globalTemp;
+let globalTemp, currentFeature, borderFeature;
+
 //  기본 맵 설정. -->
 let raster = new ol.layer.Tile({
   source: new ol.source.OSM({
@@ -76,10 +77,10 @@ let squareFunction = function( coordinates, geometry ) {
 let doInteraction = function(dist, unit) {
   draw = new ol.interaction.Draw({
     source: source,
-    // type: 'Polygon'
-    type: 'LineString',
-    geometryFunction: squareFunction,
-    maxPoints: 2
+    type: 'Polygon'
+    // type: 'LineString',
+    // geometryFunction: squareFunction,
+    // maxPoints: 2
   });
   map.addInteraction( draw );
   snap = new ol.interaction.Snap({ source: source });
@@ -115,7 +116,7 @@ let doInteraction = function(dist, unit) {
   draw.on('drawend', function( evt ) {
     console.group('Draw End');
 
-    let currentFeature = evt.feature;
+    currentFeature = evt.feature;
     evt.feature.setProperties({
       'category': 'Effective Range Test'
     });
@@ -123,34 +124,61 @@ let doInteraction = function(dist, unit) {
     console.log(currentFeature);
     
     
+
+    // currentFeature를 복제.
+    globalTemp = currentFeature.clone();
+    // currentFeature를 복제.
+    console.log(`globalTemp : `);
+    console.log(globalTemp)
+    globalTemp.getGeometry().transform('EPSG:3857', 'EPSG:4326');
     
     
-    var coordinates = currentFeature.getGeometry().getCoordinates();
+    var coordinates = globalTemp.getGeometry().getCoordinates();
     console.log(`coordinates : `);
     console.log(coordinates);
-
+    // console.log(coordinates[0]);
+    // console.log(coordinates[0][0]);
+    
+    
+    var poly = turf.polygon(coordinates);
+    // var poly = turf.polygon(coordinates[0]);
+    // var poly = turf.polygon(coordinates[0][0]);
+    console.log(`poly : `);
+    console.log(poly);
+    
+    console.log(`transformScale : `);
+    //  여기서 Uncaught Error: coordinates must contain numbers 에러가 나다 말다 함.
+    // var scaledPoly = turf.transformScale(poly, 1.2);
+    var scaledPoly = turf.transformScale(poly, 1.05);
+    console.log(scaledPoly);
+    console.log(`transformScale passed!`);
+    
+    borderFeature = new ol.format.GeoJSON().readFeatures(scaledPoly);
+    console.log(`borderFeature : `);
+    console.log(borderFeature[0]);
+    
+    /*
+    borderFeature[0].getGeometry().transform('ESPG:4326', 'ESPG:3857');
+    */
+    borderFeature[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
+    source.addFeature(borderFeature[0]);
+    
+    
     //  Feature의 정 중앙 좌표를 가져오는 함수.
-    console.log(`currentFeature.getGeometry().getInteriorPoint().A : `);
-    console.log(currentFeature.getGeometry().getInteriorPoint().A);
+    // console.log(`currentFeature.getGeometry().getInteriorPoint().A : `);
+    // console.log(currentFeature.getGeometry().getInteriorPoint().A);
+    
+    // var centerPoint = [
+    //   currentFeature.getGeometry().getInteriorPoint().A[0],
+    //   currentFeature.getGeometry().getInteriorPoint().A[1]
+    // ];
+
+    // console.log( centerPoint );
+
+    // drawPoint(centerPoint);
+    //  Feature의 정 중앙 좌표를 가져오는 함수.
 
     
-    var centerPoint = [
-      currentFeature.getGeometry().getInteriorPoint().A[0],
-      currentFeature.getGeometry().getInteriorPoint().A[1]
-    ];
-
-    console.log( centerPoint );
-
-    drawPoint(centerPoint);
-
-
-    
-    // currentFeature를 복제.
-    // globalTemp = currentFeature.clone();
-    // globalTemp.getGeometry().getInteriorPoint();
-    // globalTemp.getGeometry().getInteriorPoint().A;
-    // globalTemp.move(14353284.021767769, 4109346.378107986)
-
 
 
     
