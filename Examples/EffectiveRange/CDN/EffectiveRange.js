@@ -1,4 +1,4 @@
-let globalTemp, currentFeature, borderFeature;
+let globalTemp, miningSmallArea, effectiveRange;
 
 //  기본 맵 설정. -->
 let raster = new ol.layer.Tile({
@@ -75,6 +75,7 @@ let squareFunction = function( coordinates, geometry ) {
 }
 
 let doInteraction = function(dist, unit) {
+  //  소광구
   draw = new ol.interaction.Draw({
     source: source,
     type: 'Polygon'
@@ -116,61 +117,40 @@ let doInteraction = function(dist, unit) {
   draw.on('drawend', function( evt ) {
     console.group('Draw End');
 
-    currentFeature = evt.feature;
+    miningSmallArea = evt.feature;
     evt.feature.setProperties({
-      'category': 'Effective Range Test'
+      'category': 'Mining Small Area'
     });
-    console.log(`currentFeature : `);
-    console.log(currentFeature);
-    
+    console.log(`miningSmallArea : `);
+    // console.log(miningSmallArea);
     
 
-    // currentFeature를 복제.
-    globalTemp = currentFeature.clone();
-    // currentFeature를 복제.
-    console.log(`globalTemp : `);
-    console.log(globalTemp)
-    globalTemp.getGeometry().transform('EPSG:3857', 'EPSG:4326');
-    
-    
-    var coordinates = globalTemp.getGeometry().getCoordinates();
-    console.log(`coordinates : `);
-    console.log(coordinates);
-    // console.log(coordinates[0]);
-    // console.log(coordinates[0][0]);
-    
-    
-    var poly = turf.polygon(coordinates);
-    // var poly = turf.polygon(coordinates[0]);
-    // var poly = turf.polygon(coordinates[0][0]);
-    console.log(`poly : `);
-    console.log(poly);
-    
-    console.log(`transformScale : `);
-    //  여기서 Uncaught Error: coordinates must contain numbers 에러가 나다 말다 함.
-    // var scaledPoly = turf.transformScale(poly, 1.2);
-    var scaledPoly = turf.transformScale(poly, 1.05);
-    console.log(scaledPoly);
-    console.log(`transformScale passed!`);
-    
-    borderFeature = new ol.format.GeoJSON().readFeatures(scaledPoly);
-    console.log(`borderFeature : `);
-    console.log(borderFeature[0]);
-    
     /*
-    borderFeature[0].getGeometry().transform('ESPG:4326', 'ESPG:3857');
+    // miningSmallArea를 복제.
+    globalTemp = miningSmallArea.clone();
+    console.log(`globalTemp : `);
+    // console.log(globalTemp);
+    // miningSmallArea를 복제.
     */
-    borderFeature[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
-    source.addFeature(borderFeature[0]);
+
     
-    
+
+    //  --> 유효범위 Feature 생성
+    // source.addFeature(createEffectiveRangeByTransformScale(miningSmallArea));
+    source.addFeature(createEffectiveRangeByBuffer(miningSmallArea, dist, unit));
+    //  <-- Feature 생성
+
+
+
+
+
     //  Feature의 정 중앙 좌표를 가져오는 함수.
-    // console.log(`currentFeature.getGeometry().getInteriorPoint().A : `);
-    // console.log(currentFeature.getGeometry().getInteriorPoint().A);
+    // console.log(`miningSmallArea.getGeometry().getInteriorPoint().A : `);
+    // console.log(miningSmallArea.getGeometry().getInteriorPoint().A);
     
     // var centerPoint = [
-    //   currentFeature.getGeometry().getInteriorPoint().A[0],
-    //   currentFeature.getGeometry().getInteriorPoint().A[1]
+    //   miningSmallArea.getGeometry().getInteriorPoint().A[0],
+    //   miningSmallArea.getGeometry().getInteriorPoint().A[1]
     // ];
 
     // console.log( centerPoint );
@@ -205,7 +185,7 @@ let doInteraction = function(dist, unit) {
   }); //  drawend
 }   //  doInteraction
 
-const createEffectiveRange = function(){
+const createSmallMineLot = function(){
   // let unit = $('input[name=effective_range_unit]:checked').val();
   let unit = document.querySelector('input[name=effective_range_unit]:checked').value;
   // let dist = $('#effective_range_distance').val();
@@ -215,7 +195,7 @@ const createEffectiveRange = function(){
   //   doInteraction(dist, unit);
   // }
   doInteraction(dist, unit);
-} //  createEffectiveRange
+} //  createSmallMineLot
 
 
 // Miles 단위를 Kilometers 단위로 변환.
@@ -255,3 +235,86 @@ const drawPoint = function(coord) {
   source.addFeature( point );
   console.groupEnd('Draw Point Func');
 };  //  drawPoint
+
+//  인자로 받은 Feature를 감싸는 transformScale()를 거친 Feature를 리턴.
+const createEffectiveRangeByTransformScale = function(mineLot) {
+  console.group('createEffectiveRangeByTransformScale()');
+  // --> 유효범위를 만들기 위한 좌표값 준비.
+  // mineLot의 좌표체계 변환
+  mineLot.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+
+  var coordinates = mineLot.getGeometry().getCoordinates();
+  console.log(`coordinates : `);
+  // console.log(coordinates);
+  // mineLot의 좌표체계 재변환
+  mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+  // <-- 유효범위를 만들기 위한 좌표값 준비.
+
+
+  //  --> 유효범위 Feature 생성
+  var poly = turf.polygon(coordinates);
+  console.log(`poly : `);
+  // console.log(poly);
+
+  console.log(`transformScale() : `);
+  // var scaledPoly = turf.transformScale(poly, 1.2);
+  var scaledPoly = turf.transformScale(poly, 1.05, {mutate: true});
+  console.log(`transformScale passed!`);
+  // console.log(scaledPoly);
+
+  effectiveRange = new ol.format.GeoJSON().readFeatures(scaledPoly);
+  console.log(`effectiveRange : `);
+  // console.log(effectiveRange[0]);
+
+  effectiveRange[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
+
+  effectiveRange[0].setStyle( new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(0, 0, 0, 0)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: 'red',
+      lineDash: [4, 4],
+      width: 1
+    })
+  }));
+
+  effectiveRange[0].setProperties({
+    'category': 'Mining Effective Range'
+  });
+
+  console.groupEnd('createEffectiveRangeByTransformScale()');
+  return effectiveRange[0];
+};  //  createEffectiveRangeByTransformScale
+
+
+
+//  인자로 받은 Feature를 감싸는 buffer()를 거친 Feature를 리턴.
+const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
+  console.group('createEffectiveRangeByBuffer()');
+
+  mineLot.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+  let coordinates = mineLot.getGeometry().getCoordinates();
+  let poly = turf.polygon(coordinates);
+  let bufferedFeature = turf.buffer(poly, _dist, {units: _unit});
+
+  let effectiveRange = new ol.format.GeoJSON().readFeatures(bufferedFeature);
+  console.log(`effectiveRange : `);
+  // console.log(effectiveRange[0]);
+  effectiveRange[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
+
+  effectiveRange[0].setStyle( new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(0, 0, 0, 0)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: 'red',
+      lineDash: [4, 4],
+      width: 1
+    })
+  }));
+
+  mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+  console.groupEnd('createEffectiveRangeByBuffer()');
+  return effectiveRange[0];
+};  //  createEffectiveRangeByBuffer
