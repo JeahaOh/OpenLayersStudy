@@ -315,6 +315,13 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   }));
 
   mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+
+  effectiveRange[0].setProperties({
+    'define' : 'Wffective Range'
+  });
+
+  globalTemp = effectiveRange[0];
+  console.log(globalTemp);
   console.groupEnd('createEffectiveRangeByBuffer()');
   return effectiveRange[0];
 };  //  createEffectiveRangeByBuffer
