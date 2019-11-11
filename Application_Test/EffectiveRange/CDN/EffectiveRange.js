@@ -78,8 +78,8 @@ let doInteraction = function(dist, unit) {
   //  소광구
   draw = new ol.interaction.Draw({
     source: source,
-    type: 'Polygon'
-    // type: 'LineString',
+    // type: 'Polygon'
+    type: 'LineString'
     // geometryFunction: squareFunction,
     // maxPoints: 2
   });
