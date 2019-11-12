@@ -36,7 +36,6 @@ let map = new ol.Map({
   view: new ol.View({
     center: ol.proj.fromLonLat([128.4, 35.7]),
     zoom: 7
-    
   })
 });
 //  <-- 기본 맵 설정.
@@ -85,7 +84,11 @@ let lineToSquare = function() {
     // console.log(range);
 
     range = createPoly(range);
+
     source.addFeature(range);
+    
+    range = range.getGeometry().getCoordinates();
+    console.log(range);
 
     //  Draw End Finally End.
     map.removeInteraction( draw );
