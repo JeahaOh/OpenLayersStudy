@@ -78,8 +78,8 @@ let doInteraction = function(dist, unit) {
   //  소광구
   draw = new ol.interaction.Draw({
     source: source,
-    // type: 'Polygon'
-    type: 'LineString'
+    type: 'Polygon'
+    // type: 'LineString',
     // geometryFunction: squareFunction,
     // maxPoints: 2
   });
@@ -191,10 +191,10 @@ const createSmallMineLot = function(){
   // let dist = $('#effective_range_distance').val();
   let dist = document.getElementById('effective_range_distance').value;
   console.log( dist + unit );
-  // if( confirm('유효범위의 광구와의 거리는 ' + dist + unit + '입니다.') ) {
-  //   doInteraction(dist, unit);
-  // }
-  doInteraction(dist, unit);
+  if( confirm('유효범위의 광구와의 거리는 ' + dist + unit + '입니다.') ) {
+    doInteraction(dist, unit);
+  }
+  // doInteraction(dist, unit);
 } //  createSmallMineLot
 
 
@@ -304,20 +304,17 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   effectiveRange[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
 
   effectiveRange[0].setStyle( new ol.style.Style({
-    fill: new ol.style.Fill({
-      color: 'rgba(0, 0, 0, 0)'
-    }),
     stroke: new ol.style.Stroke({
       color: 'red',
-      lineDash: [4, 4],
-      width: 1
+      lineDash: [3, 10],
+      width: 2
     })
   }));
 
   mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
 
   effectiveRange[0].setProperties({
-    'define' : 'Wffective Range'
+    'define' : 'Effective Range'
   });
 
   globalTemp = effectiveRange[0];

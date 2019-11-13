@@ -206,8 +206,7 @@ function addInteraction() {
   createHelpTooltip();
 
   let listener;
-  draw.on('drawstart',
-    function (evt) {
+  draw.on('drawstart', function (evt) {
       // set sketch
       sketch = evt.feature;
 

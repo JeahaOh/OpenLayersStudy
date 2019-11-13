@@ -65,6 +65,9 @@ let addInteractions = function() {
   }
 }
 
+var modify = new Modify({source: source});
+map.addInteraction(modify);
+
 typeSelect.onchange = function() {
   map.removeInteraction( draw );
   map.removeInteraction( snap );
