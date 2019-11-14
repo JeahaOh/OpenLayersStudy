@@ -52,7 +52,7 @@ let map = new ol.Map({
 //  <-- 기본 맵 설정.
 
 //  Global
-let objDraw, objSnap, objModify, measureTooltipElement;
+let objDraw, circleRular, objSnap, objModify, measureTooltipElement, coordTooltipElement;
 
 //  Line을 그리면 사각형으로 변환한 geometry를 반환한다.
 let squareFunction = function( coordinates, geometry ) {
@@ -193,8 +193,8 @@ const objMng = function( evt ) {
   //  objMng 작동할 type
   let type = evt.dataset.val;
   
+  let geometryFunction, maxPoints;
   //  type에 따라 switch
-  let geometryFunction;
   switch( type ) {
     case 'None':
       return;
@@ -209,6 +209,11 @@ const objMng = function( evt ) {
     case 'Rular':
       //  거리를 잴 경우 LineString으로 Feature를 그리고, 분기처리를 위해 변수 선언.
       type = 'LineString';
+      maxPoints = 2;
+      status = true;
+      break;
+    case 'ESL':
+      type = 'Circle';
       status = true;
       break;
   }
@@ -217,7 +222,8 @@ const objMng = function( evt ) {
   objDraw = new ol.interaction.Draw({
     source: !status ? objSource: rularSource,
     type: type,
-    geometryFunction: geometryFunction
+    geometryFunction: geometryFunction,
+    maxPoints: maxPoints
   });
   map.addInteraction( objDraw );
   
@@ -238,7 +244,13 @@ const objMng = function( evt ) {
     if( status ) {
       //  거리재기 시작점에 점 찍어줌.
       // console.log( evt.feature.getGeometry().getCoordinates()[0] );
-      drawPoint(evt.feature.getGeometry().getCoordinates()[0])
+      if( type == 'LineString') drawPoint(evt.feature.getGeometry().getCoordinates()[0]);
+      if( type == 'Circle') {
+        // map.on('click', eslClick);
+        drawPoint( evt.feature.getGeometry().getCenter() );
+        // drawPoint( evt.feature.getFirstCoordinate() );
+        console.log( evt.feature.getGeometry().getCenter() );
+      }
       //  거리재기 시 클릭마다 rularFunction을 사용함.
       
       // set sketch
@@ -247,10 +259,11 @@ const objMng = function( evt ) {
       let tooltipCoord = evt.coordinate;
       listener = sketch.getGeometry().on('change', function (evt) {
         let geom = evt.target;
+        console.log('geom');
+        // console.log( geom );
         let output;
         if (geom instanceof ol.geom.LineString) {
           output = formatLength(geom);
-          temp = output;
           tooltipCoord = geom.getLastCoordinate();
         }
         measureTooltipElement.innerHTML = output;
@@ -268,9 +281,29 @@ const objMng = function( evt ) {
     //  type이 rular일 경우
     if( status ) {
       //  거리재기 끝점에 점 찍어줌.
-      drawPoint( evt.feature.getGeometry().getLastCoordinate() );
+      if( type == 'LineString' ) drawPoint( evt.feature.getGeometry().getLastCoordinate() );
+      if( type == 'Circle' ) {
+        // map.un('click', eslClick);
+        // console.log( evt.type );
+        // console.log( evt.feature );
+        // console.log( evt.target );
+        // console.log( evt.target.sketchCoords_ );
+        let radiusLine = new ol.Feature({
+          geometry: new ol.geom.LineString(evt.target.sketchCoords_)
+        })
+        rularSource.addFeature(radiusLine);
+        console.log( radiusLine )
+        console.log( radiusLine.getGeometry() )
+        // console.log( radiusLine.getGeometry().getLastCoordinate() )
+        try {
+        console.log( formatLength(radiusLine.getGeometry()) );
+        } catch ( err ) { console.log(err); }
+        drawPoint(radiusLine.getGeometry().getLastCoordinate());
+      }
       //  거리재기가 끝나면 rularClick 없애줌.
       map.un('click', rularClick );
+
+      // console.log( evt.feature.getCenter() )
 
       measureTooltipElement.className = 'ol-tooltip ol-tooltip-static rular-point';
       measureTooltip.setOffset([0, -7]);
@@ -293,6 +326,16 @@ const objMng = function( evt ) {
     }
     objMngInit( true );
     console.groupEnd( 'draw end' );
+
+    // objModify = new ol.interaction.Modify({ source: rularSource });
+    // map.addInteraction( objModify );
+
   }); //  drawend
 } //  objMng
 
+const eslClick = function(evt) {
+  console.group( 'ESL Click');
+  console.log( evt );
+
+  console.groupEnd( 'ESL Click');
+}
