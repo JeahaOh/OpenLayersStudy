@@ -260,7 +260,8 @@ const objMng = function( evt ) {
       listener = sketch.getGeometry().on('change', function (evt) {
         let geom = evt.target;
         console.log('geom');
-        // console.log( geom );
+        console.log( geom );
+        console.log( geom.getLastCoordinate() );
         let output;
         if (geom instanceof ol.geom.LineString) {
           output = formatLength(geom);
@@ -292,8 +293,8 @@ const objMng = function( evt ) {
           geometry: new ol.geom.LineString(evt.target.sketchCoords_)
         })
         rularSource.addFeature(radiusLine);
-        console.log( radiusLine )
-        console.log( radiusLine.getGeometry() )
+        // console.log( radiusLine )
+        // console.log( radiusLine.getGeometry() )
         // console.log( radiusLine.getGeometry().getLastCoordinate() )
         try {
         console.log( formatLength(radiusLine.getGeometry()) );
