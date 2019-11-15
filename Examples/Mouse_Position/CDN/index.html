@@ -1,32 +1,65 @@
 <!DOCTYPE html>
-<html lang="kor">
+<html lang="ko">
 <head>
   <meta charset="utf-8">
-  <title>Image Reprojection</title>
-  <link rel="stylesheet" type="text/css" href="../../include/ol.css" />
-  <style>
-    #map {
-      width: 100%;
-      height: 800px;
-    }
-  </style>
+  <title>Mouse Position</title>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
   <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
   <script type="text/javascript" src="../../../include/ol.js"></script>
 </head>
-<body>
-  <div id="map" class="map"></div>
-  <div id="mouse-position"></div>
+<body style="background-color: black; color: white;">
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+  <div id="mouse-position" style="font-weight: bold; padding: 10px;"></div>
   <form>
     <label for="projection">Projection : </label>
     <select id="projection">
       <option value="EPSG:4326">EPSG : 4326</option>
-      <option value="EPSG:3857">EPST : 3867</option>
+      <option value="EPSG:3857">EPSG : 3857</option>
     </select>
     <label for="precision">Precision</label>
     <input id="precision" type="number" min="0" max="12" value="4"/>
     </select>
   </form>
-  <p>Mouse 위치의 좌표 값을 출력하는 CDN 방식 예제.<br>CDN 방식을 사용하면 jQuery도 사용 가능하다.</p>
+  <p>Mouse 위치의 좌표 값을 출력하는 CDN 방식 예제.<br>CDN 방식을 사용하면 jQuery도 사용 가능.</p>
   <script type="text/javascript" src="index.js"></script>
+  <hr>
+  <pre>
+마우스 포인터가 위치한 곳의 좌표를 표출하기.
+예제를 진행하기전에,
+OpenLayers 공식 사이트에서는 import를 사용하는 문법을 추천함.
+But, 복습 겸 간단하게 코드를 남기는 중이니 CDN 방식으로 하겠음.
+ES6의 import 문은 다음과 같은 방법으로 대체 시키면 됨.
+<code>
+  // import Map from 'ol/Map';
+  const Map = ol.Map;
+  // import View from 'ol/View';
+  const View = ol.View;
+  // import {defaults as defaultControls} from 'ol/control';
+  const defaultControls = ol.control.defaults;
+</code>
+
+
+1. 좌표 값을 보여줄 div 선언.
+<code>
+  <div id="mouse-position"></div>
+</code>
+
+2. 마우스 좌표를 가져오는 OpenLayers의 모듈 선언.
+<code>
+  let mousePositionCtrl = new ol.control.MousePosition({
+    coordinateFormat: ol.coordinate.createStringXY(4),
+    projection: 'EPSG:4326',
+    className: 'custom-mouse-position',
+    target: document.getElementById('mouse-position'),
+    undefinedHTML: '&nbsp;'
+  });
+</code>
+
+이전 예제에서 두 단계만 추가 해주면 div 안에 마우스 위치의 좌표를 가져올 수 있음.
+그런데 마우스의 좌표가 알아 볼 수가 없음.
+좌표계라는 개념이 있고, 좌표계의 종류는 우리나라에서 사용하는 좌표계만 30개 정도 되는듯?
+좌표계에 대한 정리는 다음 포스트로 미루도록 하겠음.
+
+  </pre>
 </body>
 </html>
