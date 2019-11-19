@@ -37,21 +37,29 @@ objSource.on('change', function(){
   list = objSource.getFeatures();
   // objList = list;
   // console.log( list );
-  $('#obj_list').empty();
+  $('#obj_management_table').empty();
   for( let obj in list ) {
     _objFeature = list[obj];
     
     // console.log( _objFeature );
     // console.log( _objFeature.ol_uid );
 
-    objLiEle = document.createElement('li');
-    objLiEle.innerHTML = 'feature ' + _objFeature.ol_uid;
-    objLiEle.dataset.uid = _objFeature.ol_uid;
-    objLiEle.id = _objFeature.ol_uid;
-    objLiEle.className = 'obj_mng_features';
-    objLiEle.onclick = function(){ removeObj( this.id )};
+    // objLiEle = document.createElement('li');
+    // objLiEle.innerHTML = 'feature ' + _objFeature.ol_uid;
+    // objLiEle.dataset.uid = _objFeature.ol_uid;
+    // objLiEle.id = _objFeature.ol_uid;
+    // objLiEle.className = 'obj_mng_features';
+    // objLiEle.onclick = function(){ removeObj( this.id )};
     // console.log( objLiEle )
-    document.getElementById('obj_list').appendChild(objLiEle);
+    // document.getElementById('obj_list').appendChild(objLiEle);
+
+    let templateSource = $('#obj_table_template').html();
+    let template = Handlebars.compile( templateSource );
+    let html = template(_objFeature);
+    console.log( _objFeature );
+    // console.log( html )
+
+    $('#obj_management_table').append(html);
   }
   console.groupEnd(' objSource.on change');
 });
@@ -105,3 +113,28 @@ let objGeoJ;
   console.groupEnd('on load');
 })();
 
+const objPanelTogle = function(uid) {
+
+  console.log()
+  tgt = $('#panel_' + uid );
+  // console.log( tgt );
+  if( tgt.hasClass('panel_hidden') ) {
+
+    let _objFeature = objSource.getFeatureByUid(uid);
+    // console.log( _objFeature );
+
+    let templateSource = $('#obj_panel_template').html();
+    let template = Handlebars.compile( templateSource );
+    let html = template( _objFeature );
+    
+    // console.log( html );
+    tgt.append(html);
+
+    tgt.removeClass('panel_hidden')
+    tgt.css('display', 'block');
+  } else {
+    tgt.addClass('panel_hidden')
+    tgt.css('display', 'none');
+    tgt.empty();
+  }
+}

@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
-  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <script
+    src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL">
+  </script>
   <!-- <link rel="stylesheet" type="text/css" href="../../../include/ol_4.6.5.css" /> -->
   <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
   <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
@@ -15,23 +17,29 @@
   <script type="text/javascript" src="../../../include/ol.js"></script>
   <script type="text/javascript" src="../../../include/ol-ext.js"></script>
   <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
+  <script type="text/javascript" src="../../../include/handlebars-v4.1.2.js"></script>
   <Style>
     * {
       margin: 0;
       padding: 0;
     }
+
     #draw_obj_type_li li {
       cursor: pointer;
     }
+
     .selectedType {
       color: slategrey;
     }
+
     .ol-tooltip {
       color: black;
     }
+
     #draw_obj_type_li {
       list-style: none;
     }
+
     /* li {} */
     #draw_obj_type_li li {
       padding: 10px;
@@ -39,36 +47,147 @@
       /* float: left; */
       display: inline-block;
     }
+
     #obj_list li {
       cursor: pointer;
     }
+    .obj_management_section {
+      padding: 10px;
+    }
+    .table_space {
+      background: slategrey;
+    }
+    .table_space table {
+      border: 1px solid;
+      border-collapse: collapse;
+      text-align: center;
+    }
+    .table_space th {
+      background: gray;
+    }
+    .table_space th, td {
+      border: 1px solid black;
+    }
+    .table_space tr:nth-child(odd) {
+      background: dimgrey;
+    }
+
+    .panel_hidden {
+      display: none;
+    }
+    .uid {
+      cursor: pointer;
+    }
+
   </Style>
-  <title>  Object Management  </title>
+  <title> Object Management </title>
 </head>
 
 <body style="background-color: black; color: white;">
   <div id="map" class="map" style="width: 100%; height: 600px;"></div>
   <section>
     <h2> Draw Object </h6>
-    <ul id="draw_obj_type_li">
-      <li data-val="None" onclick="drawObj(this);" >None</li>
-      <li data-val="Modify" onclick="drawObj(this);" >Modify</li>
-      <li data-val="Rular" onclick="drawObj(this);" >Rular</li>
-      <li data-val="ESL" onclick="drawObj(this);" >ESL</li>
-      <li data-val="LineString" onclick="drawObj(this);" >LineString</li>
-      <li data-val="Square" onclick="drawObj(this);" >Square</li>
-      <!-- <li data-val="Circle" onclick="drawObj(this);" >Circle</li> -->
-      <li data-val="Polygon" onclick="drawObj(this);" >Polygon</li>
-    </ul>
+      <ul id="draw_obj_type_li">
+        <li data-val="None" onclick="drawObj(this);">None</li>
+        <li data-val="Modify" onclick="drawObj(this);">Modify</li>
+        <li data-val="Rular" onclick="drawObj(this);">Rular</li>
+        <li data-val="ESL" onclick="drawObj(this);">ESL</li>
+        <li data-val="LineString" onclick="drawObj(this);">LineString</li>
+        <li data-val="Square" onclick="drawObj(this);">Square</li>
+        <!-- <li data-val="Circle" onclick="drawObj(this);" >Circle</li> -->
+        <li data-val="Polygon" onclick="drawObj(this);">Polygon</li>
+      </ul>
   </section>
-  <section>
-    <ul id="obj_list">
+  <section class="obj_management_section">
+    <div>
+      <h2>Object Management</h2>
+    </div>
+    <hr>
+    <div>
+      <label for="obj_group_select" style="cursor: pointer;">Group : </label>
+      <select id="obj_group_select" name="obj_group_select"></select>
+      <button onclick="return false;">Management Group</button>
+      <input type="text" id="obj_search" onchange="console.log(this.value);" placeholder="객체 명, 그룹, 타입"
+        autocomplete="off" spellcheck="false" required="false" />
+    </div>
+    <div class="table_space">
+      <table id="obj_list_table">
+        <colgroup>
+          <col style="width: 10%;">
+          <col style="width: 10%;">
+          <col style="width: 20%;">
+          <col style="width: 20%;">
+          <col style="width: 10%;">
+          <col style="width: 10%;">
+          <col style="width: 10%;">
+          <col style="width: 10%;">
+        </colgroup>
+        <!--  -->
+        <tr>
+          <th><input type="checkbox" onchange="return false;" /></th>
+          <th>UID</th>
+          <th>객체명</th>
+          <th>그룹</th>
+          <th>타입</th>
+          <th>객체 보기</th>
+          <th>객체명 보기</th>
+        </tr>
+        <tbody id="obj_management_table">
+        </tbody>
+        <script id="obj_table_template" type="text/x-handlebars-template">
+          <tr class="manage_tgt">
+            <td><input type="checkbox" onchange="return false;" /></td>
+            <td onclick="objPanelTogle({{ol_uid}});" class="uid">{{ol_uid}}</td>
+            <td>{{values_.objName}}</td>
+            <td>{{values_.objGroup}}</td>
+            <td>{{values_.objType}}</td>
+            <td><input type="checkbox" onchange="return false;" /></td>
+            <td><input type="checkbox" onchange="return false;" /></td>
+          </tr>
+          <tr id="panel_{{ol_uid}}" class="panel_hidden">
+          </tr>
+        </script>
+
+        <script id="obj_panel_template" type="text/x-handlebars-template">
+          <td></td>
+          <td colspan="6">
+            <div class="obj_control_box">
+              <div class="obj_control_catg">
+                <span>기본 정보</span>
+                <hr>
+                <div class="obj_control_content">
+                  <ul>
+                    <li>
+                      <label for="obj_name">객체 명</label>
+                      <input type="text" name="obj_name" id="obj_name" value="{{values_.objName}}">
+                    </li>
+                    <li>
+                      <label for="obj_group">그룹</label>
+                      <select name="obj_group" id="obj_group"></select>
+                    </li>
+                    <li>
+                      <label ></label>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="obj_control_catg"></div>
+              <div class="obj_control_catg"></div>
+              <div class="obj_control_footer">
+                <button onclick="removeObj({{ol_uid}});">객체 삭제</button>
+              </div>
+            </div>
+          </td>
+        </script>
+      </table>
+    </div>
+    <!-- <ul id="obj_list">
       
-    </ul>
+    </ul> -->
   </section>
   <p>
     <br />
-    
+
   </p>
   <script type="text/javascript" src="./ObjectMap.js"></script>
   <script type="text/javascript" src="./ObjectDraw.js"></script>

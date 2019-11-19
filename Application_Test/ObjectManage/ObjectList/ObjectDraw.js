@@ -31,7 +31,7 @@ let squareFunction = function( coordinates, geometry ) {
 const drawObjInit = function( flag ){
   if( flag ) {
     let className = 'selectedType';
-    let menuList = $('#obj_mng_li li');
+    let menuList = $('#draw_obj_type_li li');
     $.each(menuList, function( idx ){
       if( menuList.eq( idx ).hasClass( className )) {
         menuList.eq( idx ).removeClass( className );
@@ -224,7 +224,7 @@ const drawObj = function( evt ) {
   evt.classList.add( className );
   
   //  drawObj 작동할 type
-  let type = evt.dataset.val;
+  let selectedType = type = evt.dataset.val;
   
   //  type에 따라 switch
   let geometryFunction;
@@ -303,7 +303,10 @@ const drawObj = function( evt ) {
       });
     } else {
       sketch.setProperties({
-        'type': type
+        'objName': selectedType + '_' + sketch.ol_uid,
+        'createDate': new Date(),
+        'objType': selectedType,
+        'objGroup': '기본'
       });
     }
     console.groupEnd( 'draw start' );
@@ -340,11 +343,9 @@ const drawObj = function( evt ) {
       ol.Observable.unByKey(listener);
     } else {
       console.log( sketch );
-      // GeoJSON.readFeature( sketch )
-      // console.log( GeoJSON )
-      // objGeoJ.push( sketch );
-      
-      //  toWKT(sketch);
+      sketch.setProperties({
+        'wkt': toWKT(sketch)
+      });
     }
     drawObjInit( true );
     console.groupEnd( 'draw end' );
