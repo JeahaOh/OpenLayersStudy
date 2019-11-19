@@ -421,28 +421,41 @@ function toDegreesMinutesAndSeconds(coordinate) {
   return degrees + "° " + minutes + "." + seconds + "'";
 };
 
+//  sessionStorage에 objSource의 피쳐들을 저장한다.
+const syncObjGeoj = function() {
+  objGeoJ = rw.writeFeatures( objSource.getFeatures() );
+  sessionStorage.setItem( 'objGeoJ', objGeoJ );
+  objGeoJ = JSON.parse( objGeoJ );
+}
+
 /**
  * objSource 가 변하면
  */
 let _objFeature, objList;
 objSource.on('change', function(){
-  objGeoJSync();
+  console.group(' objSource.on change');
+  syncObjGeoj();
+
   list = objSource.getFeatures();
-  objList = list;
+  // objList = list;
   // console.log( list );
   $('#obj_list').empty();
   for( let obj in list ) {
     _objFeature = list[obj];
     
     // console.log( _objFeature );
-    // console.log( _objFeature.ol_uid );
+    console.log( _objFeature.ol_uid );
 
     objLiEle = document.createElement('li');
     objLiEle.innerHTML = 'feature ' + _objFeature.ol_uid;
     objLiEle.dataset.uid = _objFeature.ol_uid;
+    objLiEle.id = _objFeature.ol_uid;
+    objLiEle.className = 'obj_mng_features';
+    objLiEle.onclick = function(){ removeObj( this.id )};
     // console.log( objLiEle )
     document.getElementById('obj_list').appendChild(objLiEle);
   }
+  console.groupEnd(' objSource.on change');
 });
 
 
@@ -490,6 +503,7 @@ let toWKT = function( feature ){
  */
 let objGeoJ;
 (function() {
+  console.group('on load');
   objGeoJ = sessionStorage.getItem( 'objGeoJ');
   // objGeoJ = objGeoJ ? objGeoJ : objSource.getFeatures();
 
@@ -497,10 +511,13 @@ let objGeoJ;
     objGeoJ = rw.readFeatures( objGeoJ );
     objSource.addFeatures( objGeoJ );
   }
+  console.groupEnd('on load');
 })();
 
-//  sessionStorage에 objSource의 피쳐들을 저장한다.
-function objGeoJSync() {
-  objGeoJ = rw.writeFeatures( objSource.getFeatures() );
-  sessionStorage.setItem( 'objGeoJ', objGeoJ );
+
+
+const removeObj = function( uid ) {
+  console.log( uid );
+  target = objSource.getFeatureByUid( uid );
+  objSource.removeFeature( target );
 }

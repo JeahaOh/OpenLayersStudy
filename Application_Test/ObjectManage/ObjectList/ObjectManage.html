@@ -32,8 +32,7 @@
     #obj_mng_li {
       list-style: none;
     }
-    li {
-    }
+    /* li {} */
     #obj_mng_li li {
       padding: 10px;
       border: 0;
@@ -41,7 +40,7 @@
       display: inline-block;
     }
     #obj_list li {
-      
+      cursor: pointer;
     }
   </Style>
   <title>  Object Management  </title>
@@ -56,7 +55,7 @@
     <li data-val="ESL" onclick="objMng(this);" >ESL</li>
     <li data-val="LineString" onclick="objMng(this);" >LineString</li>
     <li data-val="Square" onclick="objMng(this);" >Square</li>
-    <!-- <li data-val="Circle" onclick="objMng(this);" >Circle</li> -->
+    <li data-val="Circle" onclick="objMng(this);" >Circle</li>
     <li data-val="Polygon" onclick="objMng(this);" >Polygon</li>
   </ul>
   <ul id="obj_list">
