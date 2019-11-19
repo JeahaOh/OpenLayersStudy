@@ -7,9 +7,11 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
   <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <!-- <link rel="stylesheet" type="text/css" href="../../../include/ol_4.6.5.css" /> -->
   <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
   <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
   <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <!-- <script type="text/javascript" src="../../../include/ol_4.6.5.js"></script> -->
   <script type="text/javascript" src="../../../include/ol.js"></script>
   <script type="text/javascript" src="../../../include/ol-ext.js"></script>
   <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
@@ -27,14 +29,19 @@
     .ol-tooltip {
       color: black;
     }
-    ul {
+    #obj_mng_li {
       list-style: none;
     }
     li {
+    }
+    #obj_mng_li li {
       padding: 10px;
       border: 0;
       /* float: left; */
       display: inline-block;
+    }
+    #obj_list li {
+      
     }
   </Style>
   <title>  Object Management  </title>
@@ -49,8 +56,11 @@
     <li data-val="ESL" onclick="objMng(this);" >ESL</li>
     <li data-val="LineString" onclick="objMng(this);" >LineString</li>
     <li data-val="Square" onclick="objMng(this);" >Square</li>
-    <li data-val="Circle" onclick="objMng(this);" >Circle</li>
+    <!-- <li data-val="Circle" onclick="objMng(this);" >Circle</li> -->
     <li data-val="Polygon" onclick="objMng(this);" >Polygon</li>
+  </ul>
+  <ul id="obj_list">
+    
   </ul>
   <p>
     <br />

@@ -53,6 +53,7 @@ let map = new ol.Map({
 
 //  Global
 let objDraw, objSnap, objModify, measureTooltipElement, pointTooltip, pointTooltipElement, prevCoord, status, pointCNT;
+let rw = new ol.format.GeoJSON();
 let lineDistance = '';
 
 //  Line을 그리면 사각형으로 변환한 geometry를 반환한다.
@@ -244,17 +245,6 @@ let formatLength = function(line) {
 
 
 const measureClick = function() { 
-  //  evt.target은 지도 객체임.
-  // console.log( evt.target );
-  //  지도에 클릭한 좌표값.
-  // console.log( evt.coordinate );
-
-  // objDraw
-  //  현재 그리고 있는 객체.
-  // console.log( objDraw );
-  //  객체의 마지막 좌표.
-  // console.log( objDraw.finishCoordinate_ );
-
   //  Snap을 쓰고 있기 때문에 evt.coordinate는 내가 원하는 좌표 값이 아님.
   //  objDraw.finishCoordinate_는 현재 그리고 있는 feature의 마지막 클릭 좌표 값임.
   //  따라서 snap의 사용 여부를 떠나 원하는 좌표 값은 이놈이 갖고 있음.
@@ -304,6 +294,8 @@ const objMng = function( evt ) {
       geometryFunction = ol.interaction.Draw.createBox();
       // geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
       break;
+    case 'Circle':
+      break;
     case 'ESL':
       status = type;
       type = 'Circle';
@@ -336,7 +328,9 @@ const objMng = function( evt ) {
 
   objDraw.on('drawstart', function( evt ) {
     console.group( 'draw start' );
-
+    // set sketch
+    sketch = evt.feature;
+    
     //  type이 measure일 경우.
     if( status ) {
       //  선이라면 측정 시 클릭마다 측정하기 위한 함수.
@@ -344,8 +338,6 @@ const objMng = function( evt ) {
       //  원이라면 중앙점을 찍음.
       if( type == 'Circle') measureFunc( evt.feature.getGeometry().getCenter() );
       
-      // set sketch
-      sketch = evt.feature;
       /** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
       listener = sketch.getGeometry().on('change', function (evt) {
         let tooltipCoord;
@@ -360,7 +352,11 @@ const objMng = function( evt ) {
         measureTooltip.setPosition(tooltipCoord);
 
         //  사용하지 않는 함수. but tip으로 남겨둠.
-        //   objDraw.finishDrawing();
+        //  objDraw.finishDrawing();
+      });
+    } else {
+      sketch.setProperties({
+        'type': type
       });
     }
     console.groupEnd( 'draw start' );
@@ -395,6 +391,13 @@ const objMng = function( evt ) {
       measureTooltipElement = null;
       createMeasureTooltip();
       ol.Observable.unByKey(listener);
+    } else {
+      console.log( sketch );
+      // GeoJSON.readFeature( sketch )
+      // console.log( GeoJSON )
+      // objGeoJ.push( sketch );
+      
+      //  toWKT(sketch);
     }
     objMngInit( true );
     console.groupEnd( 'draw end' );
@@ -416,4 +419,88 @@ function toDegreesMinutesAndSeconds(coordinate) {
   var seconds = Math.floor((minutesNotTruncated - minutes) * 60);
   
   return degrees + "° " + minutes + "." + seconds + "'";
+};
+
+/**
+ * objSource 가 변하면
+ */
+let _objFeature, objList;
+objSource.on('change', function(){
+  objGeoJSync();
+  list = objSource.getFeatures();
+  objList = list;
+  // console.log( list );
+  $('#obj_list').empty();
+  for( let obj in list ) {
+    _objFeature = list[obj];
+    
+    // console.log( _objFeature );
+    // console.log( _objFeature.ol_uid );
+
+    objLiEle = document.createElement('li');
+    objLiEle.innerHTML = 'feature ' + _objFeature.ol_uid;
+    objLiEle.dataset.uid = _objFeature.ol_uid;
+    // console.log( objLiEle )
+    document.getElementById('obj_list').appendChild(objLiEle);
+  }
+});
+
+
+//  좌표값을 wkt 형식으로 바꿔서
+//  spring -> postgre
+//  ol에 wkt로 면환하는 함수 있음.
+//  feature를 읽어서 wkt로 변환,
+
+/*
+var format = new ol.format.WKT();
+var src = 'EPSG:3857';
+var dest = 'EPSG:4326';
+var wkt = format.writeGeometry(testingFeature.getGeometry().transform(src, dest));
+console.log(wkt);
+$.ajax({
+    type: 'POST',
+    url: '/WebVMS_Test/insertEnvironment.do',
+    data: {"type": "Polygon", "geom": String(wkt)},
+    dataType: 'text',
+    success: function(data) {
+        console.log(data);
+    },
+    error: function(req, status, err) {
+        console.log(req);
+        console.log(status);
+        console.log(err);
+    },
+    fail: function(data) {
+        console.log(data);
+    }
+});
+*/
+
+/**
+ * feature를 WKT로 변환함.
+ */
+let toWKT = function( feature ){
+  return (new ol.format.WKT()).writeFeature( feature );
+}
+
+/**
+ * 화면을 로드하면 세션에서 Feature들을 가져옴.
+ * 있으면 화면에 표출.
+ * 없으면 아무 처리 안함.
+ */
+let objGeoJ;
+(function() {
+  objGeoJ = sessionStorage.getItem( 'objGeoJ');
+  // objGeoJ = objGeoJ ? objGeoJ : objSource.getFeatures();
+
+  if( objGeoJ != null ) {
+    objGeoJ = rw.readFeatures( objGeoJ );
+    objSource.addFeatures( objGeoJ );
+  }
+})();
+
+//  sessionStorage에 objSource의 피쳐들을 저장한다.
+function objGeoJSync() {
+  objGeoJ = rw.writeFeatures( objSource.getFeatures() );
+  sessionStorage.setItem( 'objGeoJ', objGeoJ );
 }
