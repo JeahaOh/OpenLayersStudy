@@ -16,11 +16,11 @@
   <script type="text/javascript" src="../../../include/ol-ext.js"></script>
   <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
   <Style>
-    body {
+    * {
       margin: 0;
       padding: 0;
     }
-    #obj_mng_li li {
+    #draw_obj_type_li li {
       cursor: pointer;
     }
     .selectedType {
@@ -29,11 +29,11 @@
     .ol-tooltip {
       color: black;
     }
-    #obj_mng_li {
+    #draw_obj_type_li {
       list-style: none;
     }
     /* li {} */
-    #obj_mng_li li {
+    #draw_obj_type_li li {
       padding: 10px;
       border: 0;
       /* float: left; */
@@ -47,25 +47,32 @@
 </head>
 
 <body style="background-color: black; color: white;">
-  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
-  <ul id="obj_mng_li">
-    <li data-val="None" onclick="objMng(this);" >None</li>
-    <li data-val="Modify" onclick="objMng(this);" >Modify</li>
-    <li data-val="Rular" onclick="objMng(this);" >Rular</li>
-    <li data-val="ESL" onclick="objMng(this);" >ESL</li>
-    <li data-val="LineString" onclick="objMng(this);" >LineString</li>
-    <li data-val="Square" onclick="objMng(this);" >Square</li>
-    <li data-val="Circle" onclick="objMng(this);" >Circle</li>
-    <li data-val="Polygon" onclick="objMng(this);" >Polygon</li>
-  </ul>
-  <ul id="obj_list">
-    
-  </ul>
+  <div id="map" class="map" style="width: 100%; height: 600px;"></div>
+  <section>
+    <h2> Draw Object </h6>
+    <ul id="draw_obj_type_li">
+      <li data-val="None" onclick="drawObj(this);" >None</li>
+      <li data-val="Modify" onclick="drawObj(this);" >Modify</li>
+      <li data-val="Rular" onclick="drawObj(this);" >Rular</li>
+      <li data-val="ESL" onclick="drawObj(this);" >ESL</li>
+      <li data-val="LineString" onclick="drawObj(this);" >LineString</li>
+      <li data-val="Square" onclick="drawObj(this);" >Square</li>
+      <!-- <li data-val="Circle" onclick="drawObj(this);" >Circle</li> -->
+      <li data-val="Polygon" onclick="drawObj(this);" >Polygon</li>
+    </ul>
+  </section>
+  <section>
+    <ul id="obj_list">
+      
+    </ul>
+  </section>
   <p>
     <br />
     
   </p>
-  <script type="text/javascript" src="./ObjectManage.js"></script>
+  <script type="text/javascript" src="./ObjectMap.js"></script>
+  <script type="text/javascript" src="./ObjectDraw.js"></script>
+  <script type="text/javascript" src="./ObjectSet.js"></script>
 </body>
 
 </html>

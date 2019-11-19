@@ -1,56 +1,3 @@
-//  기본 맵 설정. -->
-let raster = new ol.layer.Tile({
-  source: new ol.source.OSM({
-    url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
-  })
-});
-
-let objSource = new ol.source.Vector({wrapX: false});
-let vector = new ol.layer.Vector({
-  source: objSource,
-  style: new ol.style.Style({
-    fill: new ol.style.Fill({
-      color: 'rgba(255, 255, 255, 0.1)'
-    }),
-    stroke: new ol.style.Stroke({
-      color: '#000000',
-      width: 2
-    }),
-    image: new ol.style.Circle({
-      radius: 7,
-      fill: new ol.style.Fill({
-        color: '#ffcc33'
-      })
-    })
-  })
-});
-
-let measureSource = new ol.source.Vector({wrapX: false});
-let measureVector = new ol.layer.Vector({
-  source: measureSource,
-});
-
-let map = new ol.Map({
-  layers: [
-    raster,
-    vector
-  ],
-  target: 'map',
-  view: new ol.View({
-    center: ol.proj.fromLonLat([128.4, 35.7]),
-    zoom: 7
-  }),
-  controls: ol.control.defaults().extend([
-    new ol.control.ZoomToExtent({
-      extent: [
-        14148305.929037487, 4495749.883884393,
-        14149109.160882792, 4495402.038632968
-      ]
-    })
-  ]),
-});
-//  <-- 기본 맵 설정.
-
 //  Global
 let objDraw, objSnap, objModify, measureTooltipElement, pointTooltip, pointTooltipElement, prevCoord, status, pointCNT;
 let rw = new ol.format.GeoJSON();
@@ -81,7 +28,7 @@ let squareFunction = function( coordinates, geometry ) {
  * 공통적으로
  * map에 있는 Draw, Snap, Modify Interaction을 지운다.
  */
-const objMngInit = function( flag ){
+const drawObjInit = function( flag ){
   if( flag ) {
     let className = 'selectedType';
     let menuList = $('#obj_mng_li li');
@@ -103,7 +50,7 @@ const objMngInit = function( flag ){
   map.removeInteraction( objDraw );
   map.removeInteraction( objSnap );
   map.removeInteraction( objModify );
-} // objMngInit
+} // drawObjInit
 
 //  측정 툴팁을 새로 만든다.
 const createMeasureTooltip = function() {
@@ -251,9 +198,9 @@ const measureClick = function() {
   measureFunc( objDraw.finishCoordinate_ );
 }
 
-const objMng = function( evt ) {
+const drawObj = function( evt ) {
   //  map의 interaction들을 초기화.
-  objMngInit();
+  drawObjInit();
 
   //  변수 선언
   let sketch, listener;
@@ -276,7 +223,7 @@ const objMng = function( evt ) {
   //  선택한 type에 class를 넣어서 css 컨트롤
   evt.classList.add( className );
   
-  //  objMng 작동할 type
+  //  drawObj 작동할 type
   let type = evt.dataset.val;
   
   //  type에 따라 switch
@@ -399,12 +346,12 @@ const objMng = function( evt ) {
       
       //  toWKT(sketch);
     }
-    objMngInit( true );
+    drawObjInit( true );
     console.groupEnd( 'draw end' );
   });
   //  drawend
 }
-//  objMng
+//  drawObj
 
 /**
  * 3857 좌표를 DMS 좌표로 변환하기 위해서 사용.
@@ -420,104 +367,3 @@ function toDegreesMinutesAndSeconds(coordinate) {
   
   return degrees + "° " + minutes + "." + seconds + "'";
 };
-
-//  sessionStorage에 objSource의 피쳐들을 저장한다.
-const syncObjGeoj = function() {
-  objGeoJ = rw.writeFeatures( objSource.getFeatures() );
-  sessionStorage.setItem( 'objGeoJ', objGeoJ );
-  objGeoJ = JSON.parse( objGeoJ );
-}
-
-/**
- * objSource 가 변하면
- */
-let _objFeature, objList;
-objSource.on('change', function(){
-  console.group(' objSource.on change');
-  syncObjGeoj();
-
-  list = objSource.getFeatures();
-  // objList = list;
-  // console.log( list );
-  $('#obj_list').empty();
-  for( let obj in list ) {
-    _objFeature = list[obj];
-    
-    // console.log( _objFeature );
-    console.log( _objFeature.ol_uid );
-
-    objLiEle = document.createElement('li');
-    objLiEle.innerHTML = 'feature ' + _objFeature.ol_uid;
-    objLiEle.dataset.uid = _objFeature.ol_uid;
-    objLiEle.id = _objFeature.ol_uid;
-    objLiEle.className = 'obj_mng_features';
-    objLiEle.onclick = function(){ removeObj( this.id )};
-    // console.log( objLiEle )
-    document.getElementById('obj_list').appendChild(objLiEle);
-  }
-  console.groupEnd(' objSource.on change');
-});
-
-
-//  좌표값을 wkt 형식으로 바꿔서
-//  spring -> postgre
-//  ol에 wkt로 면환하는 함수 있음.
-//  feature를 읽어서 wkt로 변환,
-
-/*
-var format = new ol.format.WKT();
-var src = 'EPSG:3857';
-var dest = 'EPSG:4326';
-var wkt = format.writeGeometry(testingFeature.getGeometry().transform(src, dest));
-console.log(wkt);
-$.ajax({
-    type: 'POST',
-    url: '/WebVMS_Test/insertEnvironment.do',
-    data: {"type": "Polygon", "geom": String(wkt)},
-    dataType: 'text',
-    success: function(data) {
-        console.log(data);
-    },
-    error: function(req, status, err) {
-        console.log(req);
-        console.log(status);
-        console.log(err);
-    },
-    fail: function(data) {
-        console.log(data);
-    }
-});
-*/
-
-/**
- * feature를 WKT로 변환함.
- */
-let toWKT = function( feature ){
-  return (new ol.format.WKT()).writeFeature( feature );
-}
-
-/**
- * 화면을 로드하면 세션에서 Feature들을 가져옴.
- * 있으면 화면에 표출.
- * 없으면 아무 처리 안함.
- */
-let objGeoJ;
-(function() {
-  console.group('on load');
-  objGeoJ = sessionStorage.getItem( 'objGeoJ');
-  // objGeoJ = objGeoJ ? objGeoJ : objSource.getFeatures();
-
-  if( objGeoJ != null ) {
-    objGeoJ = rw.readFeatures( objGeoJ );
-    objSource.addFeatures( objGeoJ );
-  }
-  console.groupEnd('on load');
-})();
-
-
-
-const removeObj = function( uid ) {
-  console.log( uid );
-  target = objSource.getFeatureByUid( uid );
-  objSource.removeFeature( target );
-}
