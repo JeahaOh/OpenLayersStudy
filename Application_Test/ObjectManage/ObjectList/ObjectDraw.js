@@ -302,11 +302,16 @@ const drawObj = function( evt ) {
         //  objDraw.finishDrawing();
       });
     } else {
+      /**
+       * !! sketch의 uid는 db랑 연결 해줘야 함 !!
+       */
       sketch.setProperties({
         'objName': selectedType + '_' + sketch.ol_uid,
-        'createDate': new Date(),
+        'objGroup': '기본',
         'objType': selectedType,
-        'objGroup': '기본'
+        'objCreateDate': TimeStamp.getDateTime(),
+        'objUpdateDate': TimeStamp.getDateTime(),
+        'objLastEditor': 'USER'
       });
     }
     console.groupEnd( 'draw start' );
@@ -344,7 +349,8 @@ const drawObj = function( evt ) {
     } else {
       console.log( sketch );
       sketch.setProperties({
-        'wkt': toWKT(sketch)
+        'wkt': toWKT(sketch),
+        '_coordinates_': sketch.getGeometry().getCoordinates()
       });
     }
     drawObjInit( true );
@@ -367,4 +373,16 @@ function toDegreesMinutesAndSeconds(coordinate) {
   var seconds = Math.floor((minutesNotTruncated - minutes) * 60);
   
   return degrees + "° " + minutes + "." + seconds + "'";
+};
+
+function toDmsAsMap(coordinate) {
+  var absolute = Math.abs(coordinate);
+  var degrees = Math.floor(absolute);
+  var minutesNotTruncated = (absolute - degrees) * 60;
+  var minutes = Math.floor(minutesNotTruncated);
+  var seconds = Math.floor((minutesNotTruncated - minutes) * 60);
+  
+  return { d: degrees,
+          m: minutes,
+          s: seconds };
 };
