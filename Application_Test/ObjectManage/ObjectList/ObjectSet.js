@@ -1,9 +1,4 @@
-/**
- * feature를 WKT로 변환함.
- */
-let toWKT = function (feature) {
-  return (new ol.format.WKT()).writeFeature(feature);
-}
+
 
 
 /**
@@ -172,8 +167,6 @@ let objGeoJ;
 })();
 
 const objPanelTogle = function (uid) {
-
-  console.log()
   tgt = $('#panel_' + uid);
   // console.log( tgt );
   if (tgt.hasClass('panel_hidden')) {
@@ -242,4 +235,22 @@ const ctrlObjProp = function (uid) {
   let targetObj = objSource.getFeatureByUid(uid);
   
   targetObj.setProperties(serialObj);
+}
+
+const addObjCoords = function(uid) {
+  console.log( uid );
+  let tgtObj = objSource.getFeatureByUid(uid);
+  console.log( tgtObj );
+  let able = tgtObj.values_.objType;
+  console.log( able );
+  switch( able ) {
+    case 'Circle':
+    
+    case 'Polygon':
+    case 'LineString':
+    case 'Square' :
+  }
+  // if
+  let  tgtCoordTab = $('#obj_coord_list_'+ uid);
+  console.log( tgtCoordTab );
 }

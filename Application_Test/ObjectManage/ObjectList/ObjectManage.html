@@ -30,6 +30,18 @@
 
     #draw_obj_type_li li {
       cursor: pointer;
+      padding: 10px;
+      border: 0;
+      /* float: left; */
+      display: inline-block;
+    }
+
+    #measure_obj_type_li li {
+      cursor: pointer;
+      padding: 10px;
+      border: 0;
+      /* float: left; */
+      display: inline-block;
     }
 
     .selectedType {
@@ -42,13 +54,6 @@
 
     li {
       list-style: none;
-    }
-
-    #draw_obj_type_li li {
-      padding: 10px;
-      border: 0;
-      /* float: left; */
-      display: inline-block;
     }
 
     #obj_list li {
@@ -74,7 +79,17 @@
     .table_space tr:nth-child(odd) {
       background: dimgrey;
     }
-    
+
+    .obj_coord_table th {
+      background: black;
+    }
+    .obj_coord_table tr:nth-child(odd) {
+      background: darkseagreen;
+    }
+    .obj_coord_table tr:nth-child(even) {
+      background: darkolivegreen;
+    }
+
     tr li {
       padding: 5px 0px;
     }
@@ -120,13 +135,31 @@
       <ul id="draw_obj_type_li">
         <li data-val="None" onclick="drawObj(this);">None</li>
         <li data-val="Modify" onclick="drawObj(this);">Modify</li>
-        <li data-val="Rular" onclick="drawObj(this);">Rular</li>
-        <li data-val="ESL" onclick="drawObj(this);">ESL</li>
-        <li data-val="LineString" onclick="drawObj(this);">LineString</li>
-        <li data-val="Square" onclick="drawObj(this);">Square</li>
+        
+        <li data-val="Line" onclick="drawObj(this);">단선</li>
+        <!-- <li data-val="" >화살표</li> -->
+        <li data-val="MultiLine" onclick="drawObj(this);">다선</li>
+
+        <li data-val="Square" onclick="drawObj(this);">사각형</li>
+        <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
+
         <!-- <li data-val="Circle" onclick="drawObj(this);" >Circle</li> -->
-        <li data-val="Polygon" onclick="drawObj(this);">Polygon</li>
+        
+        <!-- 
+        <li data-val="" >텍스트</li>
+        <li data-val="" >이미지</li>
+        <li data-val="" >마크</li>
+         -->
       </ul>
+
+      <!-- 측정을 분리 해야 할 것 같다. 이 부분은 차후에 진행 하도록 하자. -->
+      <ul id="measure_obj_type_li">
+        <li data-val="Rular" onclick="measureObj(this);">Rular</li>
+        <li data-val="ESL" onclick="measureObj(this);">ESL</li>
+      </ul>
+                <!--
+       -->
+
   </section>
   <section class="obj_management_section">
     <div>
@@ -205,6 +238,10 @@
                         data-obj_create_date="{{values_.objCreateDate}}"
                         data-obj_update_date="{{values_.objUpdateDate}}"
                         data-obj_last_editor="{{values_.objLastEditor}}">
+                      <li>
+                        <label for="obj_ol_uid">객체 번호</label>
+                        <input type="text" name="obj_ol_uid" id="obj_ol_uid" value="{{ol_uid}}" disabled />
+                      </li>
                       <li>
                         <label for="obj_name">객체 명</label>
                         <input type="text" name="objName" id="obj_name" value="{{values_.objName}}">
@@ -348,7 +385,7 @@
               </div>
               <div class="obj_ctrl_coord table_space">
                 {{#if values_._coordinates_ }}
-                <table id="obj_coord_table">
+                <table id="obj_coord_table" class="obj_coord_table">
                   <colgroup></colgroup>
                   <thead>
                     <tr>
@@ -360,12 +397,20 @@
                       <th>경도 분</th>
                       <th>경도 초</th>
                       <!-- <th>표출</th> -->
-                      <th><button onclick="addPoint({{ol_uid}});">추가</button></th>
+                      <th><button onclick="addObjCoords({{ol_uid}});">추가</button></th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="obj_coord_list_{{ol_uid}}">
                     {{#loopForCoords values_._coordinates_ ol_uid}}
-                      <tr>
+                      <tr data-idx="{{this.idx}}"
+                          data-lat_origin="{{this.lat.origin}}"
+                          data-lat_d="{{this.lat.d}}"
+                          data-lat_m="{{this.lat.m}}"
+                          data-lat_s="{{this.lat.s}}"
+                          data-lon_d="{{this.lon.d}}"
+                          data-lon_m="{{this.lon.m}}"
+                          data-lon_s="{{this.lon.s}}"
+                        >
                         <td>{{this.idx}}</td>
                         <td>{{this.lat.d}}</td>
                         <td>{{this.lat.m}}</td>
@@ -401,9 +446,10 @@
     <br />
 
   </p>
+  <script type="text/javascript" src="./MeasureObject.js"></script>
   <script type="text/javascript" src="./ObjectMap.js"></script>
   <script type="text/javascript" src="./ObjectDraw.js"></script>
-  <script type="text/javascript" src="./ObjectSet.js"></script>
+  <!--<script type="text/javascript" src="./ObjectSet.js"></script> -->
   <script type="text/javascript" src="./TimeStamp.js"></script>
 </body>
 
