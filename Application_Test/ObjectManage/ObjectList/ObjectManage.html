@@ -123,42 +123,49 @@
     }
 
 
+    .table {display: table; width: 100%;}
+    .row {display: table-row;}
+    .cell {display: table-cell; padding: 3px; border-bottom: 1px solid #DDD;}
+    .col1 { width: 20%;}
+    .col2 {width: 20%;}
+    .col3 {width: 40%;}
+    .col4 {width: 20%;}
+
+
   </Style>
   <title> Object Management </title>
-  <script>let asdf = 'asdf';</script>
 </head>
 
 <body style="background-color: black; color: white;">
   <div id="map" class="map" style="width: 100%; height: 600px;"></div>
   <section>
     <h2> Draw Object </h6>
-      <ul id="draw_obj_type_li">
-        <li data-val="None" onclick="drawObj(this);">None</li>
-        <li data-val="Modify" onclick="drawObj(this);">Modify</li>
-        
-        <li data-val="Line" onclick="drawObj(this);">단선</li>
-        <!-- <li data-val="" >화살표</li> -->
-        <li data-val="MultiLine" onclick="drawObj(this);">다선</li>
+    <ul id="draw_obj_type_li">
+      <li data-val="None" onclick="drawObj(this);">None</li>
+      <li data-val="Modify" onclick="drawObj(this);">Modify</li>
+      
+      <li data-val="Line" onclick="drawObj(this);">단선</li>
+      <!-- <li data-val="" >화살표</li> -->
+      <li data-val="MultiLine" onclick="drawObj(this);">다선</li>
 
-        <li data-val="Square" onclick="drawObj(this);">사각형</li>
-        <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
+      <li data-val="Square" onclick="drawObj(this);">사각형</li>
+      <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
 
-        <!-- <li data-val="Circle" onclick="drawObj(this);" >Circle</li> -->
-        
-        <!-- 
-        <li data-val="" >텍스트</li>
-        <li data-val="" >이미지</li>
-        <li data-val="" >마크</li>
-         -->
-      </ul>
+      <!-- <li data-val="Circle" onclick="drawObj(this);" >Circle</li> -->
+      
+      <!-- 이 세개의 기능은 map에 오버레이만 얹으면 될것 같음. -->
+      <!-- 
+      <li data-val="" >텍스트</li>
+      <li data-val="" >이미지</li>
+      <li data-val="" >마크</li>
+        -->
+    </ul>
 
-      <!-- 측정을 분리 해야 할 것 같다. 이 부분은 차후에 진행 하도록 하자. -->
-      <ul id="measure_obj_type_li">
-        <li data-val="Rular" onclick="measureObj(this);">Rular</li>
-        <li data-val="ESL" onclick="measureObj(this);">ESL</li>
-      </ul>
-                <!--
-       -->
+    <!-- 측정을 분리 해야 할 것 같다. 이 부분은 차후에 진행 하도록 하자. -->
+    <ul id="measure_obj_type_li">
+      <li data-val="Rular" onclick="measureObj(this);">Rular</li>
+      <li data-val="ESL" onclick="measureObj(this);">ESL</li>
+    </ul>
 
   </section>
   <section class="obj_management_section">
@@ -203,6 +210,15 @@
         </thead>
 
         <tbody id="obj_management_table"></tbody>
+        <tfoot>
+          <tr>
+            <th></th>
+            <td>선택 객체 삭제</td>
+            <td>영역 등록</td>
+            <td>객체 저장</td>
+            <td>객체 로드</td>
+          </tr>
+        </tfoot>
 
         <!-- Template -->
         <script id="obj_table_template" type="text/x-handlebars-template">
@@ -383,27 +399,26 @@
                   </form>
                   </div>
               </div>
-              <div class="obj_ctrl_coord table_space">
+              <div class="obj_ctrl_coord">
                 {{#if values_._coordinates_ }}
-                <table id="obj_coord_table" class="obj_coord_table">
-                  <colgroup></colgroup>
-                  <thead>
-                    <tr>
-                      <th>No.</th>
-                      <th>위도 도</th>
-                      <th>위도 분</th>
-                      <th>위도 초</th>
-                      <th>경도 도</th>
-                      <th>경도 분</th>
-                      <th>경도 초</th>
-                      <!-- <th>표출</th> -->
-                      <th><button onclick="addObjCoords({{ol_uid}});">추가</button></th>
-                    </tr>
-                  </thead>
-                  <tbody id="obj_coord_list_{{ol_uid}}">
+                <div id="obj_coord_table" class="obj_coord_table table">
+                  <div class="row">
+                    <div class="cell1">No.</div>
+                    <div class="cell2">위도 도</div>
+                    <div class="cell3">위도 분</div>
+                    <div class="cell4">위도 초</div>
+                    <div class="cell5">경도 도</div>
+                    <div class="cell6">경도 분</div>
+                    <div class="cell7">경도 초</div>
+                    <!-- <div class="cell">표출</div> -->
+                    <div class="cell8"><button onclick="addObjCoords({{ol_uid}});">추가</button></div>
+                  </div>
+                  <div id="obj_coord_list_{{ol_uid}}">
                     {{#loopForCoords values_._coordinates_ ol_uid}}
-                      <tr data-idx="{{this.idx}}"
+                      <div class="row cel1" data-ol_uid="{{this.ol_uid}}"
+                          data-idx="{{this.idx}}"
                           data-lat_origin="{{this.lat.origin}}"
+                          data-lon_origin="{{this.lon.origin}}"
                           data-lat_d="{{this.lat.d}}"
                           data-lat_m="{{this.lat.m}}"
                           data-lat_s="{{this.lat.s}}"
@@ -411,21 +426,36 @@
                           data-lon_m="{{this.lon.m}}"
                           data-lon_s="{{this.lon.s}}"
                         >
-                        <td>{{this.idx}}</td>
-                        <td>{{this.lat.d}}</td>
-                        <td>{{this.lat.m}}</td>
-                        <td>{{this.lat.s}}</td>
-                        <td>{{this.lon.d}}</td>
-                        <td>{{this.lon.m}}</td>
-                        <td>{{this.lon.s}}</td>
-                        <td>
-                          <button onclick="editPoint({{this.ol_uid}}, {{this.idx}});" >편집</button>
-                          <button onclick="deletePoint({{this.ol_uid}}, {{this.idx}});" >삭제</button>
-                        </td>
-                      </tr>
+                        <form action="#" id="obj_{{this.ol_uid}}_coord_{{this.idx}}" onsubmit="return false;">
+                          <div class="cell1">{{this.idx}}</div>
+                          <div class="cell2">
+                            <input type="number" name="lat_d" id="lat_d" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lat.d}}" readonly/>
+                          </div>
+                          <div class="cell3">
+                            <input type="number" name="lat_m" id="lat_m" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lat.m}}" readonly/>
+                          </div>
+                          <div class="cell4">
+                            <input type="number" name="lat_s" id="lat_s" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lat.s}}" readonly/>
+                          </div>
+                          <div class="cell5">
+                            <input type="number" name="lon_d" id="lon_d" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lon.d}}" readonly/>
+                          </div>
+                          <div class="cell6">
+                            <input type="number" name="lon_m" id="lon_m" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lon.m}}" readonly/>
+                          </div>
+                          <div class="cell7">
+                            <input type="number" name="lon_s" id="lon_s" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lon.s}}" readonly/>
+                          </div>
+                          <div class="cell8">
+                            <button id="{{ol_uid}}_unread" onclick="unreadPoint(this, {{this.ol_uid}}, {{this.idx}});" >편집</button>
+                            <button id="{{ol_uid}}_edit" onclick="editPoint(this, {{this.ol_uid}}, {{this.idx}});" >적용</button>
+                            <button onclick="deletePoint({{this.ol_uid}}, {{this.idx}});" >삭제</button>
+                          </div>
+                        </form>
+                      </div>
                     {{/loopForCoords}}
-                  </tbody>
-                </table>
+                    </div>
+                </div>
                 {{/if}}
               </div>
             </div>
@@ -449,7 +479,7 @@
   <script type="text/javascript" src="./MeasureObject.js"></script>
   <script type="text/javascript" src="./ObjectMap.js"></script>
   <script type="text/javascript" src="./ObjectDraw.js"></script>
-  <!--<script type="text/javascript" src="./ObjectSet.js"></script> -->
+  <script type="text/javascript" src="./ObjectSet.js"></script>
   <script type="text/javascript" src="./TimeStamp.js"></script>
 </body>
 

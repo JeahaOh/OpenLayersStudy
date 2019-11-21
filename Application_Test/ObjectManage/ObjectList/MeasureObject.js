@@ -22,8 +22,8 @@ const measureInit = function( flag ){
       menuList.eq( idx ).removeClass( className );
     }
   });
-  if( flag ) {
-  } else {
+  
+  if( !flag ) {
     map.removeLayer( measureVector );
     measureSource.clear();
     $('div').remove('.measure-point');
@@ -36,6 +36,7 @@ const measureInit = function( flag ){
   measurePointCNT = 0;
   map.removeInteraction( measureDraw );
   map.removeInteraction( measureSnap );
+
   if( flag !== 'drawObjInit' ) drawObjInit( 'measureInit' );
 } // measureInit
 

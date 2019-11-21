@@ -1,24 +1,7 @@
 //  Global
 let objDraw, objSnap, objModify, pointTooltip, status, pointCNT;
-//measureTooltipElement, pointTooltipElement, prevCoord,
 let rw = new ol.format.GeoJSON();
-//let lineDistance = '';
-
-/*
-//  Line을 그리면 사각형으로 변환한 geometry를 반환한다.
-let squareFunction = function( coordinates, geometry ) {
-  let start = coordinates[0];
-  let end = coordinates[1];
-  
-  coordinates = [[start, [start[0], end[1]], end, [end[0], start[1]], start]];
-  if( !geometry ) {
-    geometry = new ol.geom.Polygon(coordinates);
-  } else {
-    geometry.setCoordinates(coordinates);
-  }
-  return geometry;
-} //  squareFunction
-*/
+let sketch;
 
 /**
  * @param {*} flag : init 함수를 어디서 호출하는지 확인하기 위한 구분자.
@@ -44,164 +27,15 @@ const drawObjInit = function( flag ) {
   map.removeInteraction( objSnap );
   map.removeInteraction( objModify );
   if( flag !== 'measureInit' ) measureInit( 'drawObjInit' );
+  $(window).unbind('keypress', escape);
 } // drawObjInit
-
-/*
-//  측정 툴팁을 새로 만든다.
-const createMeasureTooltip = function() {
-  measureTooltipElement = document.createElement('div');
-  measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure measure-point';
-  measureTooltip = new ol.Overlay({
-    element: measureTooltipElement,
-    offset: [0, -15],
-    positioning: 'bottom-center'
-  });
-  map.addOverlay(measureTooltip);
-};  //  createMeasureTooltip
-*/
-/**
- * 인자로 받은 좌표 지점에 측정 Overlay와 Point Feature를 찍어주는 함수.
- * @param {*} coord [14365024.794099694, 4219904.888355112] ('EPSG:4326')형식의 좌표
- */
-/*
-const measureFunc = function(coord, feature) {
-  console.group('Measure Func');
-  
-  let sectionDistance, degree;
-
-  //  이전 좌표가 있다면, 구간 거리를 측정하기
-  if( prevCoord ) {
-    sectionDistance = new ol.geom.LineString([ prevCoord, coord ]);
-    sectionDistance = formatLength(sectionDistance)
-  }
-  prevCoord = coord;
-  // console.log( sectionDistance );
-
-  //  마지막 좌표의 정보를 보여줄 Overlay 준비
-  pointTooltipElement = document.createElement('div');
-  className = 'ol-tooltip ol-tooltip-static measure-point';
-  //  rular와 ESL을 구분한다, ESL의 첫번째 좌표에는 각도를 넣어줘야 하기 때문에 index 값을 넣어준다.
-  pointTooltipElement.className = status != 'ESL' ? className : className + ' ESL' + pointCNT;
-  if( pointCNT == 0 ) pointTooltipElement.id = 'centerPoint';
-  pointTooltip = new ol.Overlay({
-    element: pointTooltipElement,
-    offset: [0, -15],
-    positioning: 'bottom-center'
-  });
-
-  //  죄표를 3957로 변환
-  // console.log( coord )
-  let stringCoord = ol.proj.toLonLat(coord);
-  // console.log( stringCoord );
-  
-  //  좌표를 DMS 로 변환
-  let _lat = toDegreesMinutesAndSeconds( stringCoord[0] ) + 'N';
-  // console.log( _lat );
-  let _lon = toDegreesMinutesAndSeconds( stringCoord[1] ) + 'E';
-  // console.log( _lon );
-  stringCoord = _lat + '&ensp; ' + _lon;
-
-  //  원 측정을 할 경우, LineString feature를 받아 그 시작점과 끝점의 각을 잰다.
-  //  각도의 단위는 남-북극점을 기준으로 동쪽은 +, 서쪽은 -, 0 ~ +-180도이다.
-  if( feature ) {
-    // console.log( feature )
-    feature.getGeometry().transform('EPSG:3857', 'EPSG:4326');
-    coordinates = feature.getGeometry().getCoordinates();
-    point0 = turf.point( coordinates[0] );
-    point1 = turf.point( coordinates[1] );
-    degree = turf.bearing( point0, point1 );
-    degree = Math.round( degree * 100 ) / 100;
-    //  각도 단위를 360 단위로 바꾸고 싶다면 아래 식을 추가한다.
-    // degree = degree < 0 ? (180 + degree) + 180  : degree;
-    degree += '°';
-    feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
-  }
-
-  //  Overlay에 보여줄 측정 데이터 문자열 정리
-  let display;
-  switch( status ) {
-    case 'Rular' :
-      display =
-        lineDistance == '' ? stringCoord : stringCoord + '<br>'
-        + (sectionDistance === lineDistance 
-          ? '총 거리 : ' + sectionDistance
-          : '총 거리 : ' + lineDistance + '<br>' + '구간 거리 : ' + sectionDistance);
-      break;
-    case 'ESL' :
-      display =  pointCNT == 0 ? stringCoord : stringCoord + '<br>' + sectionDistance;
-      if( document.getElementById('centerPoint') ) {
-        target = document.getElementById('centerPoint');
-        origin = target.innerText;
-        target.innerHTML = origin + '<br>' + degree ;
-      }
-      break;
-    default: 
-      alert("Something has Crashed!!\nRefresh Page!!");
-  }
-
-  // console.log( pointCNT );
-
-  //  Overlay 띄우기
-  pointTooltipElement.innerHTML = display;
-  pointTooltip.setPosition(coord);
-  map.addOverlay(pointTooltip);
-
-  //  측정용 feature의 클릭점이 잘보이게 하기 위해 Point Feature를 띄움.
-  // console.log(coord);
-  let point = new ol.Feature({
-    geometry: new ol.geom.Point(
-      ol.proj.fromLonLat(coord, 'EPSG:4326', 'EPSG:3857')
-    )
-  });
-  point.setStyle( new ol.style.Style({
-    image: new ol.style.Circle({
-      radius: 10,
-      fill: new ol.style.Fill({
-        color: 'rgba(0, 0, 0, 0.2)'
-      })
-    })
-  }) );
-  measureSource.addFeature( point );
-  pointCNT++;
-  console.groupEnd('Measure Func');
-};  //  measureFunc
-*/
-/**
- * Format length output.
- * @param {LineString} line The line.
- * @return {string} The formatted length.
- */
-/*
-let formatLength = function(line) {
-  let length = ol.sphere.getLength(line);
-  // console.log( length );
-  let output;
-  if (length > 100) {
-    output = (Math.round(length / 1000 * 100) / 100) +
-      ' ' + 'km';
-  } else {
-    output = (Math.round(length * 100) / 100) +
-      ' ' + 'm';
-  }
-  return output;
-};  //  formatLength
-*/
-
-/*
-const measureClick = function() { 
-  //  Snap을 쓰고 있기 때문에 evt.coordinate는 내가 원하는 좌표 값이 아님.
-  //  objDraw.finishCoordinate_는 현재 그리고 있는 feature의 마지막 클릭 좌표 값임.
-  //  따라서 snap의 사용 여부를 떠나 원하는 좌표 값은 이놈이 갖고 있음.
-  measureFunc( objDraw.finishCoordinate_ );
-}
-*/
 
 const drawObj = function( evt ) {
   //  map의 interaction들을 초기화.
   drawObjInit();
 
   //  변수 선언
-  let sketch, listener;
+  // let sketch;
   let className = 'selectedType';
   let menuList = $('#obj_mng_li li');
 
@@ -270,6 +104,7 @@ const drawObj = function( evt ) {
     /**
      * !! sketch의 uid는 db랑 연결 해줘야 함 !!
      */
+    sketch.setId( TimeStamp.getMiliTime() );
     sketch.setProperties({
       'objName': selectedType + '_' + sketch.ol_uid,
       'objGroup': '기본',
@@ -278,7 +113,9 @@ const drawObj = function( evt ) {
       'objUpdateDate': TimeStamp.getDateTime(),
       'objLastEditor': 'USER'
     });
-    
+
+    $(window).on('keypress', escape);
+
     console.groupEnd( 'draw start' );
   }); //  drawstart
 
@@ -293,6 +130,7 @@ const drawObj = function( evt ) {
     });
   
     drawObjInit( true );
+
     console.groupEnd( 'draw end' );
   });
   //  drawend
@@ -307,28 +145,11 @@ let toWKT = function (feature) {
 }
 
 /**
- * 3857 좌표를 DMS 좌표로 변환하기 위해서 사용.
- * lat, lon 따로 계산 해야 함.
- * @param {*} coordinate lat이나 lon
- */
-/*
-function toDegreesMinutesAndSeconds(coordinate) {
-  var absolute = Math.abs(coordinate);
-  var degrees = Math.floor(absolute);
-  var minutesNotTruncated = (absolute - degrees) * 60;
-  var minutes = Math.floor(minutesNotTruncated);
-  var seconds = Math.floor((minutesNotTruncated - minutes) * 60);
-  
-  return degrees + "° " + minutes + "." + seconds + "'";
-};
-*/
-/**
  * 3857 좌표를 DMS 좌표계 형식의 객체로 변환하기 위해서 사용.
  * lat, lon 따로 계산 해야 함.
  * @param {*} coordinate lat이나 lon
  */
-/*
-function toDmsAsMap(coordinate) {
+const toDmsAsMap = function(coordinate) {
   var absolute = Math.abs(coordinate);
   var degrees = Math.floor(absolute);
   var minutesNotTruncated = (absolute - degrees) * 60;
@@ -342,4 +163,36 @@ function toDmsAsMap(coordinate) {
     s: seconds };
 };
 
-*/
+/**
+ * DMS 좌표계 형식의 객체를 3857 좌표계로 변환하기 위해서 사용.
+ * lat lon 한번에 계산 함.
+ * @param {*} coordMap 
+ */
+const dmsMapTo3857 = function( coordMap ) {
+  let lat = coordMap.lat;
+  console.log( lat );
+  let lon = coordMap.lon;
+  console.log( lon );
+  
+  lat = lat.d + ' ' +  lat.m + ' ' + lat.s;
+  lon = lon.d + ' ' +  lon.m + ' ' + lon.s;
+
+  coord = [ lat, lon ];
+  console.log( coord );
+  coord = ol.proj.transform(coord, 'EPSG:3857', 'EPST:4326');
+  console.log( coord );
+  return coordMap;
+}
+
+const escape = function( evt ) {
+  let charCode = (evt.keyCode) ? evt.keyCode : evt.which;
+  console.log( charCode );
+
+  //  X = 120
+  //  z = 122
+  switch( charCode ) {
+    case 120 :
+        drawObjInit();
+        return;
+  }
+}

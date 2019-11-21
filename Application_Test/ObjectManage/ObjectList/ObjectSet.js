@@ -1,6 +1,3 @@
-
-
-
 /**
  * for문으로 template에 i 값을 넣어서 html로 반환한다.
  * @param {*} from 시작 값
@@ -26,14 +23,22 @@ Handlebars.registerHelper('loopForNo', loopForNo);
  */
 const loopForCoords = function (_coordinates_, ol_uid, block) {
   console.group('Loop For Coords');
+  let cont = '';
   // console.log(_coordinates_);
   //  좌표의 껍데기를 벗김.
   if( _coordinates_.length == 1) {
     _coordinates_ = _coordinates_[0];
     // console.log(_coordinates_);
   }
-  let cont = '';
-  for (var i = 0; i < _coordinates_.length; i++) {
+  let leng = _coordinates_.length;
+  // console.log( leng );
+  // console.log( _coordinates_ )
+  if( _coordinates_[0][0] == _coordinates_[leng-1][0]
+      && _coordinates_[0][1] == _coordinates_[leng-1][1]) {
+    leng -=1;
+  }
+
+  for ( var i = 0; i < leng; i++) {
     //  좌표계 변환
     coord = ol.proj.transform(_coordinates_[i], 'EPSG:3857', 'EPSG:4326');
 
@@ -62,8 +67,7 @@ Handlebars.registerHelper('loopForCoords', loopForCoords);
  * @param uid 
  */
 const removeObj = function (uid) {
-  console.group('remove obj');
-  // console.log( uid );
+  console.group('remove obj');// console.log( uid );
 
   target = objSource.getFeatureByUid(uid);
   objSource.removeFeature(target);
@@ -163,6 +167,7 @@ let objGeoJ;
     objGeoJ = rw.readFeatures(objGeoJ);
     objSource.addFeatures(objGeoJ);
   }
+
   console.groupEnd('on load');
 })();
 
@@ -237,12 +242,21 @@ const ctrlObjProp = function (uid) {
   targetObj.setProperties(serialObj);
 }
 
-const addObjCoords = function(uid) {
+/** addObjCoords
+ * ObjectManagement에서 한 객체에 대한 좌표 추가 버튼을 누를 경우 작동함.
+ * 대상 객체의 uid를 가져옴.
+ * 
+ * 객체 타입에 따라 좌표를 추가 할 수 있는지 없는지 지정 한다?
+ * 
+ * @param {*} uid 
+ */
+const addObjCoords = function( uid ) {
   console.log( uid );
   let tgtObj = objSource.getFeatureByUid(uid);
   console.log( tgtObj );
   let able = tgtObj.values_.objType;
   console.log( able );
+  
   switch( able ) {
     case 'Circle':
     
@@ -250,7 +264,40 @@ const addObjCoords = function(uid) {
     case 'LineString':
     case 'Square' :
   }
-  // if
+ 
   let  tgtCoordTab = $('#obj_coord_list_'+ uid);
   console.log( tgtCoordTab );
+}
+
+const unreadPoint = function( ele, uid, idx ) {
+  status = 
+  $('.obj_' + uid + '_coord_' + idx).attr('readonly', false );
+}
+
+const editPoint = function( ele, uid, idx ) {
+  let tgt = $('#obj_' + uid + '_coord_' + idx);
+  // console.log( tgt );
+  console.log(  );
+  // console.log( tgt.serializeArray() );
+  let value = tgt.serializeObject();
+  value = {
+    uid: uid,
+    coordIdx: idx,
+    lat : {
+      d: value.lat_d,
+      m: value.lat_m,
+      s: value.lat_s
+    },
+    lon : {
+      d: value.lon_d,
+      m: value.lon_m,
+      s: value.lon_s
+    }
+  }
+  console.log( value )
+  value = dmsMapTo3857( value );
+  // value = ol.proj.transform(value, 'EPSG:4326', 'EPSG:3857');
+  // console.log( value );
+  
+
 }

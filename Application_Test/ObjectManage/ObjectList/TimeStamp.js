@@ -76,7 +76,7 @@ const TimeStamp = {
     return Math.floor(new Date().getTime())
   },
   //  UNIXTIME을 리턴
-  //  Unix time : 1970 -> 지금까지의 초 10자리의 숫자임.
+  //  Unix time : 1970부터 메소드를 호출한 순간까지의 초 10자리의 숫자임.
   getUnixTime : function() {
     return Math.floor(new Date().getTime() / 1000)
   }
