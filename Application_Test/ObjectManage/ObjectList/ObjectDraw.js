@@ -26,6 +26,8 @@ const drawObjInit = function( flag ) {
   map.removeInteraction( objDraw );
   map.removeInteraction( objSnap );
   map.removeInteraction( objModify );
+
+  //  초기화 함수를 measureInit에서 호출 하지 않았다면 measureInit 함수를 호출함.
   if( flag !== 'measureInit' ) measureInit( 'drawObjInit' );
   $(window).unbind('keypress', escape);
 } // drawObjInit
@@ -106,12 +108,16 @@ const drawObj = function( evt ) {
      */
     sketch.setId( TimeStamp.getMiliTime() );
     sketch.setProperties({
-      'objName': selectedType + '_' + sketch.ol_uid,
-      'objGroup': '기본',
-      'objType': selectedType,
-      'objCreateDate': TimeStamp.getDateTime(),
-      'objUpdateDate': TimeStamp.getDateTime(),
-      'objLastEditor': 'USER'
+      info: {
+        'objName': selectedType + '_' + sketch.ol_uid,
+        'objGroup': '기본',
+        'objType': selectedType,
+        'objCreateDate': TimeStamp.getDateTime(),
+        'objUpdateDate': TimeStamp.getDateTime(),
+        'objLastEditor': 'USER'
+      },
+      objStyle : {}
+
     });
 
     $(window).on('keypress', escape);
@@ -121,12 +127,13 @@ const drawObj = function( evt ) {
 
   objDraw.on('drawend', function( evt ) {
     console.group( 'draw end' );
-    //  측정일 경우
     
     console.log( sketch );
     sketch.setProperties({
-      'wkt': toWKT(sketch),
-      '_coordinates_': sketch.getGeometry().getCoordinates()
+      coords : {
+        'wkt': toWKT(sketch),
+        '_coordinates_': sketch.getGeometry().getCoordinates()
+      }
     });
   
     drawObjInit( true );

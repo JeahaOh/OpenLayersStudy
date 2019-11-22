@@ -102,6 +102,8 @@
     }
     
     .obj_ctrl_box {
+    }
+    .obj_ctrl_catg_area {
       display: flex;
       flex: 1 1 0px;
       min-width: auto;
@@ -225,9 +227,9 @@
           <tr class="manage_tgt">
             <td><input type="checkbox" data-ol_uid="{{ol_uid}}" class="select_obj_mng_li" /></td>
             <td onclick="objPanelTogle({{ol_uid}});" class="uid">{{ol_uid}}</td>
-            <td>{{values_.objName}}</td>
-            <td>{{values_.objGroup}}</td>
-            <td>{{values_.objType}}</td>
+            <td>{{values_.info.objName}}</td>
+            <td>{{values_.info.objGroup}}</td>
+            <td>{{values_.info.objType}}</td>
             <!-- 
               기타 설정에 있는데 굳이 살릴 필요가 없을 것 같다.
             <td><input type="checkbox" onchange="return false;" /></td>
@@ -242,165 +244,167 @@
           </td>
           <td colspan="5">
             <div class="obj_ctrl_box">
-              <div class="obj_ctrl_catg">
-                <span>기본 정보</span>
-                <hr>
-                <div class="obj_ctrl_content">
-                  <form action="#" id="obj_prop_{{ol_uid}}">
-                    <ul id="obj_prop_{{ol_uid}}_origin"
-                        data-obj_name="{{values_.objName}}"
-                        data-obj_group="{{values_.objGroup}}"
-                        data-obj_type="{{values_.objType}}"
-                        data-obj_create_date="{{values_.objCreateDate}}"
-                        data-obj_update_date="{{values_.objUpdateDate}}"
-                        data-obj_last_editor="{{values_.objLastEditor}}">
-                      <li>
-                        <label for="obj_ol_uid">객체 번호</label>
-                        <input type="text" name="obj_ol_uid" id="obj_ol_uid" value="{{ol_uid}}" disabled />
-                      </li>
-                      <li>
-                        <label for="obj_name">객체 명</label>
-                        <input type="text" name="objName" id="obj_name" value="{{values_.objName}}">
-                      </li>
-                      <li>
-                        <label for="obj_group">그룹</label>
-                        <select name="obj_group" id="obj_group">helper를 이용해서?</select>
-                      </li>
-                      <li>
-                        <label for="obj_type">객체 타입</label>
-                        <input type="text" name="objType" id="obj_type" value="{{values_.objType}}" readonly/>
-                      </li>
-                      <!-- 
-                        사용하지 않는 것 같다.
-                      <li>
-                        <label for="obj_lat">위도</label>
-                        <input type="text" name="obj_lat" id="obj_lat" value="" readonly />
-                      </li>
-                      <li>
-                        <label for="obj_lon">경도</label>
-                        <input type="text" name="obj_lon" id="obj_lon" value="" readonly />
-                      </li>
-                      -->
-                      <li>
-                        <label for="obj_create_date">생성 일시</label>
-                        <input type="datetime" name="objCreateDate" id="obj_create_date" value="{{values_.objCreateDate}}" readonly />
-                      </li>
-                      <li>
-                        <label for="obj_update_date">수정 일시</label>
-                        <input type="datetime" name="objUpdateDate" id="obj_update_date" value="{{values_.objUpdateDate}}" readonly />
-                      </li>
-                      <li>
-                        <label for="obj_last_editor">수정자</label>
-                        <input type="text" name="objLastEditor" id="obj_last_editor" value="{{values_.objLastEditor}}" readonly />
-                      </li>
-                    </ul>
-                    <button type="button" onclick="ctrlObjProp({{ol_uid}});">기본 정보 적용</button>
-                    <button type="reset" >취소</button>
-                  </form>
+              <div class="obj_ctrl_catg_area">
+                <div class="obj_ctrl_catg">
+                  <span>기본 정보</span>
+                  <hr>
+                  <div class="obj_ctrl_content">
+                    <form action="#" id="obj_prop_{{ol_uid}}">
+                      <ul id="obj_prop_{{ol_uid}}_origin"
+                          data-obj_name="{{values_.info.objName}}"
+                          data-obj_group="{{values_.info.objGroup}}"
+                          data-obj_type="{{values_.info.objType}}"
+                          data-obj_create_date="{{values_.info.objCreateDate}}"
+                          data-obj_update_date="{{values_.info.objUpdateDate}}"
+                          data-obj_last_editor="{{values_.info.objLastEditor}}">
+                        <li>
+                          <label for="obj_ol_uid">객체 번호</label>
+                          <input type="text" name="obj_ol_uid" id="obj_ol_uid" value="{{ol_uid}}" disabled />
+                        </li>
+                        <li>
+                          <label for="obj_name">객체 명</label>
+                          <input type="text" name="objName" id="obj_name" value="{{values_.info.objName}}">
+                        </li>
+                        <li>
+                          <label for="obj_group">그룹</label>
+                          <select name="obj_group" id="obj_group">helper를 이용해서?</select>
+                        </li>
+                        <li>
+                          <label for="obj_type">객체 타입</label>
+                          <input type="text" name="objType" id="obj_type" value="{{values_.info.objType}}" readonly/>
+                        </li>
+                        <!-- 
+                          사용하지 않는 것 같다.
+                        <li>
+                          <label for="obj_lat">위도</label>
+                          <input type="text" name="obj_lat" id="obj_lat" value="" readonly />
+                        </li>
+                        <li>
+                          <label for="obj_lon">경도</label>
+                          <input type="text" name="obj_lon" id="obj_lon" value="" readonly />
+                        </li>
+                        -->
+                        <li>
+                          <label for="obj_create_date">생성 일시</label>
+                          <input type="datetime" name="objCreateDate" id="obj_create_date" value="{{values_.info.objCreateDate}}" readonly />
+                        </li>
+                        <li>
+                          <label for="obj_update_date">수정 일시</label>
+                          <input type="datetime" name="objUpdateDate" id="obj_update_date" value="{{values_.info.objUpdateDate}}" readonly />
+                        </li>
+                        <li>
+                          <label for="obj_last_editor">수정자</label>
+                          <input type="text" name="objLastEditor" id="obj_last_editor" value="{{values_.info.objLastEditor}}" readonly />
+                        </li>
+                      </ul>
+                      <button type="button" onclick="ctrlObjProp({{ol_uid}});">기본 정보 적용</button>
+                      <button type="reset" >취소</button>
+                    </form>
+                  </div>
                 </div>
-              </div>
-              <div class="obj_ctrl_catg">
-                <span>표출 정보</span>
-                <hr>
-                <div class="obj_ctrl_content">
-                  <form action="#" id="obj_style_{{ol_uid}}">
-                  <ul>
-                    <li>
-                      <label for="obj_stroke_color">선 색상</label>
-                      <input type="color" name="obj_stroke_color" id="obj_stroke_color" value="{{values_.objStrokeColor}}" />
-                    </li>
-                    <li>
-                      <label for="obj_stroke_line_dash">선 대시 종류</label>
-                      <select name="obj_stroke_line_dash" id="obj_stroke_line_dash">
-                        <option value="">SOLID</option>
-                        <option value="">DASH</option>
-                        <option value="">DOT</option>
-                        <option value="">DASHDOT</option>
-                        <option value="">DASHDOTDASH</option>
-                        <option value="">CLEAR</option>
-                      </select>
-                    </li>
-                    <li>
-                      <label for="obj_stroke_width">선 두께</label>
-                      <select name="obj_stroke_width" id="obj_stroke_width" >
-                        {{#loopForNo 0 9 1}}
-                          <option value="{{this}}">{{this}}</option>
-                        {{/loopForNo}}
-                      </select>
-                    </li>
-                    <li>
-                      <label for="obj_fill_color">채우기 색상</label>
-                      <input type="text" name="obj_fill_color" id="obj_fill_color" />
-                    </li>
-                    <li>
-                      <label for="obj_opacity">투명도</label>
-                      <input type="slider" name="obj_opacity" id="obj_opacity" />
-                    </li>
-                    <li>
-                      <label for="obj_font_color">폰트 색상</label>
-                      <input type="color" name="obj_font_color" id="obj_font_color" />
-                    </li>
-                    <li>
-                      <label for="obj_text_font">폰트</label>
-                      <input type="text" name="obj_text_font" id="obj_text_font" />
-                    </li>
-                    <li>
-                      <label for="obj_text_font_size">폰트 크기</label>
-                      <input type="number" name="obj_text_font_size" id="obj_text_font_size" />
-                    </li>
-                  </ul>
-                  </form>
-                </div>
-              </div>
-              
-              <div class="obj_ctrl_catg">
-                <span>기타 설정</span>
-                <hr>
-                <div class="obj_ctrl_content">
-                  <form action="#" id="obj_ext_{{ol_uid}}">
+                <div class="obj_ctrl_catg">
+                  <span>표출 정보</span>
+                  <hr>
+                  <div class="obj_ctrl_content">
+                    <form action="#" id="obj_style_{{ol_uid}}">
                     <ul>
                       <li>
-                        <label for="obj_visible">보기</label>
-                        <input type="checkbox" name="obj_visible" id="obj_visible" />
+                        <label for="obj_stroke_color">선 색상</label>
+                        <input type="color" name="obj_stroke_color" id="obj_stroke_color" value="{{values_.info.objStrokeColor}}" />
                       </li>
                       <li>
-                        <label for="obj_name_visible">이름 보기</label>
-                        <input type="checkbox" name="obj_name_visible" id="obj_name_visible" />
-                      </li>
-                      <li>
-                        <label for="obj_angle">회전 각도</label>
-                        <input type="number" name="obj_angle" id="obj_angle" disabled/>
-                      </li>
-                      <li>
-                        <label for="obj_radiusNM">반지름 (NM)</label>
-                        <input type="number" name="obj_radiusNM" id="obj_radiusNM" disabled/>
-                      </li>
-                      <li>
-                        <label for="obj_inside_angle">호 내각</label>
-                        <input type="number" name="obj_inside_angle" id="obj_inside_angle" disabled/>
-                      </li>
-                      <li>
-                        <label for="obj_angle_ratio">오각형 비율</label>
-                        <input type="number" name="obj_angle_ratio" id="obj_angle_ratio" disabled/>
-                      </li>
-                      <li>
-                        <label for="obj_begin_point_type">시작점 화살표</label>
-                        <select name="obj_begin_end_type" id="obj_begin_end_type" disabled>
-                          
+                        <label for="obj_stroke_line_dash">선 대시 종류</label>
+                        <select name="obj_stroke_line_dash" id="obj_stroke_line_dash">
+                          <option value="">SOLID</option>
+                          <option value="">DASH</option>
+                          <option value="">DOT</option>
+                          <option value="">DASHDOT</option>
+                          <option value="">DASHDOTDASH</option>
+                          <option value="">CLEAR</option>
                         </select>
                       </li>
                       <li>
-                        <label for="obj_end_point_type">종료점 화살표</label>
-                        <select name="obj_end_point_type" id="obj_end_point_type" disabled>
-                          
+                        <label for="obj_stroke_width">선 두께</label>
+                        <select name="obj_stroke_width" id="obj_stroke_width" >
+                          {{#loopForNo 0 9 1}}
+                            <option value="{{this}}">{{this}}</option>
+                          {{/loopForNo}}
                         </select>
+                      </li>
+                      <li>
+                        <label for="obj_fill_color">채우기 색상</label>
+                        <input type="text" name="obj_fill_color" id="obj_fill_color" />
+                      </li>
+                      <li>
+                        <label for="obj_opacity">투명도</label>
+                        <input type="slider" name="obj_opacity" id="obj_opacity" />
+                      </li>
+                      <li>
+                        <label for="obj_font_color">폰트 색상</label>
+                        <input type="color" name="obj_font_color" id="obj_font_color" />
+                      </li>
+                      <li>
+                        <label for="obj_text_font">폰트</label>
+                        <input type="text" name="obj_text_font" id="obj_text_font" />
+                      </li>
+                      <li>
+                        <label for="obj_text_font_size">폰트 크기</label>
+                        <input type="number" name="obj_text_font_size" id="obj_text_font_size" />
                       </li>
                     </ul>
-                  </form>
+                    </form>
                   </div>
+                </div>
+                
+                <div class="obj_ctrl_catg">
+                  <span>기타 설정</span>
+                  <hr>
+                  <div class="obj_ctrl_content">
+                    <form action="#" id="obj_ext_{{ol_uid}}">
+                      <ul>
+                        <li>
+                          <label for="obj_visible">보기</label>
+                          <input type="checkbox" name="obj_visible" id="obj_visible" />
+                        </li>
+                        <li>
+                          <label for="obj_name_visible">이름 보기</label>
+                          <input type="checkbox" name="obj_name_visible" id="obj_name_visible" />
+                        </li>
+                        <li>
+                          <label for="obj_angle">회전 각도</label>
+                          <input type="number" name="obj_angle" id="obj_angle" disabled/>
+                        </li>
+                        <li>
+                          <label for="obj_radiusNM">반지름 (NM)</label>
+                          <input type="number" name="obj_radiusNM" id="obj_radiusNM" disabled/>
+                        </li>
+                        <li>
+                          <label for="obj_inside_angle">호 내각</label>
+                          <input type="number" name="obj_inside_angle" id="obj_inside_angle" disabled/>
+                        </li>
+                        <li>
+                          <label for="obj_angle_ratio">오각형 비율</label>
+                          <input type="number" name="obj_angle_ratio" id="obj_angle_ratio" disabled/>
+                        </li>
+                        <li>
+                          <label for="obj_begin_point_type">시작점 화살표</label>
+                          <select name="obj_begin_end_type" id="obj_begin_end_type" disabled>
+                            
+                          </select>
+                        </li>
+                        <li>
+                          <label for="obj_end_point_type">종료점 화살표</label>
+                          <select name="obj_end_point_type" id="obj_end_point_type" disabled>
+                            
+                          </select>
+                        </li>
+                      </ul>
+                    </form>
+                    </div>
+                </div>
               </div>
               <div class="obj_ctrl_coord">
-                {{#if values_._coordinates_ }}
+                {{#if values_.coords._coordinates_ }}
                 <div id="obj_coord_table" class="obj_coord_table table">
                   <div class="row">
                     <div class="cell1">No.</div>
@@ -414,7 +418,7 @@
                     <div class="cell8"><button onclick="addObjCoords({{ol_uid}});">추가</button></div>
                   </div>
                   <div id="obj_coord_list_{{ol_uid}}">
-                    {{#loopForCoords values_._coordinates_ ol_uid}}
+                    {{#loopForCoords values_.coords._coordinates_ ol_uid}}
                       <div class="row cel1" data-ol_uid="{{this.ol_uid}}"
                           data-idx="{{this.idx}}"
                           data-lat_origin="{{this.lat.origin}}"

@@ -239,7 +239,9 @@ const ctrlObjProp = function (uid) {
   // console.log( serialObj );
   let targetObj = objSource.getFeatureByUid(uid);
   
-  targetObj.setProperties(serialObj);
+  targetObj.setProperties({
+    info:serialObj
+  });
 }
 
 /** addObjCoords
