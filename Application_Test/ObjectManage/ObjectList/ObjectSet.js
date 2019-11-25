@@ -284,3 +284,32 @@ const editStyle = function( uid ) {
   let input = $('#obj_style_' + uid).serializeObject();
   console.log( input );
 }
+
+const rgb2rgba = function( rgb, opa ) {
+  rgb = rgb.replace('#', '').trim();
+  r = parseInt( rgb.substring( 0 , 2 ), 16);
+  g = parseInt( rgb.substring( 2 , 4 ), 16);
+  b = parseInt( rgb.substring( 4 , 6 ), 16);
+  opa = opa / 10;
+  if( opa > 1 ) opa = 1;
+  return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opa + ')';
+}
+
+const rgba2rgb = function( rgba ) {
+  rgba = rgba.replace('rgba(', '').replace(')', '').trim();
+  // rgba.re('(');
+  // rgba.remove(')');
+  // rgba.remove(' ');
+  rgba = rgba.split(',');
+  console.log( rgba );
+  for( i in rgba ) {
+    console.log( rgba[i] );
+  }
+  r = (rgba[0]).toString(16);
+  g = (rgba[1]).toString(16);
+  b = (rgba[2]).toString(16);
+  console.log( r + g + b)
+  //return {rgb : rgb, a: a}
+}
+
+//"rgba(170, 187, 204, 1)"

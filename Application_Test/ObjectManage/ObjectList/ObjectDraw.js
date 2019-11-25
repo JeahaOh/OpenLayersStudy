@@ -127,7 +127,7 @@ const drawObj = function( evt ) {
   objDraw.on('drawend', function( evt ) {
     console.group( 'draw end' );
     
-    console.log( sketch.getStyle() );
+    // console.log( sketch.getStyle() );
     setCoordsAtProps( sketch );
     
 

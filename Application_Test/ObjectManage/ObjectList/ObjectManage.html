@@ -19,11 +19,14 @@
   <script type="text/javascript" src="../../../include/ol-ext.js"></script>
   <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
   <script type="text/javascript" src="../../../include/handlebars-v4.1.2.js"></script>
+
+  <link type="text/css" rel="stylesheet" href="./rgbaColorPicker.css" />
+  <script type="text/javascript" src="./rgbaColorPicker.js"></script>
   
   <title> Object Management </title>
 </head>
 
-<body style="background-color: black; color: white;">
+<body style="background-color: #222; color: #ddd;">
   <div id="map" class="map" style="width: 100%; height: 600px;"></div>
   <section>
     <h2> Draw Object </h6>
@@ -37,7 +40,6 @@
 
       <li data-val="Square" onclick="drawObj(this);">사각형</li>
       <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
-
       <!-- <li data-val="Circle" onclick="drawObj(this);" >Circle</li> -->
       
       <!-- 이 세개의 기능은 map에 오버레이만 얹으면 될것 같음. -->
@@ -181,6 +183,10 @@
                     </form>
                   </div>
                 </div>
+
+
+
+
                 <div class="obj_ctrl_catg">
                   <span>표출 정보</span>
                   <hr>
@@ -188,9 +194,14 @@
                     <form action="#" onsubmit="return false;" id="obj_style_{{ol_uid}}">
                       <ul>
                         <li>
-                          <label for="obj_stroke_color">선 색상</label>
-                          <input type="color" name="storkeColor" id="obj_stroke_color" value="{{values_.info.objStrokeColor}}" />
+                          <label for="obj_stroke_RGB">선 색상</label>
+                          <input type="color" name="storkeRGB" id="obj_stroke_RGB" value="{{values_.style.strokeRGB}}" />
                         </li>
+                        <li>
+                          <label for="obj_stroke_opacity">선 투명도</label>
+                          <input type="number" name="strokeOpacity" id="obj_stroke_opacity" value="{{values_.style.strokeOpacity}}" min="0" max="10"/>
+                        </li>
+                        <input type="hidden" name="strokeRGBA" id="{{ol_uid}}_strokeRGBA">
                         <li>
                           <label for="obj_stroke_line_dash">선 대시 종류</label>
                           <select name="strokeLineDash" id="obj_stroke_line_dash">
@@ -211,25 +222,31 @@
                           </select>
                         </li>
                         <li>
-                          <label for="obj_fill_color">채우기 색상</label>
-                          <input type="text" name="fillColor" id="obj_fill_color" />
+                          <label for="obj_fill_RGB">채우기 색상</label>
+                          <input type="color" name="fillRGB" id="obj_fill_RGB" value="{{values_.style.fillRGB}}"/>
                         </li>
                         <li>
-                          <label for="obj_opacity">투명도</label>
-                          <input type="number" name="fillOpacity" id="obj_opacity" min="0" max="10"/>
+                          <label for="obj_fill_opacity">채우기 투명도</label>
+                          <input type="number" name="fillOpacity" id="obj_fill_opacity" value="{{values_.style.fillOpacity}}" min="0" max="10" />
+                        </li>
+                        <input type="hidden" name="fillRGBA" id="{{ol_uid}}_fillRGBA">
+                        <li>
+                          <label for="obj_text_RGB">폰트 색상</label>
+                          <input type="color" name="textRGB" id="obj_text_RGB" value="{{values_.style.textRGB}}" />
                         </li>
                         <li>
-                          <label for="obj_text_color">폰트 색상</label>
-                          <input type="color" name="textColor" id="obj_text_color" />
+                          <label for="obj_text_opacity">폰트 투명도</label>
+                          <input type="number" name="textOpacity" id="obj_text_opacity" value="{{values_.style.textOpacity}}" min="0" max="10"/>
                         </li>
-                        <li>
+                        <input type="hidden" name="textRGBA" id="{{ol_uid}}_textRGBA">
+                        <!-- <li>
                           <label for="obj_text_font">폰트</label>
                           <input type="text" name="textFont" id="obj_text_font" />
-                        </li>
-                        <li>
+                        </li> -->
+                        <!-- <li>
                           <label for="obj_text_size">폰트 크기</label>
                           <input type="number" name="textSize" id="obj_text_size" />
-                        </li>
+                        </li> -->
                         <li>
                           <button onclick="editStyle({{ol_uid}})">스타일 적용</button>
                         </li>
@@ -237,7 +254,10 @@
                     </form>
                   </div>
                 </div>
-                
+
+
+
+
                 <div class="obj_ctrl_catg">
                   <span>기타 설정</span>
                   <hr>
@@ -324,6 +344,7 @@
     </ul> -->
   </section>
   <p>
+
     <br />
 
   </p>
