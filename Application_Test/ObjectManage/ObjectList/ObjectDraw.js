@@ -111,12 +111,11 @@ const drawObj = function( evt ) {
       info: {
         'objName': selectedType + '_' + sketch.ol_uid,
         'objGroup': '기본',
-        'objType': selectedType,
+        'selectedType': selectedType,
+        'realType': type,
         'objCreateDate': TimeStamp.getDateTime(),
-        'objUpdateDate': TimeStamp.getDateTime(),
         'objLastEditor': 'USER'
-      },
-      objStyle : {}
+      }
 
     });
 
@@ -128,14 +127,11 @@ const drawObj = function( evt ) {
   objDraw.on('drawend', function( evt ) {
     console.group( 'draw end' );
     
-    console.log( sketch );
-    sketch.setProperties({
-      coords : {
-        'wkt': toWKT(sketch),
-        '_coordinates_': sketch.getGeometry().getCoordinates()
-      }
-    });
-  
+    console.log( sketch.getStyle() );
+    setCoordsAtProps( sketch );
+    
+
+    console.log( sketch.getProperties() );
     drawObjInit( true );
 
     console.groupEnd( 'draw end' );
@@ -143,6 +139,41 @@ const drawObj = function( evt ) {
   //  drawend
 }
 //  drawObj
+
+const setCoordsAtProps = function( feature ) {
+  console.group('set coords at props');
+  
+  // console.log( 'BEFORE' );
+  // console.log( feature.getProperties().coords );
+
+  let coords3857 = feature.getGeometry().getCoordinates();
+  // console.log(coords3857);
+  if( coords3857.length == 1) {
+    coords3857 = coords3857[0];
+    // console.log(_coordinates_);
+  }
+  let coords4326 = [];
+  let coordsDms = [];
+  for( var i = 0; i < coords3857.length; i++){
+    coords4326.push(ol.proj.transform( coords3857[i], 'EPSG:3857', 'EPSG:4326' ));
+    coordsDms.push( [toDmsAsMap( coords4326[i][0], toDmsAsMap(coords3857[i][1]) )] );
+  }
+  
+  // console.log( sketch );
+  feature.setProperties({
+    coords : {
+      'wkt': toWKT(feature),
+      'coords3857': coords3857,
+      'coords4326': coords4326,
+      'coordsDms': coordsDms
+    }
+  });
+
+  // console.log( 'AFTER' );
+  // console.log( feature.getProperties().coords );
+
+  console.groupEnd('set coords at props');
+}
 
 /**
  * feature를 WKT로 변환함.
@@ -186,10 +217,11 @@ const dmsMapTo3857 = function( coordMap ) {
 
   coord = [ lat, lon ];
   console.log( coord );
-  coord = ol.proj.transform(coord, 'EPSG:3857', 'EPST:4326');
+  coord = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
   console.log( coord );
   return coordMap;
 }
+// mapdirective에서
 
 const escape = function( evt ) {
   let charCode = (evt.keyCode) ? evt.keyCode : evt.which;

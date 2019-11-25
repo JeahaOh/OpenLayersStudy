@@ -1,0 +1,112 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+hr {
+  margin: 5px 0px;
+}
+
+#draw_obj_type_li li {
+  cursor: pointer;
+  padding: 10px;
+  border: 0;
+  /* float: left; */
+  display: inline-block;
+}
+
+#measure_obj_type_li li {
+  cursor: pointer;
+  padding: 10px;
+  border: 0;
+  /* float: left; */
+  display: inline-block;
+}
+
+.selectedType {
+  color: slategrey;
+}
+
+.ol-tooltip {
+  color: black;
+}
+
+li {
+  list-style: none;
+}
+
+#obj_list li {
+  cursor: pointer;
+}
+.obj_management_section {
+  padding: 10px;
+}
+.table_space {
+  background: slategrey;
+}
+.table_space table {
+  border: 1px solid;
+  border-collapse: collapse;
+  text-align: center;
+}
+.table_space th {
+  background: gray;
+}
+.table_space th, td {
+  border: 1px solid black;
+}
+.table_space tr:nth-child(odd) {
+  background: dimgrey;
+}
+
+.obj_coord_table th {
+  background: black;
+}
+.obj_coord_table tr:nth-child(odd) {
+  background: darkseagreen;
+}
+.obj_coord_table tr:nth-child(even) {
+  background: darkolivegreen;
+}
+
+tr li {
+  padding: 5px 0px;
+}
+
+.panel_hidden {
+  display: none;
+}
+.uid {
+  cursor: pointer;
+}
+
+.obj_ctrl_catg_area {
+  display: flex;
+  flex: 1 1 0px;
+  min-width: auto;
+}
+.obj_ctrl_catg {
+  text-align: left;
+  padding: 10px;
+  float: left;
+}
+.obj_ctrl_footer {
+  float: none;
+}
+.obj_ctrl_content  label {
+  display: inline-block;
+  width: 120px;
+}
+.obj_ctrl_content  input {
+  width: 150px;
+}
+
+
+.table {display: table; width: 100%;}
+.row {display: table-row;}
+.cell {display: table-cell; padding: 3px; border-bottom: 1px solid #DDD;}
+.col1 { width: 20%;}
+.col2 {width: 20%;}
+.col3 {width: 40%;}
+.col4 {width: 20%;}
+

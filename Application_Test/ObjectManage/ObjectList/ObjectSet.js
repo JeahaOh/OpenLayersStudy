@@ -21,37 +21,28 @@ Handlebars.registerHelper('loopForNo', loopForNo);
  * @param {*} ol_uid Feature의 uid
  * @param {*} block Handlebars 객체, 자동으로 넣어 줌.
  */
-const loopForCoords = function (_coordinates_, ol_uid, block) {
+const loopForCoords = function (ol_uid, block) {
   console.group('Loop For Coords');
   let cont = '';
-  // console.log(_coordinates_);
-  //  좌표의 껍데기를 벗김.
-  if( _coordinates_.length == 1) {
-    _coordinates_ = _coordinates_[0];
-    // console.log(_coordinates_);
-  }
-  let leng = _coordinates_.length;
+  let coords = objSource.getFeatureByUid( ol_uid ).values_.coords.coords4326;
+
+  // console.log( coords );
+  
+  let leng = coords.length;
   // console.log( leng );
   // console.log( _coordinates_ )
-  if( _coordinates_[0][0] == _coordinates_[leng-1][0]
-      && _coordinates_[0][1] == _coordinates_[leng-1][1]) {
+  if( coords[0][0] == coords[leng-1][0]
+      && coords[0][1] == coords[leng-1][1]) {
     leng -=1;
   }
 
   for ( var i = 0; i < leng; i++) {
-    //  좌표계 변환
-    coord = ol.proj.transform(_coordinates_[i], 'EPSG:3857', 'EPSG:4326');
-
-    //  좌표의 lat, lon 값을 분할하여, DMS 형식으로 변환
-    let lat = toDmsAsMap(coord[0]);
-    let lon = toDmsAsMap(coord[1]);
-    
     //  fn의 인자로 객체를 넣어 주어야 템플릿에 지정된 값을 넣어줄 수 있다.
     cont += block.fn({
       ol_uid: ol_uid,
       idx: i + 1,
-      lat: lat,
-      lon: lon
+      lat: coords[i][0],
+      lon: coords[i][1]
     });
   }
   console.groupEnd('Loop For Coords');
@@ -113,7 +104,7 @@ objSource.on('change', function () {
     let templateSource = $('#obj_table_template').html();
     let template = Handlebars.compile(templateSource);
     let html = template(_objFeature);
-    console.log(_objFeature);
+    // console.log(_objFeature);
     // console.log( html )
 
     $('#obj_management_table').append(html);
@@ -230,13 +221,13 @@ jQuery.fn.serializeObject = function () {
  * @param {*} uid 대상 feature의 uid
  */
 const ctrlObjProp = function (uid) {
-  // console.log(uid);
-  // let serial = $('#obj_prop_' + uid).serialize() 
-  // console.log( serial );
+  $('#obj_' + uid + '_last_editor').val('UPDATER');
+  // serialObj.objLastEditor = 'UPDATER';
+  // serialObj.objUpdateDate = TimeStamp.getDateTime();
+  $('#obj_' + uid + '_update_date').val( TimeStamp.getDateTime() );
+
   let serialObj = $('#obj_prop_' + uid).serializeObject()
-  serialObj.objLastEditor = 'UPDATER';
-  serialObj.objUpdateDate = TimeStamp.getDateTime();
-  // console.log( serialObj );
+  console.log( serialObj );
   let targetObj = objSource.getFeatureByUid(uid);
   
   targetObj.setProperties({
@@ -244,62 +235,52 @@ const ctrlObjProp = function (uid) {
   });
 }
 
-/** addObjCoords
- * ObjectManagement에서 한 객체에 대한 좌표 추가 버튼을 누를 경우 작동함.
- * 대상 객체의 uid를 가져옴.
- * 
- * 객체 타입에 따라 좌표를 추가 할 수 있는지 없는지 지정 한다?
- * 
+/**
+ * uid를 받아서 form안의 좌표값들을 받음.
+ * uid로 대상 객체를 지정, form의 좌표값들을 적용시켜줌.
+ * 객체의 type에 따라 좌표 형식이 조금 달라짐.
  * @param {*} uid 
  */
-const addObjCoords = function( uid ) {
-  console.log( uid );
-  let tgtObj = objSource.getFeatureByUid(uid);
-  console.log( tgtObj );
-  let able = tgtObj.values_.objType;
-  console.log( able );
+const editPoint = function(uid) {
+  console.group( 'edit point ' + uid);
   
-  switch( able ) {
-    case 'Circle':
-    
-    case 'Polygon':
-    case 'LineString':
+  let inputs = $('#obj_' + uid + '_coord').serializeArray();
+  let newCoords = [];
+  // console.log( inputs );
+  
+  for( var i = 0; i < inputs.length; i +=2 ) {
+    // console.log( inputs[i].inputs );
+    // console.log( inputs[i + 1].inputs );
+    coord = [ parseFloat( inputs[i].value ), parseFloat( inputs[i + 1].value ) ];
+    newCoords.push( ol.proj.transform( coord, 'EPSG:4326', 'EPSG:3857') );
+  }
+  
+  // console.log( newCoords );
+  
+  let tgtFeature = objSource.getFeatureByUid( uid );
+  type = tgtFeature.values_.info.selectedType;
+  
+  ctrlObjProp(uid);
+  let geo;
+  switch( type ) {
+    case 'Line':
+    case 'MultiLine':
+      geo = new ol.geom.LineString( newCoords );
+      tgtFeature.setGeometry( geo );
+      break;
     case 'Square' :
+    case 'Polygon':
+      newCoords.push( newCoords[0] );
+      newCoords = newCoords;
+      // console.log( newCoords );
+      tgtFeature.getGeometry().setCoordinates( [newCoords] );
+      break;
   }
- 
-  let  tgtCoordTab = $('#obj_coord_list_'+ uid);
-  console.log( tgtCoordTab );
+  setCoordsAtProps( tgtFeature );
+  console.groupEnd( 'edit point');
 }
 
-const unreadPoint = function( ele, uid, idx ) {
-  status = 
-  $('.obj_' + uid + '_coord_' + idx).attr('readonly', false );
-}
-
-const editPoint = function( ele, uid, idx ) {
-  let tgt = $('#obj_' + uid + '_coord_' + idx);
-  // console.log( tgt );
-  console.log(  );
-  // console.log( tgt.serializeArray() );
-  let value = tgt.serializeObject();
-  value = {
-    uid: uid,
-    coordIdx: idx,
-    lat : {
-      d: value.lat_d,
-      m: value.lat_m,
-      s: value.lat_s
-    },
-    lon : {
-      d: value.lon_d,
-      m: value.lon_m,
-      s: value.lon_s
-    }
-  }
-  console.log( value )
-  value = dmsMapTo3857( value );
-  // value = ol.proj.transform(value, 'EPSG:4326', 'EPSG:3857');
-  // console.log( value );
-  
-
+const editStyle = function( uid ) {
+  let input = $('#obj_style_' + uid).serializeObject();
+  console.log( input );
 }

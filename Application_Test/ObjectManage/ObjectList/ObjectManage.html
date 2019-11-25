@@ -12,129 +12,14 @@
   <!-- <link rel="stylesheet" type="text/css" href="../../../include/ol_4.6.5.css" /> -->
   <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
   <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <link rel="stylesheet" type="text/css" href="./ObjectManage.css" />
   <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
   <!-- <script type="text/javascript" src="../../../include/ol_4.6.5.js"></script> -->
   <script type="text/javascript" src="../../../include/ol.js"></script>
   <script type="text/javascript" src="../../../include/ol-ext.js"></script>
   <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
   <script type="text/javascript" src="../../../include/handlebars-v4.1.2.js"></script>
-  <Style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
-    hr {
-      margin: 5px 0px;
-    }
-
-    #draw_obj_type_li li {
-      cursor: pointer;
-      padding: 10px;
-      border: 0;
-      /* float: left; */
-      display: inline-block;
-    }
-
-    #measure_obj_type_li li {
-      cursor: pointer;
-      padding: 10px;
-      border: 0;
-      /* float: left; */
-      display: inline-block;
-    }
-
-    .selectedType {
-      color: slategrey;
-    }
-
-    .ol-tooltip {
-      color: black;
-    }
-
-    li {
-      list-style: none;
-    }
-
-    #obj_list li {
-      cursor: pointer;
-    }
-    .obj_management_section {
-      padding: 10px;
-    }
-    .table_space {
-      background: slategrey;
-    }
-    .table_space table {
-      border: 1px solid;
-      border-collapse: collapse;
-      text-align: center;
-    }
-    .table_space th {
-      background: gray;
-    }
-    .table_space th, td {
-      border: 1px solid black;
-    }
-    .table_space tr:nth-child(odd) {
-      background: dimgrey;
-    }
-
-    .obj_coord_table th {
-      background: black;
-    }
-    .obj_coord_table tr:nth-child(odd) {
-      background: darkseagreen;
-    }
-    .obj_coord_table tr:nth-child(even) {
-      background: darkolivegreen;
-    }
-
-    tr li {
-      padding: 5px 0px;
-    }
-
-    .panel_hidden {
-      display: none;
-    }
-    .uid {
-      cursor: pointer;
-    }
-    
-    .obj_ctrl_box {
-    }
-    .obj_ctrl_catg_area {
-      display: flex;
-      flex: 1 1 0px;
-      min-width: auto;
-    }
-    .obj_ctrl_catg {
-      text-align: left;
-      padding: 10px;
-      float: left;
-    }
-    .obj_ctrl_footer {
-      float: none;
-    }
-    .obj_ctrl_content  label {
-      display: inline-block;
-      width: 120px;
-    }
-    .obj_ctrl_content  input {
-      width: 150px;
-    }
-
-
-    .table {display: table; width: 100%;}
-    .row {display: table-row;}
-    .cell {display: table-cell; padding: 3px; border-bottom: 1px solid #DDD;}
-    .col1 { width: 20%;}
-    .col2 {width: 20%;}
-    .col3 {width: 40%;}
-    .col4 {width: 20%;}
-
-
-  </Style>
+  
   <title> Object Management </title>
 </head>
 
@@ -229,7 +114,7 @@
             <td onclick="objPanelTogle({{ol_uid}});" class="uid">{{ol_uid}}</td>
             <td>{{values_.info.objName}}</td>
             <td>{{values_.info.objGroup}}</td>
-            <td>{{values_.info.objType}}</td>
+            <td>{{values_.info.selectedType}}</td>
             <!-- 
               기타 설정에 있는데 굳이 살릴 필요가 없을 것 같다.
             <td><input type="checkbox" onchange="return false;" /></td>
@@ -250,13 +135,7 @@
                   <hr>
                   <div class="obj_ctrl_content">
                     <form action="#" id="obj_prop_{{ol_uid}}">
-                      <ul id="obj_prop_{{ol_uid}}_origin"
-                          data-obj_name="{{values_.info.objName}}"
-                          data-obj_group="{{values_.info.objGroup}}"
-                          data-obj_type="{{values_.info.objType}}"
-                          data-obj_create_date="{{values_.info.objCreateDate}}"
-                          data-obj_update_date="{{values_.info.objUpdateDate}}"
-                          data-obj_last_editor="{{values_.info.objLastEditor}}">
+                      <ul>
                         <li>
                           <label for="obj_ol_uid">객체 번호</label>
                           <input type="text" name="obj_ol_uid" id="obj_ol_uid" value="{{ol_uid}}" disabled />
@@ -267,11 +146,11 @@
                         </li>
                         <li>
                           <label for="obj_group">그룹</label>
-                          <select name="obj_group" id="obj_group">helper를 이용해서?</select>
+                          <select name="objGroup" id="obj_group">helper를 이용해서?</select>
                         </li>
                         <li>
                           <label for="obj_type">객체 타입</label>
-                          <input type="text" name="objType" id="obj_type" value="{{values_.info.objType}}" readonly/>
+                          <input type="text" name="selectedType" id="obj_type" value="{{values_.info.selectedType}}" readonly/>
                         </li>
                         <!-- 
                           사용하지 않는 것 같다.
@@ -290,11 +169,11 @@
                         </li>
                         <li>
                           <label for="obj_update_date">수정 일시</label>
-                          <input type="datetime" name="objUpdateDate" id="obj_update_date" value="{{values_.info.objUpdateDate}}" readonly />
+                          <input type="datetime" name="objUpdateDate" id="obj_{{ol_uid}}_update_date" value="{{values_.info.objUpdateDate}}" readonly />
                         </li>
                         <li>
                           <label for="obj_last_editor">수정자</label>
-                          <input type="text" name="objLastEditor" id="obj_last_editor" value="{{values_.info.objLastEditor}}" readonly />
+                          <input type="text" name="objLastEditor" id="obj_{{ol_uid}}_last_editor" value="{{values_.info.objLastEditor}}" readonly />
                         </li>
                       </ul>
                       <button type="button" onclick="ctrlObjProp({{ol_uid}});">기본 정보 적용</button>
@@ -306,52 +185,55 @@
                   <span>표출 정보</span>
                   <hr>
                   <div class="obj_ctrl_content">
-                    <form action="#" id="obj_style_{{ol_uid}}">
-                    <ul>
-                      <li>
-                        <label for="obj_stroke_color">선 색상</label>
-                        <input type="color" name="obj_stroke_color" id="obj_stroke_color" value="{{values_.info.objStrokeColor}}" />
-                      </li>
-                      <li>
-                        <label for="obj_stroke_line_dash">선 대시 종류</label>
-                        <select name="obj_stroke_line_dash" id="obj_stroke_line_dash">
-                          <option value="">SOLID</option>
-                          <option value="">DASH</option>
-                          <option value="">DOT</option>
-                          <option value="">DASHDOT</option>
-                          <option value="">DASHDOTDASH</option>
-                          <option value="">CLEAR</option>
-                        </select>
-                      </li>
-                      <li>
-                        <label for="obj_stroke_width">선 두께</label>
-                        <select name="obj_stroke_width" id="obj_stroke_width" >
-                          {{#loopForNo 0 9 1}}
-                            <option value="{{this}}">{{this}}</option>
-                          {{/loopForNo}}
-                        </select>
-                      </li>
-                      <li>
-                        <label for="obj_fill_color">채우기 색상</label>
-                        <input type="text" name="obj_fill_color" id="obj_fill_color" />
-                      </li>
-                      <li>
-                        <label for="obj_opacity">투명도</label>
-                        <input type="slider" name="obj_opacity" id="obj_opacity" />
-                      </li>
-                      <li>
-                        <label for="obj_font_color">폰트 색상</label>
-                        <input type="color" name="obj_font_color" id="obj_font_color" />
-                      </li>
-                      <li>
-                        <label for="obj_text_font">폰트</label>
-                        <input type="text" name="obj_text_font" id="obj_text_font" />
-                      </li>
-                      <li>
-                        <label for="obj_text_font_size">폰트 크기</label>
-                        <input type="number" name="obj_text_font_size" id="obj_text_font_size" />
-                      </li>
-                    </ul>
+                    <form action="#" onsubmit="return false;" id="obj_style_{{ol_uid}}">
+                      <ul>
+                        <li>
+                          <label for="obj_stroke_color">선 색상</label>
+                          <input type="color" name="storkeColor" id="obj_stroke_color" value="{{values_.info.objStrokeColor}}" />
+                        </li>
+                        <li>
+                          <label for="obj_stroke_line_dash">선 대시 종류</label>
+                          <select name="strokeLineDash" id="obj_stroke_line_dash">
+                            <option value="">SOLID</option>
+                            <option value="">DASH</option>
+                            <option value="">DOT</option>
+                            <option value="">DASHDOT</option>
+                            <option value="">DASHDOTDASH</option>
+                            <option value="">CLEAR</option>
+                          </select>
+                        </li>
+                        <li>
+                          <label for="obj_stroke_width">선 두께</label>
+                          <select name="strokeWidth" id="obj_stroke_width" >
+                            {{#loopForNo 0 9 1}}
+                              <option value="{{this}}">{{this}}</option>
+                            {{/loopForNo}}
+                          </select>
+                        </li>
+                        <li>
+                          <label for="obj_fill_color">채우기 색상</label>
+                          <input type="text" name="fillColor" id="obj_fill_color" />
+                        </li>
+                        <li>
+                          <label for="obj_opacity">투명도</label>
+                          <input type="number" name="fillOpacity" id="obj_opacity" min="0" max="10"/>
+                        </li>
+                        <li>
+                          <label for="obj_text_color">폰트 색상</label>
+                          <input type="color" name="textColor" id="obj_text_color" />
+                        </li>
+                        <li>
+                          <label for="obj_text_font">폰트</label>
+                          <input type="text" name="textFont" id="obj_text_font" />
+                        </li>
+                        <li>
+                          <label for="obj_text_size">폰트 크기</label>
+                          <input type="number" name="textSize" id="obj_text_size" />
+                        </li>
+                        <li>
+                          <button onclick="editStyle({{ol_uid}})">스타일 적용</button>
+                        </li>
+                      </ul>
                     </form>
                   </div>
                 </div>
@@ -404,63 +286,28 @@
                 </div>
               </div>
               <div class="obj_ctrl_coord">
-                {{#if values_.coords._coordinates_ }}
+                {{#if values_.coords }}
                 <div id="obj_coord_table" class="obj_coord_table table">
-                  <div class="row">
-                    <div class="cell1">No.</div>
-                    <div class="cell2">위도 도</div>
-                    <div class="cell3">위도 분</div>
-                    <div class="cell4">위도 초</div>
-                    <div class="cell5">경도 도</div>
-                    <div class="cell6">경도 분</div>
-                    <div class="cell7">경도 초</div>
-                    <!-- <div class="cell">표출</div> -->
-                    <div class="cell8"><button onclick="addObjCoords({{ol_uid}});">추가</button></div>
-                  </div>
-                  <div id="obj_coord_list_{{ol_uid}}">
-                    {{#loopForCoords values_.coords._coordinates_ ol_uid}}
-                      <div class="row cel1" data-ol_uid="{{this.ol_uid}}"
-                          data-idx="{{this.idx}}"
-                          data-lat_origin="{{this.lat.origin}}"
-                          data-lon_origin="{{this.lon.origin}}"
-                          data-lat_d="{{this.lat.d}}"
-                          data-lat_m="{{this.lat.m}}"
-                          data-lat_s="{{this.lat.s}}"
-                          data-lon_d="{{this.lon.d}}"
-                          data-lon_m="{{this.lon.m}}"
-                          data-lon_s="{{this.lon.s}}"
-                        >
-                        <form action="#" id="obj_{{this.ol_uid}}_coord_{{this.idx}}" onsubmit="return false;">
-                          <div class="cell1">{{this.idx}}</div>
-                          <div class="cell2">
-                            <input type="number" name="lat_d" id="lat_d" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lat.d}}" readonly/>
+                  <div id="obj_coord_list_{{ol_uid}}" >
+                    <form action="#" id="obj_{{this.ol_uid}}_coord" onsubmit="return false;">
+                    {{#loopForCoords ol_uid}}
+                      <div class="row ">
+                          <div class="cel1">No. {{this.idx}}</div>
+                          <div class="cel1">
+                            <label for="{{this.idx}}_lat">위도 : </label>
+                            <input type="number" name="{{this.idx}}_lat" id="{{this.idx}}_lat" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lat}}" />
                           </div>
-                          <div class="cell3">
-                            <input type="number" name="lat_m" id="lat_m" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lat.m}}" readonly/>
+                          <div class="cel1">
+                            <label for="{{this.idx}}_lon">경도 : </label>
+                            <input type="number" name="{{this.idx}}_lon" id="{{this.idx}}_lon" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lon}}" />
                           </div>
-                          <div class="cell4">
-                            <input type="number" name="lat_s" id="lat_s" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lat.s}}" readonly/>
-                          </div>
-                          <div class="cell5">
-                            <input type="number" name="lon_d" id="lon_d" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lon.d}}" readonly/>
-                          </div>
-                          <div class="cell6">
-                            <input type="number" name="lon_m" id="lon_m" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lon.m}}" readonly/>
-                          </div>
-                          <div class="cell7">
-                            <input type="number" name="lon_s" id="lon_s" class="obj_{{this.ol_uid}}_coord_{{this.idx}}" value="{{this.lon.s}}" readonly/>
-                          </div>
-                          <div class="cell8">
-                            <button id="{{ol_uid}}_unread" onclick="unreadPoint(this, {{this.ol_uid}}, {{this.idx}});" >편집</button>
-                            <button id="{{ol_uid}}_edit" onclick="editPoint(this, {{this.ol_uid}}, {{this.idx}});" >적용</button>
-                            <button onclick="deletePoint({{this.ol_uid}}, {{this.idx}});" >삭제</button>
-                          </div>
-                        </form>
+                        </div>
+                        {{/loopForCoords}}
+                        </form>   
+                        <button id="{{ol_uid}}_edit" onclick="editPoint( {{this.ol_uid}});" > 좌표 변경 적용</button>
                       </div>
-                    {{/loopForCoords}}
-                    </div>
-                </div>
-                {{/if}}
+                  </div>
+                  {{/if}}
               </div>
             </div>
           </td>
