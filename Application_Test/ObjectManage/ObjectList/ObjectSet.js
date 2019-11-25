@@ -296,20 +296,14 @@ const rgb2rgba = function( rgb, opa ) {
 }
 
 const rgba2rgb = function( rgba ) {
-  rgba = rgba.replace('rgba(', '').replace(')', '').trim();
-  // rgba.re('(');
-  // rgba.remove(')');
-  // rgba.remove(' ');
-  rgba = rgba.split(',');
-  console.log( rgba );
-  for( i in rgba ) {
-    console.log( rgba[i] );
-  }
-  r = (rgba[0]).toString(16);
-  g = (rgba[1]).toString(16);
-  b = (rgba[2]).toString(16);
-  console.log( r + g + b)
-  //return {rgb : rgb, a: a}
+  rgba = rgba.replace('rgba(', '').replace(')', '').trim().split(',');
+
+
+  r = parseInt(rgba[0].trim()).toString( 16 );
+  g = parseInt(rgba[1].trim()).toString( 16 );
+  b = parseInt(rgba[2].trim()).toString( 16 );
+
+  return {rgb : '#'+(r+g+b).toUpperCase(), opa: rgba[3].trim()};
 }
 
 //"rgba(170, 187, 204, 1)"
