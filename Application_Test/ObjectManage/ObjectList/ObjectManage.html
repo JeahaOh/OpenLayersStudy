@@ -102,7 +102,7 @@
         <tfoot>
           <tr>
             <th></th>
-            <td>선택 객체 삭제</td>
+            <td><button onclick="removeObjList()">선택 객체 삭제</button></td>
             <td>영역 등록</td>
             <td>객체 저장</td>
             <td>객체 로드</td>
@@ -113,10 +113,10 @@
         <script id="obj_table_template" type="text/x-handlebars-template">
           <tr class="manage_tgt">
             <td><input type="checkbox" data-ol_uid="{{ol_uid}}" class="select_obj_mng_li" /></td>
-            <td onclick="objPanelTogle({{ol_uid}});" class="uid">{{ol_uid}}</td>
-            <td>{{values_.info.objName}}</td>
-            <td>{{values_.info.objGroup}}</td>
-            <td>{{values_.info.selectedType}}</td>
+            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{ol_uid}}</td>
+            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.objName}}</td>
+            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.objGroup}}</td>
+            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.selectedType}}</td>
             <!-- 
               기타 설정에 있는데 굳이 살릴 필요가 없을 것 같다.
             <td><input type="checkbox" onchange="return false;" /></td>
@@ -211,22 +211,20 @@
 
                         <li>
                           <label for="obj_stroke_line_dash">선 대시 종류</label>
-                          {{style_.stroke_.lineDash_}}
                           <select name="strokeLineDash" id="obj_stroke_line_dash">
                             {{#lineDashFunc style_.stroke_.lineDash_}}{{/lineDashFunc}}
                           </select>
                         </li>
                         <li>
                           <label for="obj_stroke_width">선 두께</label>
-                          {{style_.stroke_.width_}}
                           <select name="strokeWidth" id="obj_stroke_width" >
                             {{#loopForStrokeWidth 0 10 1 style_.stroke_.width_}}{{/loopForStrokeWidth}}
                           </select>
                         </li>
                         
-                        <hr>
 
                         {{#colorize style_.fill_.color_ ol_uid "fill"}}
+                          <hr>
                           <li>
                             <label for="obj_fill_RGB">채우기 색상</label>
                             <input type="color" name="fillRGB" id="obj_fill_RGB" value="{{this.rgb}}"/>
@@ -239,7 +237,6 @@
                         {{/colorize}}
 
 
-                        <hr>
                         <!-- {{style_.text_.fill_.color_}}
                           <li>
                             <label for="obj_text_RGB">폰트 색상</label>

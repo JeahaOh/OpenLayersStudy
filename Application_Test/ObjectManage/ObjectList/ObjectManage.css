@@ -76,7 +76,7 @@ tr li {
 .panel_hidden {
   display: none;
 }
-.uid {
+.panel_togle {
   cursor: pointer;
 }
 

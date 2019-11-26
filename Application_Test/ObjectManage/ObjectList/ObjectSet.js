@@ -32,7 +32,6 @@ Handlebars.registerHelper('loopForStrokeWidth', loopForStrokeWidth);
 
 /**
  * for문으로 template에 좌표 값들을 넣어서 html로 반환한다.
- * @param {*} _coordinates_ 좌표 배열
  * @param {*} ol_uid Feature의 uid
  * @param {*} block Handlebars 객체, 자동으로 넣어 줌.
  */
@@ -65,34 +64,11 @@ const loopForCoords = function (ol_uid, block) {
 };
 Handlebars.registerHelper('loopForCoords', loopForCoords);
 //  loopForCoords
-/*
-const ifRGB = function( rgb, block ) {
-  let cont = '';
-  if(rgb) {
-    console.log( rgb );
-    cont = block.fn(rgb);
-  } else {
-    // console.log( '#000000');
-    cont = block.fn('#000000');
-  }
-  return cont;
-}
-Handlebars.registerHelper( 'ifRGB', ifRGB );
-
-const ifOpa = function( opa, block ) {
-  let cont = '';
-  if( opa ) {
-    console.log( opa );
-    cont = block.fn( parseInt( opa ) )
-  } else {
-    cont = block.fn( 10 );
-  }
-  return cont;
-}
-Handlebars.registerHelper( 'ifOpa', ifOpa );
-*/
+const areaType = ['Polygon', 'Circle', 'Square'];
 const colorize = function(rgba, uid, where, block) {
   cont = '';
+  feature = objSource.getFeatureByUid(uid);
+  // console.log( feature.values_.info.selectedType );
   // console.log( rgba );
   switch( where ) {
     case 'stroke' :
@@ -100,6 +76,7 @@ const colorize = function(rgba, uid, where, block) {
       defaultOpa = '10'
       break;
     case 'fill' :
+      if( !areaType.includes(feature.values_.info.selectedType) ) return;
       defaultRGB = '#FFFFFF';
       defaultOpa = '0'
       break;
@@ -120,7 +97,9 @@ const colorize = function(rgba, uid, where, block) {
   return cont;
 }
 Handlebars.registerHelper( 'colorize', colorize );
+//  colorize
 
+// Stroke LineDash를 정의한 객체들을 모아둔 배열.
 const dashArr = [
   {val : [1, 0], name: '직선' },
   {val : [5, 5], name: '점선' },
@@ -133,7 +112,9 @@ const lineDashFunc = function(type) {
   cont = '';
   if(type) {
     for( var i = 0; i < dashArr.length; i++ ) {
-      if( dashArr[i].val[0] != type[0] && dashArr[i].val[1] != type[1] ) {
+      // console.log( dashArr[i] );
+      // console.log( type );
+      if( dashArr[i].val[0] != type[0] || dashArr[i].val[1] != type[1] ) {
         cont += '<option value="[' + dashArr[i].val + ']">' +  dashArr[i].name + '</option>';
       } else {
         cont += '<option value="[' + dashArr[i].val + ']" selected>' +  dashArr[i].name + '</option>';
@@ -149,7 +130,7 @@ const lineDashFunc = function(type) {
   return cont;
 }
 Handlebars.registerHelper( 'lineDashFunc', lineDashFunc );
-
+//  lineDashFunc
 
 /**
  * feature의 uid를 받아서 해당 feature를 삭제한다.
@@ -162,6 +143,19 @@ const removeObj = function (uid) {
   objSource.removeFeature(target);
 
   console.groupEnd('remove obj');
+}
+const removeObjList = function() {
+  let target = $('.select_obj_mng_li');
+  // console.log( target );
+  let length = target.length;
+  if( length > 0 ) {
+    for( var i = 0; i < target.length; i++ ) {
+      if( target[i].checked ) {
+      console.log( target[i].dataset.ol_uid );
+      removeObj( target[i].dataset.ol_uid );
+      }
+    }
+  }
 }
 
 //  sessionStorage에 objSource의 피쳐들을 저장한다.
@@ -199,6 +193,7 @@ objSource.on('change', function () {
   }
   console.groupEnd(' objSource.on change');
 });
+//  objSource onChange
 
 
 //  좌표값을 wkt 형식으로 바꿔서
@@ -232,6 +227,7 @@ $.ajax({
 */
 
 /**
+ * onLoad
  * 화면을 로드하면 세션에서 Feature들을 가져옴.
  * 있으면 화면에 표출.
  * 없으면 아무 처리 안함.
@@ -281,31 +277,34 @@ let objGeoJ;
 
   console.groupEnd('on load');
 })();
+//  onload
+
 
 const objPanelTogle = function (uid) {
   tgt = $('#panel_' + uid);
   // console.log( tgt );
   if (tgt.hasClass('panel_hidden')) {
+    //  열려있는 다른 panel 들을 닫는다.
+    $('.panel_show').addClass('panel_hidden').css('display', 'none').empty().removeClass('panel_show');
 
     let _objFeature = objSource.getFeatureByUid(uid);
     // console.log( _objFeature );
 
-    let templateSource = $('#obj_ctrl_template').html();
-    let template = Handlebars.compile(templateSource);
+    let template = Handlebars.compile( $('#obj_ctrl_template').html() );
     Handlebars.registerPartial('obj_coord_part', $('#obj_coord_part'));
-    let html = template(_objFeature);
+    tgt.append(template(_objFeature));
 
-    // console.log( html );
-    tgt.append(html);
-
-    tgt.removeClass('panel_hidden')
+    tgt.removeClass('panel_hidden');
+    tgt.addClass('panel_show');
     tgt.css('display', 'table-row');
   } else {
-    tgt.addClass('panel_hidden')
+    tgt.removeClass('panel_show');
+    tgt.addClass('panel_hidden');
     tgt.css('display', 'none');
     tgt.empty();
   }
 }
+//  objPanelTogle
 
 //  Object Management 챠트의 최상이 체크박스 선택시 하위 obj의 선택 여부 변환.
 $('#select_all_obj_mng_li').click(function () {
@@ -334,6 +333,7 @@ jQuery.fn.serializeObject = function () {
   console.groupEnd('serializeObject');
   return obj;
 }
+//  serializeObject
 
 /**
  * 대상 객체의 기본정보(properties) 값을 바꿔준다.
@@ -354,6 +354,7 @@ const ctrlObjProp = function (uid) {
     info:serialObj
   });
 }
+//  ctrlObjProp
 
 /**
  * uid를 받아서 form안의 좌표값들을 받음.
@@ -399,6 +400,7 @@ const editPoint = function(uid) {
   setCoordsAtProps( tgtFeature );
   console.groupEnd( 'edit point');
 }
+//  editPoint
 
 /**
  * rgb2rgba('#AABBCC', 10) 형식으로 문자열 데이터가 들어오면
@@ -417,6 +419,7 @@ const rgb2rgba = function( rgb, opa ) {
   if( !opa || opa > 1 ) opa = 1;
   return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opa + ')';
 }
+//  rgb2rgba
 
 /**
  * 'rgba(255, 255, 255, 0.5') 형식으로 문자열 데이터가 들어오면
@@ -430,8 +433,11 @@ const rgba2rgb = function( rgba ) {
   g = parseInt(rgba[1].trim()).toString( 16 );
   b = parseInt(rgba[2].trim()).toString( 16 );
 
-  return {rgb : '#'+(r+g+b).toUpperCase(), opa: rgba[3].trim()};
+  return {
+    rgb : '#'+ ( r + g + b ).toUpperCase()
+    , opa: rgba[3].trim()};
 }
+//  rgba2rgb
 
 
 const editStyle = function( uid ) {
@@ -452,6 +458,7 @@ const editStyle = function( uid ) {
   target.setProperties( {style: style} );
   target.setStyle( style );
 }
+//  editStyle
 
 const map2style = function( map ) {
   // console.log( map.strokeLineDash );
@@ -472,3 +479,4 @@ const map2style = function( map ) {
   // console.log( style );
   return style;
 }
+//  map2style

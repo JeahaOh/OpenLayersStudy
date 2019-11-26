@@ -131,7 +131,7 @@ const drawObj = function( evt ) {
     setCoordsAtProps( sketch );
     
 
-    console.log( sketch.getProperties() );
+    // console.log( sketch.getProperties() );
     drawObjInit( true );
 
     console.groupEnd( 'draw end' );
@@ -223,6 +223,7 @@ const dmsMapTo3857 = function( coordMap ) {
 }
 // mapdirective에서
 
+// 그리기 도중 취소하기.
 const escape = function( evt ) {
   let charCode = (evt.keyCode) ? evt.keyCode : evt.which;
   console.log( charCode );
