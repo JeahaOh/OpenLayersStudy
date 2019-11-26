@@ -156,7 +156,7 @@ const setCoordsAtProps = function( feature ) {
   let coordsDms = [];
   for( var i = 0; i < coords3857.length; i++){
     coords4326.push(ol.proj.transform( coords3857[i], 'EPSG:3857', 'EPSG:4326' ));
-    coordsDms.push( [toDmsAsMap( coords4326[i][0], toDmsAsMap(coords3857[i][1]) )] );
+    // coordsDms.push( [toDmsAsMap( coords4326[i][0], toDmsAsMap(coords3857[i][1]) )] );
   }
   
   // console.log( sketch );
@@ -165,7 +165,7 @@ const setCoordsAtProps = function( feature ) {
       'wkt': toWKT(feature),
       'coords3857': coords3857,
       'coords4326': coords4326,
-      'coordsDms': coordsDms
+      // 'coordsDms': coordsDms
     }
   });
 

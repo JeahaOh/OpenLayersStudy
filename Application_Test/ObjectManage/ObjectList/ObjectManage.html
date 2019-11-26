@@ -102,10 +102,13 @@
         <tfoot>
           <tr>
             <th></th>
-            <td><button onclick="removeObjList()">선택 객체 삭제</button></td>
+            <td><button onclick="removeObjList();">선택 객체 삭제</button></td>
             <td>영역 등록</td>
-            <td>객체 저장</td>
-            <td>객체 로드</td>
+            <td><button onclick="saveSelectedObjList();">객체 저장</button></td>
+            <td>
+              <input type="file" name="fileinput" id="fileinput" >
+              <button onclick="loadFile();">객체 로드</button>
+            </td>
           </tr>
         </tfoot>
 
