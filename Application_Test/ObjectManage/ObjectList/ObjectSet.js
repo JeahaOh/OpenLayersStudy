@@ -15,6 +15,21 @@ const loopForNo = function (from, to, incr, block) {
 Handlebars.registerHelper('loopForNo', loopForNo);
 //  loopForNo
 
+const loopForStrokeWidth = function (from, to, incr, selected, block) {
+  cont = '';
+  if( !selected ) selected = 1;
+  for (var i = from; i < to; i += incr) {
+    if( i != selected) {
+      cont += '<option value="' + i + '">' + i + '</option>';
+    } else {
+      cont += '<option value="' + i + '" selected>' + i + '</option>';
+    }
+  }
+  return cont;
+};
+Handlebars.registerHelper('loopForStrokeWidth', loopForStrokeWidth);
+//  loopForStrokeWidth
+
 /**
  * for문으로 template에 좌표 값들을 넣어서 html로 반환한다.
  * @param {*} _coordinates_ 좌표 배열
@@ -50,7 +65,90 @@ const loopForCoords = function (ol_uid, block) {
 };
 Handlebars.registerHelper('loopForCoords', loopForCoords);
 //  loopForCoords
+/*
+const ifRGB = function( rgb, block ) {
+  let cont = '';
+  if(rgb) {
+    console.log( rgb );
+    cont = block.fn(rgb);
+  } else {
+    // console.log( '#000000');
+    cont = block.fn('#000000');
+  }
+  return cont;
+}
+Handlebars.registerHelper( 'ifRGB', ifRGB );
 
+const ifOpa = function( opa, block ) {
+  let cont = '';
+  if( opa ) {
+    console.log( opa );
+    cont = block.fn( parseInt( opa ) )
+  } else {
+    cont = block.fn( 10 );
+  }
+  return cont;
+}
+Handlebars.registerHelper( 'ifOpa', ifOpa );
+*/
+const colorize = function(rgba, uid, where, block) {
+  cont = '';
+  // console.log( rgba );
+  switch( where ) {
+    case 'stroke' :
+      defaultRGB = '#000000';
+      defaultOpa = '10'
+      break;
+    case 'fill' :
+      defaultRGB = '#FFFFFF';
+      defaultOpa = '0'
+      break;
+  }
+  
+  if( !rgba ) {
+    cont += block.fn({rgb: defaultRGB, opa: defaultOpa, ol_uid: uid});
+  } else {
+    let rgb = rgba2rgb(rgba);
+    // console.log( rgb );
+    cont += block.fn({ 
+      ol_uid: uid
+      , rgba: rgba
+      , rgb: rgb.rgb
+      , opa: (rgb.opa) * 10
+    });
+  }
+  return cont;
+}
+Handlebars.registerHelper( 'colorize', colorize );
+
+const dashArr = [
+  {val : [1, 0], name: '직선' },
+  {val : [5, 5], name: '점선' },
+  {val : [5, 15], name: '헐렁한 점선'},
+  {val : [1, 15], name: '흐릿한 점선'},
+  {val : [3, 3], name: '촘촘한 점선'}
+];
+const lineDashFunc = function(type) {
+  console.group( 'line dash func' );
+  cont = '';
+  if(type) {
+    for( var i = 0; i < dashArr.length; i++ ) {
+      if( dashArr[i].val[0] != type[0] && dashArr[i].val[1] != type[1] ) {
+        cont += '<option value="[' + dashArr[i].val + ']">' +  dashArr[i].name + '</option>';
+      } else {
+        cont += '<option value="[' + dashArr[i].val + ']" selected>' +  dashArr[i].name + '</option>';
+      }
+    }
+  } else {
+    for( var i = 0; i < dashArr.length; i++ ) {
+      // console.log( dashArr[i].val );
+      cont += '<option value="[' + dashArr[i].val + ']">' +  dashArr[i].name + '</option>';
+    }
+  }
+  console.groupEnd( 'line dash func' );
+  return cont;
+}
+Handlebars.registerHelper( 'lineDashFunc', lineDashFunc );
 
 
 /**
@@ -90,16 +188,6 @@ objSource.on('change', function () {
 
     // console.log( _objFeature );
     // console.log( _objFeature.ol_uid );
-
-    // objLiEle = document.createElement('li');
-    // objLiEle.innerHTML = 'feature ' + _objFeature.ol_uid;
-    // objLiEle.dataset.uid = _objFeature.ol_uid;
-    // objLiEle.id = _objFeature.ol_uid;
-    // objLiEle.className = 'obj_mng_features';
-    // objLiEle.onclick = function(){ removeObj( this.id )};
-    // console.log( objLiEle )
-    // document.getElementById('obj_list').appendChild(objLiEle);
-
 
     let templateSource = $('#obj_table_template').html();
     let template = Handlebars.compile(templateSource);
@@ -154,9 +242,41 @@ let objGeoJ;
   objGeoJ = sessionStorage.getItem('objGeoJ');
   // objGeoJ = objGeoJ ? objGeoJ : objSource.getFeatures();
 
-  if (objGeoJ != null) {
-    objGeoJ = rw.readFeatures(objGeoJ);
-    objSource.addFeatures(objGeoJ);
+  if (objGeoJ == null) return;
+  
+  //  sessionStorage에 Feature가 있다면 objSource에 넣어준다.
+  objGeoJ = rw.readFeatures(objGeoJ);
+  objSource.addFeatures(objGeoJ);
+
+  //  Feature가 style을 갖고 있다면 적용 해 준다.
+  //  style의 갯수만큼 objSource는 change 된다.
+  let length = objGeoJ.features.length;
+  if ( length > 0 ) {
+    for( var i = 0; i < length; i++ ) {
+      let feature = objGeoJ.features[i];
+      // console.log( feature)
+      // console.log( feature.id )
+      let style = feature.properties.style;
+      if ( style ) {
+        // console.log( style );
+        // console.log( style.stroke_.lineDash_ );
+        // console.log( typeof style.stroke_.lineDash_ );
+        style = new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: style.stroke_.color_,
+            lineDash: style.stroke_.lineDash_,
+            width: style.stroke_.width_
+          }),
+          fill: new ol.style.Fill({
+            color: style.fill_.color_,
+          }),
+          text: new ol.style.Text({
+            color: style.text_.color_
+          })
+        });
+        objSource.getFeatureById(feature.id).setStyle(style);
+      }
+    }
   }
 
   console.groupEnd('on load');
@@ -227,7 +347,7 @@ const ctrlObjProp = function (uid) {
   $('#obj_' + uid + '_update_date').val( TimeStamp.getDateTime() );
 
   let serialObj = $('#obj_prop_' + uid).serializeObject()
-  console.log( serialObj );
+  // console.log( serialObj );
   let targetObj = objSource.getFeatureByUid(uid);
   
   targetObj.setProperties({
@@ -280,24 +400,31 @@ const editPoint = function(uid) {
   console.groupEnd( 'edit point');
 }
 
-const editStyle = function( uid ) {
-  let input = $('#obj_style_' + uid).serializeObject();
-  console.log( input );
-}
-
+/**
+ * rgb2rgba('#AABBCC', 10) 형식으로 문자열 데이터가 들어오면
+ * 'rgba(255, 255, 255, 0.5') 형식으로 반환.
+ * @param {*} rgb 
+ * @param {*} opa 
+ */
 const rgb2rgba = function( rgb, opa ) {
+  // console.log( rgb );
+  if( !rgb ) return null;
   rgb = rgb.replace('#', '').trim();
   r = parseInt( rgb.substring( 0 , 2 ), 16);
   g = parseInt( rgb.substring( 2 , 4 ), 16);
   b = parseInt( rgb.substring( 4 , 6 ), 16);
   opa = opa / 10;
-  if( opa > 1 ) opa = 1;
+  if( !opa || opa > 1 ) opa = 1;
   return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opa + ')';
 }
 
+/**
+ * 'rgba(255, 255, 255, 0.5') 형식으로 문자열 데이터가 들어오면
+ * {rgb: "#FFFFFF", opa: "0.5"} 형식의 객체 반환
+ * @param {*} rgba 
+ */
 const rgba2rgb = function( rgba ) {
   rgba = rgba.replace('rgba(', '').replace(')', '').trim().split(',');
-
 
   r = parseInt(rgba[0].trim()).toString( 16 );
   g = parseInt(rgba[1].trim()).toString( 16 );
@@ -306,4 +433,42 @@ const rgba2rgb = function( rgba ) {
   return {rgb : '#'+(r+g+b).toUpperCase(), opa: rgba[3].trim()};
 }
 
-//"rgba(170, 187, 204, 1)"
+
+const editStyle = function( uid ) {
+  let input = $('#obj_style_' + uid).serializeObject();
+  let target = objSource.getFeatureByUid( uid );
+  // console.log( input.strokeLineDash );
+
+  input.strokeRGBA = rgb2rgba( input.strokeRGB, input.strokeOpacity );
+  input.fillRGBA = rgb2rgba( input.fillRGB, input.fillOpacity );
+  input.strokeLineDash = input.strokeLineDash;
+  // input.textRGBA = rgb2rgba( input.textRGB, input.textOpacity );
+  // console.log( input );
+
+  let style = map2style( input );
+  // console.log( style );
+  // console.log( style.strokeLineDash )
+  //  객체에 따로 style을 저장 하려면 주석을 풀어야 함.
+  target.setProperties( {style: style} );
+  target.setStyle( style );
+}
+
+const map2style = function( map ) {
+  // console.log( map.strokeLineDash );
+  style = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: map.strokeRGBA,
+      lineDash: JSON.parse(map.strokeLineDash),
+      width: map.strokeWidth
+    }),
+    fill: new ol.style.Fill({
+      color: map.fillRGBA,
+    }),
+    text: new ol.style.Text({
+      color: map.textRGBA
+    })
+  });
+
+  // console.log( style );
+  return style;
+}
