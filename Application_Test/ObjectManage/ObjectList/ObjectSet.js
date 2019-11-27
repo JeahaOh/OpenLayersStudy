@@ -151,8 +151,8 @@ const removeObjList = function() {
   if( length > 0 ) {
     for( var i = 0; i < target.length; i++ ) {
       if( target[i].checked ) {
-      console.log( target[i].dataset.ol_uid );
-      removeObj( target[i].dataset.ol_uid );
+        // console.log( target[i].dataset.ol_uid );
+        removeObj( target[i].dataset.ol_uid );
       }
     }
   }

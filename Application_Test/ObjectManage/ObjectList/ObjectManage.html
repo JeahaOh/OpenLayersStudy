@@ -30,12 +30,14 @@
   <div id="map" class="map" style="width: 100%; height: 600px;"></div>
   <section>
     <h2> Draw Object </h6>
+      <label for="snapSensitivity">Snap Sensitivity</label>
+        <input type="number" name="snapSensitivity" id="snapSensitivity" min="0" max="50" value="25">
     <ul id="draw_obj_type_li">
       <li data-val="None" onclick="drawObj(this);">None</li>
       <li data-val="Modify" onclick="drawObj(this);">Modify</li>
       
       <li data-val="Line" onclick="drawObj(this);">단선</li>
-      <!-- <li data-val="" >화살표</li> -->
+      <li data-val="Arrow" onclick="drawObj(this);">화살표</li>
       <li data-val="MultiLine" onclick="drawObj(this);">다선</li>
 
       <li data-val="Square" onclick="drawObj(this);">사각형</li>
@@ -48,6 +50,9 @@
       <li data-val="" >이미지</li>
       <li data-val="" >마크</li>
         -->
+      
+        
+      
     </ul>
 
     <!-- 측정을 분리 해야 할 것 같다. 이 부분은 차후에 진행 하도록 하자. -->

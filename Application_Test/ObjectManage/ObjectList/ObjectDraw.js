@@ -69,6 +69,7 @@ const drawObj = function( evt ) {
       objModify = new ol.interaction.Modify({ source: objSource });
       map.addInteraction( objModify );
       return;
+    case 'Arrow':
     case 'Line':
       type = 'LineString';
       maxPoints = 2;
@@ -90,8 +91,6 @@ const drawObj = function( evt ) {
   //  draw 선언.
   objDraw = new ol.interaction.Draw({
     source: (selectedType != 'CircleP') ? objSource : null,
-    // source: null,
-    // source: objSource,
     type: type,
     geometryFunction: geometryFunction,
     maxPoints: maxPoints
@@ -100,7 +99,7 @@ const drawObj = function( evt ) {
   map.addInteraction( objDraw );
 
   //  snap 넣어줌.
-  objSnap = new ol.interaction.Snap({ source: objSource, pixelTolerance: 25 });
+  objSnap = new ol.interaction.Snap({ source: objSource, pixelTolerance: $('#snapSensitivity').val() });
   map.addInteraction( objSnap );
 
   objDraw.on('drawstart', function( evt ) {
@@ -154,55 +153,69 @@ const drawObj = function( evt ) {
       
       //  원의 중심
       let center = sketch.getGeometry().getCenter();
-      console.log( center );
+      // console.log( center );
       center = ol.proj.transform( center, 'EPSG:3857', 'EPSG:4326');
       // console.log( center );
       
+      let options = {
+        //  steps가 높을수록 정교하고, 리소스를 많이 먹음.
+        steps: 64,
+        units: 'meters',
+        properties: {
+          info: {
+            'objName': selectedType + '_' + sketch.ol_uid,
+            'objGroup': '기본',
+            'selectedType': selectedType,
+            'realType': type,
+            'objCreateDate': TimeStamp.getDateTime(),
+            'objLastEditor': 'USER'
+          },
+          // id: TimeStamp.getMiliTime()
+          id: 'ASDF'
+        }
+      }
       //  원의 반지름 거리
+      //  options의 step에 맞춰 비율을 조정해야 할 듯 함.
       let radius = sketch.getGeometry().getRadius();
       radius = Math.round( radius * 0.815 );
-      let options = {
-        step: 1,
-        units: 'meters'
-      }
-      console.log(radius);
+      // console.log(radius);
       
       let circle = turf.circle( center, radius, options );
-      console.log( circle );
-      console.log( circle.geometry.coordinates )
-
-      circle = rw.readFeature( circle );
       // console.log( circle );
-      // objSource.addFeature( circle );
-
-      // console.log( circle.getGeometry().getCoordinates() );
+      // console.log( circle.geometry.coordinates )
+      circle = rw.readFeature( circle );
       circle.getGeometry().transform('EPSG:4326', 'EPSG:3857');
 
-      // console.log( circle.getGeometry().getCoordinates() );
-/*
-      // setCoordsAtProps( circle );
-      // circle.setId( sketch.getId() )
-      // circle.setProperties( sketch.getProperties() );
-*/
-      circle.setId( TimeStamp.getMiliTime() );
-      circle.setProperties({
-        info: {
-          'objName': selectedType + '_' + sketch.ol_uid,
-          'objGroup': '기본',
-          'selectedType': selectedType,
-          'realType': type,
-          'objCreateDate': TimeStamp.getDateTime(),
-          'objLastEditor': 'USER'
-        }
-      });
+      
+      circle.setId( 'QWER' );
+      /**
+       * !! sketch의 uid는 db랑 연결 해줘야 함 !!
+       */
+      // sketch.setId( TimeStamp.getMiliTime() );
+      // sketch.setProperties({
+      //   info: {
+      //     'objName': selectedType + '_' + sketch.ol_uid,
+      //     'objGroup': '기본',
+      //     'selectedType': selectedType,
+      //     'realType': type,
+      //     'objCreateDate': TimeStamp.getDateTime(),
+      //     'objLastEditor': 'USER'
+      //   }
+      // });
+
       setCoordsAtProps( circle );
       
       objSource.addFeature( circle );
+      console.log( circle )
     } else {
       setCoordsAtProps( sketch );
+      sketch.on('change', function(evt) {
+        console.log(evt)
+
+      });
     }
 
-    // console.log( sketch.getProperties() );
+    
     drawObjInit( true );
 
     console.groupEnd( 'draw end' );
@@ -306,6 +319,7 @@ const escape = function( evt ) {
   switch( charCode ) {
     case 120 :
         drawObjInit();
+        console.clear();
         return;
   }
 }

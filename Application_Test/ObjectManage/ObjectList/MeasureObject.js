@@ -28,6 +28,7 @@ const measureInit = function( flag ){
     measureSource.clear();
     $('div').remove('.measure-point');
     map.removeOverlay( measurePointTooltip );
+    console.clear();
   }
 
   map.un('click', measureClick );
@@ -250,7 +251,7 @@ const measureObj = function( evt ) {
   }
 
   //  snap 넣어줌.
-  measureSnap = new ol.interaction.Snap({ source: objSource, pixelTolerance: 25 });
+  measureSnap = new ol.interaction.Snap({ source: objSource, pixelTolerance: $('#snapSensitivity').val() });
   map.addInteraction( measureSnap );
 
   measureDraw.on('drawstart', function( evt ) {
