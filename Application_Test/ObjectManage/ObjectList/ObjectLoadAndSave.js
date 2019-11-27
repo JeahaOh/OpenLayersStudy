@@ -1,3 +1,9 @@
+/**
+ * Session Storage에 저장된 Features를 File로 저장, 다시 Session에 저장하기 위한 js 파일.
+ * Read시 스타일이 바로 적용되지 않는 문제가 있고,
+ * 문제 해결을 추후에 하기 위해 이 부분만 따로 분리해둠.
+ * 
+ */
 
 const saveSelectedObjList = function() {
   let allLi = $('.select_obj_mng_li');
@@ -16,7 +22,11 @@ const saveSelectedObjList = function() {
   }
   if( target.length > 0 ) {
     target = rw.writeFeatures( target );
-    let file = new Blob( [target], {type: 'application/json'});
+    let file = new Blob( [target.toString()], {type: 'application/json'});
+
+    console.log( target );
+    // console.log( file );
+
     let a = document.createElement('a');
     a.href = URL.createObjectURL( file );
     a.download = TimeStamp.getDateTime() + '.json';
@@ -58,7 +68,8 @@ const receivedText = function(e) {
   let lines = e.target.result;
   var newArr = lines;
   console.log( newArr );
-  newArr = rw.readFeatures( newArr )
+  newArr = rw.readFeatures( newArr );
+
   objSource.addFeatures( newArr );
 
   console.log( newArr.features )
@@ -67,8 +78,8 @@ const receivedText = function(e) {
   if ( length > 0 ) {
     for( var i = 0; i < length; i++ ) {
       let feature = newArr.features[i];
-      // console.log( feature)
-      // console.log( feature.id )
+      // console.log( feature);
+      // console.log( feature.id );
       let style = feature.properties.style;
       if ( style ) {
         // console.log( style );

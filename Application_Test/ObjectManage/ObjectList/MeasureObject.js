@@ -1,6 +1,6 @@
 //  Global
-let measureDraw, measureSnap, measureTooltipElement, measurePointTooltip, measurePointTooltipElement, prevCoord, measureStatus, measurePointCNT;
-let lineDistance = '';
+let measureDraw, measureSnap, measureTooltipElement, measurePointTooltip, measurePointTooltipElement, measurePrevCoord, measureStatus, measurePointCNT;
+let measureLineDistance = '';
 
 
 /**
@@ -31,7 +31,7 @@ const measureInit = function( flag ){
   }
 
   map.un('click', measureClick );
-  lineDistance = '';
+  measureLineDistance = '';
   measureStatus = undefined;
   measurePointCNT = 0;
   map.removeInteraction( measureDraw );
@@ -51,11 +51,11 @@ const measureFunc = function(coord, feature) {
   let sectionDistance, degree;
 
   //  이전 좌표가 있다면, 구간 거리를 측정하기
-  if( prevCoord ) {
-    sectionDistance = new ol.geom.LineString([ prevCoord, coord ]);
+  if( measurePrevCoord ) {
+    sectionDistance = new ol.geom.LineString([ measurePrevCoord, coord ]);
     sectionDistance = formatLength(sectionDistance)
   }
-  prevCoord = coord;
+  measurePrevCoord = coord;
   // console.log( sectionDistance );
 
   //  마지막 좌표의 정보를 보여줄 Overlay 준비
@@ -103,10 +103,10 @@ const measureFunc = function(coord, feature) {
   switch( measureStatus ) {
     case 'Rular' :
       display =
-        lineDistance == '' ? stringCoord : stringCoord + '<br>'
-        + (sectionDistance === lineDistance 
+        measureLineDistance == '' ? stringCoord : stringCoord + '<br>'
+        + (sectionDistance === measureLineDistance 
           ? '총 거리 : ' + sectionDistance
-          : '총 거리 : ' + lineDistance + '<br>' + '구간 거리 : ' + sectionDistance);
+          : '총 거리 : ' + measureLineDistance + '<br>' + '구간 거리 : ' + sectionDistance);
       break;
     case 'ESL' :
       display =  measurePointCNT == 0 ? stringCoord : stringCoord + '<br>' + sectionDistance;
@@ -270,7 +270,7 @@ const measureObj = function( evt ) {
         let output;
         if (geom instanceof ol.geom.LineString) {
           output = formatLength(geom);
-          lineDistance = output;
+          measureLineDistance = output;
           tooltipCoord = geom.getLastCoordinate();
         }
         measureTooltipElement.innerHTML = output;
