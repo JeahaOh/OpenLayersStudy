@@ -64,7 +64,7 @@ const loopForCoords = function (ol_uid, block) {
 };
 Handlebars.registerHelper('loopForCoords', loopForCoords);
 //  loopForCoords
-const areaType = ['Polygon', 'Circle', 'Square'];
+const areaType = ['Polygon', 'CircleP', 'Square'];
 const colorize = function(rgba, uid, where, block) {
   cont = '';
   feature = objSource.getFeatureByUid(uid);
@@ -250,10 +250,10 @@ let objGeoJ;
   if ( length > 0 ) {
     for( var i = 0; i < length; i++ ) {
       let feature = objGeoJ.features[i];
-      // console.log( feature)
+      console.log( feature )
       // console.log( feature.id )
-      let style = feature.properties.style;
-      if ( style ) {
+      if ( feature.properties !== null &&feature.properties.style ) {
+        let style = feature.properties.style;
         // console.log( style );
         // console.log( style.stroke_.lineDash_ );
         // console.log( typeof style.stroke_.lineDash_ );

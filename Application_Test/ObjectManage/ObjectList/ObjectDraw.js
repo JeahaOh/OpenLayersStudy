@@ -82,17 +82,21 @@ const drawObj = function( evt ) {
       geometryFunction = ol.interaction.Draw.createBox();
       // geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
       break;
-    case 'Circle':
+    case 'CircleP':
+      type = 'Circle'
       break;
   }
 
   //  draw 선언.
   objDraw = new ol.interaction.Draw({
-    source: objSource,
+    source: (selectedType != 'CircleP') ? objSource : null,
+    // source: null,
+    // source: objSource,
     type: type,
     geometryFunction: geometryFunction,
     maxPoints: maxPoints
   });
+  console.log( objDraw.source_ );
   map.addInteraction( objDraw );
 
   //  snap 넣어줌.
@@ -116,7 +120,6 @@ const drawObj = function( evt ) {
         'objCreateDate': TimeStamp.getDateTime(),
         'objLastEditor': 'USER'
       }
-
     });
 
     $(window).on('keypress', escape);
@@ -126,10 +129,78 @@ const drawObj = function( evt ) {
 
   objDraw.on('drawend', function( evt ) {
     console.group( 'draw end' );
+    // console.log( evt )
+    console.log( evt.feature )
+    console.log( evt.feature.getId() )
+    // target = objSource.getFeatureById(evt.feature.getId());
+    // objSource.removeFeature(target);
+    console.log( evt.feature.ol_uid )
+    // target = objSource.getFeatureByUid(evt.feature.ol_uid);
+    // objSource.removeFeature(target);
+
+    // vector.getSource().removeFeature(evt.feature);
+
+    // try{
+    //   objSource.removeFeature(evt.feature);
+    // } catch (e) {
+    //   console.log( e )
+    // }
+
+    // objSource.removeFeature(evt.target.feature);
     
-    // console.log( sketch.getStyle() );
-    setCoordsAtProps( sketch );
-    
+    if( selectedType == 'CircleP' ) {
+      // console.log( sketch );
+      // console.log( sketch.getGeometry() );
+      
+      //  원의 중심
+      let center = sketch.getGeometry().getCenter();
+      console.log( center );
+      center = ol.proj.transform( center, 'EPSG:3857', 'EPSG:4326');
+      // console.log( center );
+      
+      //  원의 반지름 거리
+      let radius = sketch.getGeometry().getRadius();
+      radius = Math.round( radius * 0.815 );
+      let options = {
+        step: 1,
+        units: 'meters'
+      }
+      console.log(radius);
+      
+      let circle = turf.circle( center, radius, options );
+      console.log( circle );
+      console.log( circle.geometry.coordinates )
+
+      circle = rw.readFeature( circle );
+      // console.log( circle );
+      // objSource.addFeature( circle );
+
+      // console.log( circle.getGeometry().getCoordinates() );
+      circle.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+
+      // console.log( circle.getGeometry().getCoordinates() );
+/*
+      // setCoordsAtProps( circle );
+      // circle.setId( sketch.getId() )
+      // circle.setProperties( sketch.getProperties() );
+*/
+      circle.setId( TimeStamp.getMiliTime() );
+      circle.setProperties({
+        info: {
+          'objName': selectedType + '_' + sketch.ol_uid,
+          'objGroup': '기본',
+          'selectedType': selectedType,
+          'realType': type,
+          'objCreateDate': TimeStamp.getDateTime(),
+          'objLastEditor': 'USER'
+        }
+      });
+      setCoordsAtProps( circle );
+      
+      objSource.addFeature( circle );
+    } else {
+      setCoordsAtProps( sketch );
+    }
 
     // console.log( sketch.getProperties() );
     drawObjInit( true );
@@ -147,13 +218,15 @@ const setCoordsAtProps = function( feature ) {
   // console.log( feature.getProperties().coords );
 
   let coords3857 = feature.getGeometry().getCoordinates();
+
+
   // console.log(coords3857);
-  if( coords3857.length == 1) {
+  if( coords3857.length && coords3857.length == 1) {
     coords3857 = coords3857[0];
     // console.log(_coordinates_);
   }
   let coords4326 = [];
-  let coordsDms = [];
+  // let coordsDms = [];
   for( var i = 0; i < coords3857.length; i++){
     coords4326.push(ol.proj.transform( coords3857[i], 'EPSG:3857', 'EPSG:4326' ));
     // coordsDms.push( [toDmsAsMap( coords4326[i][0], toDmsAsMap(coords3857[i][1]) )] );

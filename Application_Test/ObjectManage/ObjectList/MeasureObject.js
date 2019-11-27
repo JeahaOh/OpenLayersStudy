@@ -166,9 +166,11 @@ const createMeasureTooltip = function() {
  * @param {LineString} line The line.
  * @return {string} The formatted length.
  */
-let formatLength = function(line) {
+let formatLength = function(line, rough) {
   let length = ol.sphere.getLength(line);
   // console.log( length );
+  if( rough ) return length;
+
   let output;
   if (length > 100) {
     output = (Math.round(length / 1000 * 100) / 100) +
