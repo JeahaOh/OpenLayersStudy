@@ -26,11 +26,15 @@ const drawObjInit = function( flag ) {
   map.removeInteraction( objDraw );
   map.removeInteraction( objSnap );
   map.removeInteraction( objModify );
+  map.removeInteraction( select );
 
   //  초기화 함수를 measureInit에서 호출 하지 않았다면 measureInit 함수를 호출함.
   if( flag !== 'measureInit' ) measureInit( 'drawObjInit' );
   $(window).unbind('keypress', escape);
 } // drawObjInit
+
+const select = new ol.interaction.Select({ wrapx: false });
+// map.addInteraction( select );
 
 const drawObj = function( evt ) {
   //  map의 interaction들을 초기화.
@@ -66,17 +70,32 @@ const drawObj = function( evt ) {
     case 'None':
       return;
     case 'Modify':
-      objModify = new ol.interaction.Modify({ source: objSource });
-      map.addInteraction( objModify );
+      console.clear();
+      /*
+      map.addInteraction( select );
+      select.on('select', function( evt ) {
+        // console.log( evt.selected[0] );
+        
+        // console.log( evt.selected[0].values_.info.selectedType );
+        let targetType;
+        let prventType = ['Arrow'];
+        if( !evt.selected[0].values_ ) targetType = evt.selected[0].values_.info.selectedType;
+        if( !targetType || prventType.includes(targetType) ) {
+          return;
+        } 
+
+        objModify = new ol.interaction.Modify({
+          features: select.getFeatures()
+        });
+        map.addInteraction( objModify );
+      });
+      */
       return;
     case 'Line':
       type = 'LineString';
       maxPoints = 2;
       break;
     case 'Arrow':
-      // console.log( 'vector' );
-      // console.log( vector );
-      // vector.styleFunction_=arrowFunction;
     case 'MultiLine' :
       type = 'LineString';
       break;
@@ -98,7 +117,7 @@ const drawObj = function( evt ) {
     geometryFunction: geometryFunction,
     maxPoints: maxPoints
   });
-  console.log( objDraw.source_ );
+  // console.log( objDraw.source_ );
   map.addInteraction( objDraw );
 
   //  snap 넣어줌.
@@ -208,6 +227,12 @@ const drawObj = function( evt ) {
     console.groupEnd( 'draw end' );
   });
   //  drawend
+
+
+
+  // objModify.on('modifystart', function( evt ) {
+  //   $(window).on('keypress', escape);
+  // });
 }
 //  drawObj
 
@@ -311,6 +336,11 @@ const escape = function( evt ) {
   }
 };
 
+/**
+ * 화살표 Feature를 만들 시 사용하는 styleFunction.
+ * LineString feature를 받으면, 그 feature에 스타일을 적용한다.
+ * @param {*} feature 
+ */
 const arrowFunction = function(feature) {
   console.group( 'Arrow Function' );
   let geometry = feature.getGeometry();

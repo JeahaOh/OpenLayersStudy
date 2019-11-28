@@ -318,6 +318,7 @@ const measureObj = function( evt ) {
     }
     measureInit( true );
     console.groupEnd( 'draw end' );
+    console.clear();
   });
   //  drawend
 }

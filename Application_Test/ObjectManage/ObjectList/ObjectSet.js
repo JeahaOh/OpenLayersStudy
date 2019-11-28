@@ -17,7 +17,7 @@ Handlebars.registerHelper('loopForNo', loopForNo);
 
 const loopForStrokeWidth = function (from, to, incr, selected, block) {
   cont = '';
-  if( !selected ) selected = 1;
+  if( !selected ) selected = 2;
   for (var i = from; i < to; i += incr) {
     if( i != selected) {
       cont += '<option value="' + i + '">' + i + '</option>';
