@@ -518,19 +518,24 @@ const sendAsArea = function() {
       // console.log( target.values_.info.selectedType );
     }
   }
-  if( !confirm( '영역 등록 가능한 객체 타입은 ' + areaType + '입니다.\n해당하는 ' +  targetList.length + '개의 객체를 영역으로 등록 하시겠습니까?' ) ) return;
+  if( !confirm(
+      '영역 등록 가능한 객체 타입은 '
+       + areaType + '입니다.\n해당하는 '
+       +  targetList.length + '개의 객체를 영역으로 등록 하시겠습니까?' )
+    ) return;
+
   for( idx in targetList ) {
-    target = targetList[idx]
-    // console.log( target );
+    target = JSON.stringify( targetList[idx] );
+    console.log( target );
     $.ajax({
-      url: '/',
+      url: '/Application_Test/ObjectManage/ObjectList',
       type: 'POST',
       dataType: 'application/json',
-      data: JSON.stringify(target),
+      data: target,
       async: true,
-      beforeSend: function( data ) {
+      beforeSend: function( status ) {
         console.log( 'before send' );
-        console.log( data );
+        console.log( target );
       },
       success: function( data ) {
         console.log( 'success' );
@@ -538,7 +543,7 @@ const sendAsArea = function() {
       },
       error: function( data ) {
         console.error( 'ERR' );
-        console.log( data );
+        // console.log( data );
       }
     })
   }
