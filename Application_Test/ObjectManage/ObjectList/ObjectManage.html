@@ -20,9 +20,9 @@
   <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
   <script type="text/javascript" src="../../../include/handlebars-v4.1.2.js"></script>
 
-  <link type="text/css" rel="stylesheet" href="./rgbaColorPicker.css" />
-  <script type="text/javascript" src="./rgbaColorPicker.js"></script>
-  
+  <!-- <link type="text/css" rel="stylesheet" href="./rgbaColorPicker.css" /> -->
+  <!-- <script type="text/javascript" src="./rgbaColorPicker.js"></script> -->
+
   <title> Object Management </title>
 </head>
 
@@ -30,32 +30,32 @@
   <div id="map" class="map" style="width: 100%; height: 600px;"></div>
   <section>
     <h2> Draw Object </h6>
-      <label for="snapSensitivity">Snap Sensitivity</label>
-        <input type="number" name="snapSensitivity" id="snapSensitivity" min="0" max="50" value="25">
+    <label for="snapSensitivity">Snap Sensitivity</label>
+    <input type="number" name="snapSensitivity" id="snapSensitivity" min="0" max="50" value="25">
     <ul id="draw_obj_type_li">
       <li data-val="None" onclick="drawObj(this);">None</li>
       <!-- <li data-val="Modify" onclick="drawObj(this);">Modify</li> -->
-      
+
       <li data-val="Line" onclick="drawObj(this);">단선</li>
       <li data-val="Arrow" onclick="drawObj(this);">화살표</li>
       <li data-val="MultiLine" onclick="drawObj(this);">다선</li>
 
       <li data-val="Square" onclick="drawObj(this);">사각형</li>
       <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
-      <li data-val="CircleP" onclick="drawObj(this);" >원</li>
-      
+      <li data-val="CircleP" onclick="drawObj(this);">원</li>
+
       <!-- 이 세개의 기능은 map에 오버레이만 얹으면 될것 같음. -->
-      <!-- 
-      <li data-val="" >텍스트</li>
+      
+      <li data-val="Text" onclick="drawObj(this);" >텍스트</li>
       <li data-val="" >이미지</li>
       <li data-val="" >마크</li>
-        -->
+      
     </ul>
     <ul id="measure_obj_type_li">
       <li data-val="Rular" onclick="measureObj(this);">Rular</li>
       <li data-val="ESL" onclick="measureObj(this);">ESL</li>
+      <!-- <input type="text" class="color"> -->
     </ul>
-
   </section>
   <section class="obj_management_section">
     <div>
@@ -90,10 +90,10 @@
             <th>그룹</th>
             <th>타입</th>
             <!--
-              기타 설정에 있는데 굳이 살릴 필요가 없을 것 같다.
-            <th>객체 보기</th>
-            <th>객체명 보기</th>
-            -->
+                기타 설정에 있는데 굳이 살릴 필요가 없을 것 같다.
+                <th>객체 보기</th>
+                <th>객체명 보기</th>
+              -->
 
           </tr>
         </thead>
@@ -106,7 +106,7 @@
             <td>영역 등록</td>
             <td><button onclick="saveSelectedObjList();">객체 저장</button></td>
             <td>
-              <input type="file" name="fileinput" id="fileinput" >
+              <input type="file" name="fileinput" id="fileinput">
               <button onclick="loadFile();">객체 로드</button>
             </td>
           </tr>
@@ -115,65 +115,65 @@
         <!-- Template -->
         <script id="obj_table_template" type="text/x-handlebars-template">
           <tr class="manage_tgt">
-            <td><input type="checkbox" data-ol_uid="{{ol_uid}}" class="select_obj_mng_li" /></td>
-            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{ol_uid}}</td>
-            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.objName}}</td>
-            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.objGroup}}</td>
-            <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.selectedType}}</td>
-            <!-- 
-              기타 설정에 있는데 굳이 살릴 필요가 없을 것 같다.
-            <td><input type="checkbox" onchange="return false;" /></td>
-            <td><input type="checkbox" onchange="return false;" /></td>
-             -->
-          </tr>
-          <tr id="panel_{{ol_uid}}" class="panel_hidden"></tr>
-        </script>
+              <td><input type="checkbox" data-ol_uid="{{ol_uid}}" class="select_obj_mng_li" /></td>
+              <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{ol_uid}}</td>
+              <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.objName}}</td>
+              <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.objGroup}}</td>
+              <td class="panel_togle" onclick="objPanelTogle({{ol_uid}});">{{values_.info.selectedType}}</td>
+              <!-- 
+                기타 설정에 있는데 굳이 살릴 필요가 없을 것 같다.
+                <td><input type="checkbox" onchange="return false;" /></td>
+                <td><input type="checkbox" onchange="return false;" /></td>
+              -->
+            </tr>
+            <tr id="panel_{{ol_uid}}" class="panel_hidden"></tr>
+          </script>
 
         <script id="obj_ctrl_template" type="text/x-handlebars-template">
           <td>
-          </td>
-          <td colspan="5">
-            <div class="obj_ctrl_box">
-              <div class="obj_ctrl_catg_area">
-                <div class="obj_ctrl_catg">
-                  <span>기본 정보</span>
-                  <hr>
-                  <div class="obj_ctrl_content">
-                    <form action="#" id="obj_prop_{{ol_uid}}">
-                      <ul>
-                        <li>
-                          <label for="obj_ol_uid">객체 번호</label>
-                          <input type="text" name="obj_ol_uid" id="obj_ol_uid" value="{{ol_uid}}" disabled />
-                        </li>
-                        <li>
-                          <label for="obj_name">객체 명</label>
-                          <input type="text" name="objName" id="obj_name" value="{{values_.info.objName}}">
-                        </li>
-                        <li>
-                          <label for="obj_group">그룹</label>
-                          <select name="objGroup" id="obj_group">helper를 이용해서?</select>
-                        </li>
-                        <li>
-                          <label for="obj_type">객체 타입</label>
-                          <input type="text" name="selectedType" id="obj_type" value="{{values_.info.selectedType}}" readonly/>
-                        </li>
-                        <!-- 
-                          사용하지 않는 것 같다.
-                        <li>
-                          <label for="obj_lat">위도</label>
-                          <input type="text" name="obj_lat" id="obj_lat" value="" readonly />
-                        </li>
-                        <li>
-                          <label for="obj_lon">경도</label>
-                          <input type="text" name="obj_lon" id="obj_lon" value="" readonly />
-                        </li>
-                        -->
-                        <li>
-                          <label for="obj_create_date">생성 일시</label>
-                          <input type="datetime" name="objCreateDate" id="obj_create_date" value="{{values_.info.objCreateDate}}" readonly />
-                        </li>
-                        <li>
-                          <label for="obj_update_date">수정 일시</label>
+            </td>
+            <td colspan="5">
+              <div class="obj_ctrl_box">
+                <div class="obj_ctrl_catg_area">
+                  <div class="obj_ctrl_catg">
+                    <span>기본 정보</span>
+                    <hr>
+                    <div class="obj_ctrl_content">
+                      <form action="#" id="obj_prop_{{ol_uid}}">
+                        <ul>
+                          <li>
+                            <label for="obj_ol_uid">객체 번호</label>
+                            <input type="text" name="obj_ol_uid" id="obj_ol_uid" value="{{ol_uid}}" disabled />
+                          </li>
+                          <li>
+                            <label for="obj_name">객체 명</label>
+                            <input type="text" name="objName" id="obj_name" value="{{values_.info.objName}}">
+                          </li>
+                          <li>
+                            <label for="obj_group">그룹</label>
+                            <select name="objGroup" id="obj_group">helper를 이용해서?</select>
+                          </li>
+                          <li>
+                            <label for="obj_type">객체 타입</label>
+                            <input type="text" name="selectedType" id="obj_type" value="{{values_.info.selectedType}}" readonly/>
+                          </li>
+                          <!-- 
+                            사용하지 않는 것 같다.
+                            <li>
+                              <label for="obj_lat">위도</label>
+                              <input type="text" name="obj_lat" id="obj_lat" value="" readonly />
+                            </li>
+                            <li>
+                              <label for="obj_lon">경도</label>
+                              <input type="text" name="obj_lon" id="obj_lon" value="" readonly />
+                            </li>
+                          -->
+                          <li>
+                            <label for="obj_create_date">생성 일시</label>
+                            <input type="datetime" name="objCreateDate" id="obj_create_date" value="{{values_.info.objCreateDate}}" readonly />
+                          </li>
+                          <li>
+                            <label for="obj_update_date">수정 일시</label>
                           <input type="datetime" name="objUpdateDate" id="obj_{{ol_uid}}_update_date" value="{{values_.info.objUpdateDate}}" readonly />
                         </li>
                         <li>
@@ -191,16 +191,16 @@
                   </div>
                 </div>
 
-
-
+                
+                
                 {{#unless style_.length }}
-                  <div class="obj_ctrl_catg">
-                    <span>표출 정보</span>
+                <div class="obj_ctrl_catg">
+                  <span>표출 정보</span>
                     <hr>
                     <div class="obj_ctrl_content">
                       <form action="#" onsubmit="return false;" id="obj_style_{{ol_uid}}">
-                        <ul>
-                          {{#colorize style_.stroke_.color_ ol_uid "stroke"}}
+                          <ul>
+                            {{#colorize style_.stroke_.color_ ol_uid "stroke"}}
                             <li>
                               <label for="obj_stroke_RGB">선 색상</label>
                               <input type="color" name="strokeRGB" id="obj_stroke_RGB" value="{{this.rgb}}" />
@@ -210,23 +210,23 @@
                               <input type="number" name="strokeOpacity" id="obj_stroke_opacity" value="{{this.opa}}" min="0" max="10"/>
                             </li>
                             <input type="hidden" name="strokeRGBA" id="{{this.ol_uid}}_strokeRGBA" value="{{this.rgba}}">
-                          {{/colorize}}
-
-                          <li>
-                            <label for="obj_stroke_line_dash">선 대시 종류</label>
-                            <select name="strokeLineDash" id="obj_stroke_line_dash">
-                              {{#lineDashFunc style_.stroke_.lineDash_}}{{/lineDashFunc}}
-                            </select>
-                          </li>
-                          <li>
-                            <label for="obj_stroke_width">선 두께</label>
-                            <select name="strokeWidth" id="obj_stroke_width" >
-                              {{#loopForStrokeWidth 0 10 1 style_.stroke_.width_}}{{/loopForStrokeWidth}}
-                            </select>
-                          </li>
-                          
-
-                          {{#colorize style_.fill_.color_ ol_uid "fill"}}
+                            {{/colorize}}
+                            
+                            <li>
+                              <label for="obj_stroke_line_dash">선 대시 종류</label>
+                              <select name="strokeLineDash" id="obj_stroke_line_dash">
+                                {{#lineDashFunc style_.stroke_.lineDash_}}{{/lineDashFunc}}
+                              </select>
+                            </li>
+                            <li>
+                              <label for="obj_stroke_width">선 두께</label>
+                              <select name="strokeWidth" id="obj_stroke_width" >
+                                {{#loopForStrokeWidth 0 10 1 style_.stroke_.width_}}{{/loopForStrokeWidth}}
+                              </select>
+                            </li>
+                            
+                            
+                            {{#colorize style_.fill_.color_ ol_uid "fill"}}
                             <hr>
                             <li>
                               <label for="obj_fill_RGB">채우기 색상</label>
@@ -237,15 +237,15 @@
                               <input type="number" name="fillOpacity" id="obj_fill_opacity" value="{{this.opa}}" min="0" max="10" />
                             </li>
                             <input type="hidden" name="fillRGBA" id="{{this.ol_uid}}_fillRGBA" value="{{this.rgba}}">
-                          {{/colorize}}
+                            {{/colorize}}
 
-
-                          <!-- {{style_.text_.fill_.color_}}
-                            <li>
+                            
+                            <!-- {{style_.text_.fill_.color_}}
+                              <li>
                               <label for="obj_text_RGB">폰트 색상</label>
                               <input type="color" name="textRGB" id="obj_text_RGB" value="{{style_.text_.fill_.color_}}" />
                             </li> -->
-                          <!-- <li>
+                            <!-- <li>
                             <label for="obj_text_font">폰트</label>
                             <input type="text" name="textFont" id="obj_text_font" />
                           </li> -->
@@ -263,15 +263,15 @@
                       </form>
                     </div>
                   </div>
-                {{/unless}}
+                  {{/unless}}
 
-
-
-
-                <div class="obj_ctrl_catg">
-                  <span>기타 설정</span>
-                  <hr>
-                  <div class="obj_ctrl_content">
+                  
+                  
+                  
+                  <div class="obj_ctrl_catg">
+                    <span>기타 설정</span>
+                    <hr>
+                    <div class="obj_ctrl_content">
                     <form action="#" id="obj_ext_{{ol_uid}}">
                       <ul>
                         <li>
@@ -312,7 +312,7 @@
                         </li>
                       </ul>
                     </form>
-                    </div>
+                  </div>
                 </div>
               </div>
               <div class="obj_ctrl_coord">
@@ -320,8 +320,8 @@
                 <div id="obj_coord_table" class="obj_coord_table table">
                   <div id="obj_coord_list_{{ol_uid}}" >
                     <form action="#" id="obj_{{this.ol_uid}}_coord" onsubmit="return false;">
-                    {{#loopForCoords ol_uid}}
-                      <div class="row ">
+                        {{#loopForCoords ol_uid}}
+                        <div class="row ">
                           <div class="cel1">No. {{this.idx}}</div>
                           <div class="cel1">
                             <label for="{{this.idx}}_lat">위도 : </label>
@@ -333,25 +333,25 @@
                           </div>
                         </div>
                         {{/loopForCoords}}
-                        </form>   
-                        <button id="{{ol_uid}}_edit" onclick="editPoint( {{this.ol_uid}});" > 좌표 변경 적용</button>
-                      </div>
+                      </form>   
+                      <button id="{{ol_uid}}_edit" onclick="editPoint( {{this.ol_uid}});" > 좌표 변경 적용</button>
+                    </div>
                   </div>
                   {{/if}}
+                </div>
               </div>
-            </div>
-          </td>
-          <td>
-            <div class="obj_ctrl_footer">
-              <button onclick="removeObj({{ol_uid}});">객체 삭제</button>
-            </div>
-          </td>
-        </script>
+            </td>
+            <td>
+              <div class="obj_ctrl_footer">
+                <button onclick="removeObj({{ol_uid}});">객체 삭제</button>
+              </div>
+            </td>
+          </script>
       </table>
     </div>
     <!-- <ul id="obj_list">
-      
-    </ul> -->
+        
+      </ul> -->
   </section>
   <p>
 
@@ -364,7 +364,7 @@
   <script type="text/javascript" src="./ObjectSet.js"></script>
   <script type="text/javascript" src="./ObjectLoadAndSave.js"></script>
   <script type="text/javascript" src="./TimeStamp.js"></script>
-  
+
 </body>
 
 </html>

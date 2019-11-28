@@ -1,5 +1,5 @@
 //  Global
-let objDraw, objSnap, objModify, pointTooltip, status, pointCNT;
+let objDraw, objSnap, objModify, pointTooltip, status, pointCNT, objText;
 let rw = new ol.format.GeoJSON();
 let sketch;
 
@@ -17,6 +17,7 @@ let sketch;
 const drawObjInit = function( flag ) {
   let className = 'selectedType';
   let menuList = $('#draw_obj_type_li li');
+  objText = '';
   $.each(menuList, function( idx ){
     if( menuList.eq( idx ).hasClass( className )) {
       menuList.eq( idx ).removeClass( className );
@@ -108,6 +109,10 @@ const drawObj = function( evt ) {
     case 'CircleP':
       type = 'Circle'
       break;
+    case 'Text':
+      objText = prompt('Text 내용을 입력하세요');
+      console.log( objText );
+      type='Point';
   }
 
   //  draw 선언.
@@ -211,11 +216,21 @@ const drawObj = function( evt ) {
       
       objSource.addFeature( circle );
       // console.log( circle )
-    } else {
+    } 
+    // else if( selectedType === 'Text' ) {
+    //   setCoordsAtProps( sketch );
+    //   sketch.setStyle( new ol.style.Style({
+    //     text: new ol.style.Text({
+    //       text: objText
+    //     })
+    //   }));
+    // }
+     else {
       setCoordsAtProps( sketch );
       // sketch.on('change', function(evt) {
       //   console.log(evt)
       // });
+      defaultStyler( sketch )
     }
     if( selectedType == 'Arrow' ) {
       arrowFunction(sketch)
@@ -351,6 +366,10 @@ const arrowFunction = function(feature) {
       stroke: new ol.style.Stroke({
         color: "rgba(255, 204, 51, 1)",
         width: 4
+      }),
+      text: new ol.style.Text({
+        text: 'Arrow',
+        scale: 3
       })
     })
   ];
@@ -377,3 +396,29 @@ const arrowFunction = function(feature) {
   console.groupEnd( 'Arrow Function' );
   // return styles;
 };
+
+const defaultStyler = function( feature ) {
+  let style = new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(255, 255, 255, 0.1)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: 'rgba(0, 0, 0, 1)',
+      width: 2
+    }),
+    // image: new ol.style.Circle({
+    //   radius: 7,
+    //   fill: new ol.style.Fill({
+    //     color: '#ffcc33'
+    //   })
+    // }),
+    text: new ol.style.Text({
+      font: '12px Verdana',
+      scale: 3,
+      text: objText,
+    })
+  });
+
+  feature.setStyle( style );
+  feature.setProperties( {style: style})
+}

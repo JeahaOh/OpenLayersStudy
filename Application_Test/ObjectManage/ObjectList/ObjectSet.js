@@ -234,7 +234,7 @@ $.ajax({
  */
 let objGeoJ;
 (function () {
-  console.clear();
+  // console.clear();
   console.group('on load');
   objGeoJ = sessionStorage.getItem('objGeoJ');
   // objGeoJ = objGeoJ ? objGeoJ : objSource.getFeatures();
@@ -257,6 +257,7 @@ let objGeoJ;
       if ( feature.properties !== null &&feature.properties.style ) {
         // console.log( 'style' );
         let style = feature.properties.style;
+        console.log( style );
         // console.log( style.length );
         try {
           if( !style.length ) {
@@ -272,7 +273,10 @@ let objGeoJ;
                 color: style.fill_.color_,
               }),
               text: new ol.style.Text({
-                color: style.text_.color_
+                color: style.text_.color_,
+                font: '12px Verdana',
+                scale: 3,
+                text: style.text_.text_
               })
             });
             
