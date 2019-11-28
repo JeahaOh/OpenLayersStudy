@@ -64,7 +64,7 @@ const loopForCoords = function (ol_uid, block) {
 };
 Handlebars.registerHelper('loopForCoords', loopForCoords);
 //  loopForCoords
-const areaType = ['Polygon', 'CircleP', 'Square'];
+
 const colorize = function(rgba, uid, where, block) {
   cont = '';
   feature = objSource.getFeatureByUid(uid);
@@ -78,7 +78,7 @@ const colorize = function(rgba, uid, where, block) {
     case 'fill' :
       if( !areaType.includes(feature.values_.info.selectedType) ) return;
       defaultRGB = '#FFFFFF';
-      defaultOpa = '0'
+      defaultOpa = '1'
       break;
   }
   
@@ -86,12 +86,12 @@ const colorize = function(rgba, uid, where, block) {
     cont += block.fn({rgb: defaultRGB, opa: defaultOpa, ol_uid: uid});
   } else {
     let rgb = rgba2rgb(rgba);
-    // console.log( rgb );
+    console.log( rgb );
     cont += block.fn({ 
       ol_uid: uid
       , rgba: rgba
       , rgb: rgb.rgb
-      , opa: (rgb.opa) * 10
+      , opa: (rgb.opa) == 0 ? 0 : (rgb.opa) * 10
     });
   }
   return cont;
@@ -498,3 +498,49 @@ const map2style = function( map ) {
   return style;
 }
 //  map2style
+
+const sendAsArea = function() {
+  console.group( 'Send As Area ');
+  let targetList = getSelectedObjList();
+  
+  if( targetList.length == 0 ) {
+    alert('영역 객체로 지정할 객체를 선택하세요');
+    return false;
+  }
+  
+  let target;
+  for( idx in targetList ) {
+    target = targetList[idx]
+    // console.log( target );
+    // console.log( idx )
+    if( !areaType.includes(target.values_.info.selectedType) ) {
+      targetList.splice(idx);
+      // console.log( target.values_.info.selectedType );
+    }
+  }
+  if( !confirm( '영역 등록 가능한 객체 타입은 ' + areaType + '입니다.\n해당하는 ' +  targetList.length + '개의 객체를 영역으로 등록 하시겠습니까?' ) ) return;
+  for( idx in targetList ) {
+    target = targetList[idx]
+    // console.log( target );
+    $.ajax({
+      url: '/',
+      type: 'POST',
+      dataType: 'application/json',
+      data: JSON.stringify(target),
+      async: true,
+      beforeSend: function( data ) {
+        console.log( 'before send' );
+        console.log( data );
+      },
+      success: function( data ) {
+        console.log( 'success' );
+        console.log( data );
+      },
+      error: function( data ) {
+        console.error( 'ERR' );
+        console.log( data );
+      }
+    })
+  }
+  console.groupEnd( 'Send As Area ');
+}

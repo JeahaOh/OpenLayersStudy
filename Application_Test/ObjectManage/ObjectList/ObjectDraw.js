@@ -1,6 +1,7 @@
 //  Global
 let objDraw, objSnap, objModify, pointTooltip, status, pointCNT, objText;
 let rw = new ol.format.GeoJSON();
+const areaType = ['Polygon', 'CircleP', 'Square'];
 let sketch;
 
 /**
@@ -33,6 +34,20 @@ const drawObjInit = function( flag ) {
   if( flag !== 'measureInit' ) measureInit( 'drawObjInit' );
   $(window).unbind('keypress', escape);
 } // drawObjInit
+
+//  Line을 그리면 사각형으로 변환한 geometry를 반환한다.
+const squareFunction = function( coordinates, geometry ) {
+  let start = coordinates[0];
+  let end = coordinates[1];
+
+  coordinates = [[start, [start[0], end[1]], end, [end[0], start[1]], start]];
+  if( !geometry ) {
+    geometry = new ol.geom.Polygon(coordinates);
+  } else {
+    geometry.setCoordinates(coordinates);
+  }
+  return geometry;
+} //  squareFunction
 
 const select = new ol.interaction.Select({ wrapx: false });
 // map.addInteraction( select );
@@ -102,8 +117,9 @@ const drawObj = function( evt ) {
       break;
     case 'Square':
       type = 'Circle';
-      // geometryFunction = squareFunction;
-      geometryFunction = ol.interaction.Draw.createBox();
+      selectedType = 'Square';
+      geometryFunction = squareFunction;
+      // geometryFunction = ol.interaction.Draw.createBox();
       // geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
       break;
     case 'CircleP':
@@ -156,6 +172,7 @@ const drawObj = function( evt ) {
   objDraw.on('drawend', function( evt ) {
     console.group( 'draw end' );
     
+    
     if( selectedType == 'CircleP' ) {
       // console.log( sketch );
       // console.log( sketch.getGeometry() );
@@ -175,7 +192,7 @@ const drawObj = function( evt ) {
             'objName': selectedType + '_' + sketch.ol_uid,
             'objGroup': '기본',
             'selectedType': selectedType,
-            'realType': type,
+            'realType': 'Polygon',
             'objCreateDate': TimeStamp.getDateTime(),
             'objLastEditor': 'USER'
           },
@@ -213,24 +230,16 @@ const drawObj = function( evt ) {
       // });
 
       setCoordsAtProps( circle );
-      
+      defaultStyler( circle );
+
       objSource.addFeature( circle );
       // console.log( circle )
-    } 
-    // else if( selectedType === 'Text' ) {
-    //   setCoordsAtProps( sketch );
-    //   sketch.setStyle( new ol.style.Style({
-    //     text: new ol.style.Text({
-    //       text: objText
-    //     })
-    //   }));
-    // }
-     else {
+    } else {
       setCoordsAtProps( sketch );
       // sketch.on('change', function(evt) {
       //   console.log(evt)
       // });
-      defaultStyler( sketch )
+      defaultStyler( sketch );
     }
     if( selectedType == 'Arrow' ) {
       arrowFunction(sketch)
@@ -242,12 +251,6 @@ const drawObj = function( evt ) {
     console.groupEnd( 'draw end' );
   });
   //  drawend
-
-
-
-  // objModify.on('modifystart', function( evt ) {
-  //   $(window).on('keypress', escape);
-  // });
 }
 //  drawObj
 
@@ -263,7 +266,6 @@ const setCoordsAtProps = function( feature ) {
   // console.log(coords3857);
   if( coords3857.length && coords3857.length == 1) {
     coords3857 = coords3857[0];
-    // console.log(_coordinates_);
   }
   let coords4326 = [];
   // let coordsDms = [];

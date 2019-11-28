@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
   <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
   <script
     src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL">
@@ -83,8 +84,10 @@
         </colgroup>
         <thead>
           <tr>
-            <!-- <th><input type="checkbox" onchange="selectAllObjMngLi(this);" /></th> -->
-            <th><input type="checkbox" id="select_all_obj_mng_li" /></th>
+            <th onclick="$('#select_all_obj_mng_li').click();" class="btn_cell">
+              전체 선택
+              <input type="checkbox" id="select_all_obj_mng_li" style="display:none;"/>
+            </th>
             <th>UID</th>
             <th>객체명</th>
             <th>그룹</th>
@@ -94,21 +97,19 @@
                 <th>객체 보기</th>
                 <th>객체명 보기</th>
               -->
-
           </tr>
         </thead>
-
         <tbody id="obj_management_table"></tbody>
         <tfoot>
           <tr>
             <th></th>
-            <td><button onclick="removeObjList();">선택 객체 삭제</button></td>
-            <td>영역 등록</td>
-            <td><button onclick="saveSelectedObjList();">객체 저장</button></td>
-            <td>
-              <input type="file" name="fileinput" id="fileinput">
-              <button onclick="loadFile();">객체 로드</button>
+            <td onclick="removeObjList();" class="btn_cell">선택 객체 삭제</td>
+            <td onclick="sendAsArea();" class="btn_cell">영역 등록</td>
+            <td onclick="saveSelectedObjList();" class="btn_cell">객체 저장</td>
+            <td  class="btn_cell" id="loadFeaturesFromFile">
+              객체 로드
             </td>
+            <input type="file" name="fileinput" id="fileinput"  style="display: none;" onchange="loadFile();">
           </tr>
         </tfoot>
 
@@ -221,7 +222,7 @@
                             <li>
                               <label for="obj_stroke_width">선 두께</label>
                               <select name="strokeWidth" id="obj_stroke_width" >
-                                {{#loopForStrokeWidth 0 10 1 style_.stroke_.width_}}{{/loopForStrokeWidth}}
+                                {{#loopForStrokeWidth 1 10 1 style_.stroke_.width_}}{{/loopForStrokeWidth}}
                               </select>
                             </li>
                             

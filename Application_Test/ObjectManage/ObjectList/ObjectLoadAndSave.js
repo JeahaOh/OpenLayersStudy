@@ -1,3 +1,24 @@
+const getSelectedObjList = function() {
+  console.group( 'get Selected Obj List');
+  let allLi = $('.select_obj_mng_li');
+  // console.log( allLi );
+  let selected = [];
+
+  let length = allLi.length;
+  console.log( length );
+
+  if( length > 0 ) {
+    for( var i = 0; i < length; i++ ) {
+      if( allLi[i].checked ) {
+        selected.push( objSource.getFeatureByUid( allLi[i].dataset.ol_uid ) );
+      }
+    }
+  }
+
+  console.groupEnd( 'get Selected Obj List');
+  return selected;
+}
+
 /**
  * Session Storage에 저장된 Features를 File로 저장, 다시 Session에 저장하기 위한 js 파일.
  * Read시 스타일이 바로 적용되지 않는 문제가 있고,
@@ -6,21 +27,10 @@
  */
 
 const saveSelectedObjList = function() {
-  let allLi = $('.select_obj_mng_li');
-  let target = [];
-  // console.log( target );
-  let length = allLi.length;
-  // console.log( length )
-  if( length > 0 ) {
-    for( var i = 0; i < length; i++ ) {
-      if( allLi[i].checked ) {
-        // console.log( allLi[i].dataset.ol_uid );
-        target.push(objSource.getFeatureByUid(allLi[i].dataset.ol_uid));
-      }
-    }
-    // console.log( target );
-  }
+  let target = getSelectedObjList();
+  
   if( target.length > 0 ) {
+    console.log( target );
     target = rw.writeFeatures( target );
     let file = new Blob( [target.toString()], {type: 'application/json'});
 
@@ -62,6 +72,9 @@ const loadFile = function() {
     fr.onload = receivedText;
     fr.readAsText(file);
   }
+
+  //  객체 로드 완료시 페이지를 재 로드 시키는건 어떨까?
+  // location.reload();
 };
 
 const receivedText = function(e) {
@@ -69,37 +82,45 @@ const receivedText = function(e) {
   var newArr = lines;
   console.log( newArr );
   newArr = rw.readFeatures( newArr );
+  console.log( newArr.features );
 
   objSource.addFeatures( newArr );
 
-  console.log( newArr.features )
+  let length = 0;
+  try { length = newArr.features.length; } catch( e ) { console.log( e ) }
 
-  let length = newArr.features.length;
   if ( length > 0 ) {
     for( var i = 0; i < length; i++ ) {
       let feature = newArr.features[i];
       // console.log( feature);
       // console.log( feature.id );
-      let style = feature.properties.style;
-      if ( style ) {
-        // console.log( style );
-        // console.log( style.stroke_.lineDash_ );
-        // console.log( typeof style.stroke_.lineDash_ );
-        style = new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: style.stroke_.color_,
-            lineDash: style.stroke_.lineDash_,
-            width: style.stroke_.width_
-          }),
-          fill: new ol.style.Fill({
-            color: style.fill_.color_,
-          }),
-          text: new ol.style.Text({
-            color: style.text_.color_
-          })
-        });
-        objSource.getFeatureById(feature.id).setStyle(style);
-      }
+      try{
+        if ( feature.properties.style ) {
+          let style = feature.properties.style;
+          // console.log( style );
+          // console.log( style.stroke_.lineDash_ );
+          style = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+              color: style.stroke_.color_,
+              lineDash: style.stroke_.lineDash_,
+              width: style.stroke_.width_
+            }),
+            fill: new ol.style.Fill({
+              color: style.fill_.color_,
+            }),
+            text: new ol.style.Text({
+              color: style.text_.color_
+            })
+          });
+          objSource.getFeatureById(feature.id).setStyle(style);
+        }
+      } catch( e ) { console.log( e ); }
     }
   }
 }
+
+$('#loadFeaturesFromFile').on('click', function( evt ){
+  evt.stopPropagation();
+  // console.log( evt );
+  $('#fileinput').click();
+})
