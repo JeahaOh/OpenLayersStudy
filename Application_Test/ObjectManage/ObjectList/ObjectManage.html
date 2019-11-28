@@ -50,12 +50,7 @@
       <li data-val="" >이미지</li>
       <li data-val="" >마크</li>
         -->
-      
-        
-      
     </ul>
-
-    <!-- 측정을 분리 해야 할 것 같다. 이 부분은 차후에 진행 하도록 하자. -->
     <ul id="measure_obj_type_li">
       <li data-val="Rular" onclick="measureObj(this);">Rular</li>
       <li data-val="ESL" onclick="measureObj(this);">ESL</li>
@@ -198,76 +193,77 @@
 
 
 
+                {{#unless style_.length }}
+                  <div class="obj_ctrl_catg">
+                    <span>표출 정보</span>
+                    <hr>
+                    <div class="obj_ctrl_content">
+                      <form action="#" onsubmit="return false;" id="obj_style_{{ol_uid}}">
+                        <ul>
+                          {{#colorize style_.stroke_.color_ ol_uid "stroke"}}
+                            <li>
+                              <label for="obj_stroke_RGB">선 색상</label>
+                              <input type="color" name="strokeRGB" id="obj_stroke_RGB" value="{{this.rgb}}" />
+                            </li>
+                            <li>
+                              <label for="obj_stroke_opacity">선 투명도</label>
+                              <input type="number" name="strokeOpacity" id="obj_stroke_opacity" value="{{this.opa}}" min="0" max="10"/>
+                            </li>
+                            <input type="hidden" name="strokeRGBA" id="{{this.ol_uid}}_strokeRGBA" value="{{this.rgba}}">
+                          {{/colorize}}
 
-                <div class="obj_ctrl_catg">
-                  <span>표출 정보</span>
-                  <hr>
-                  <div class="obj_ctrl_content">
-                    <form action="#" onsubmit="return false;" id="obj_style_{{ol_uid}}">
-                      <ul>
-                        {{#colorize style_.stroke_.color_ ol_uid "stroke"}}
                           <li>
-                            <label for="obj_stroke_RGB">선 색상</label>
-                            <input type="color" name="strokeRGB" id="obj_stroke_RGB" value="{{this.rgb}}" />
+                            <label for="obj_stroke_line_dash">선 대시 종류</label>
+                            <select name="strokeLineDash" id="obj_stroke_line_dash">
+                              {{#lineDashFunc style_.stroke_.lineDash_}}{{/lineDashFunc}}
+                            </select>
                           </li>
                           <li>
-                            <label for="obj_stroke_opacity">선 투명도</label>
-                            <input type="number" name="strokeOpacity" id="obj_stroke_opacity" value="{{this.opa}}" min="0" max="10"/>
+                            <label for="obj_stroke_width">선 두께</label>
+                            <select name="strokeWidth" id="obj_stroke_width" >
+                              {{#loopForStrokeWidth 0 10 1 style_.stroke_.width_}}{{/loopForStrokeWidth}}
+                            </select>
                           </li>
-                          <input type="hidden" name="strokeRGBA" id="{{this.ol_uid}}_strokeRGBA" value="{{this.rgba}}">
-                        {{/colorize}}
+                          
 
-                        <li>
-                          <label for="obj_stroke_line_dash">선 대시 종류</label>
-                          <select name="strokeLineDash" id="obj_stroke_line_dash">
-                            {{#lineDashFunc style_.stroke_.lineDash_}}{{/lineDashFunc}}
-                          </select>
-                        </li>
-                        <li>
-                          <label for="obj_stroke_width">선 두께</label>
-                          <select name="strokeWidth" id="obj_stroke_width" >
-                            {{#loopForStrokeWidth 0 10 1 style_.stroke_.width_}}{{/loopForStrokeWidth}}
-                          </select>
-                        </li>
-                        
-
-                        {{#colorize style_.fill_.color_ ol_uid "fill"}}
-                          <hr>
-                          <li>
-                            <label for="obj_fill_RGB">채우기 색상</label>
-                            <input type="color" name="fillRGB" id="obj_fill_RGB" value="{{this.rgb}}"/>
-                          </li>
-                          <li>
-                            <label for="obj_fill_opacity">채우기 투명도</label>
-                            <input type="number" name="fillOpacity" id="obj_fill_opacity" value="{{this.opa}}" min="0" max="10" />
-                          </li>
-                          <input type="hidden" name="fillRGBA" id="{{this.ol_uid}}_fillRGBA" value="{{this.rgba}}">
-                        {{/colorize}}
+                          {{#colorize style_.fill_.color_ ol_uid "fill"}}
+                            <hr>
+                            <li>
+                              <label for="obj_fill_RGB">채우기 색상</label>
+                              <input type="color" name="fillRGB" id="obj_fill_RGB" value="{{this.rgb}}"/>
+                            </li>
+                            <li>
+                              <label for="obj_fill_opacity">채우기 투명도</label>
+                              <input type="number" name="fillOpacity" id="obj_fill_opacity" value="{{this.opa}}" min="0" max="10" />
+                            </li>
+                            <input type="hidden" name="fillRGBA" id="{{this.ol_uid}}_fillRGBA" value="{{this.rgba}}">
+                          {{/colorize}}
 
 
-                        <!-- {{style_.text_.fill_.color_}}
-                          <li>
-                            <label for="obj_text_RGB">폰트 색상</label>
-                            <input type="color" name="textRGB" id="obj_text_RGB" value="{{style_.text_.fill_.color_}}" />
+                          <!-- {{style_.text_.fill_.color_}}
+                            <li>
+                              <label for="obj_text_RGB">폰트 색상</label>
+                              <input type="color" name="textRGB" id="obj_text_RGB" value="{{style_.text_.fill_.color_}}" />
+                            </li> -->
+                          <!-- <li>
+                            <label for="obj_text_font">폰트</label>
+                            <input type="text" name="textFont" id="obj_text_font" />
                           </li> -->
-                        <!-- <li>
-                          <label for="obj_text_font">폰트</label>
-                          <input type="text" name="textFont" id="obj_text_font" />
-                        </li> -->
-                        <!-- <li>
-                          <label for="obj_text_size">폰트 크기</label>
-                          <input type="number" name="textSize" id="obj_text_size" />
-                        </li> -->
-                        
-                        <hr>
-                        
-                        <li>
-                          <button onclick="editStyle({{ol_uid}})">스타일 적용</button>
-                        </li>
-                      </ul>
-                    </form>
+                          <!-- <li>
+                            <label for="obj_text_size">폰트 크기</label>
+                            <input type="number" name="textSize" id="obj_text_size" />
+                          </li> -->
+                          
+                          <hr>
+                          
+                          <li>
+                            <button onclick="editStyle({{ol_uid}})">스타일 적용</button>
+                          </li>
+                        </ul>
+                      </form>
+                    </div>
                   </div>
-                </div>
+                {{/unless}}
 
 
 

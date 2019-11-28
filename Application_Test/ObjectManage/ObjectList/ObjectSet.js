@@ -234,6 +234,7 @@ $.ajax({
  */
 let objGeoJ;
 (function () {
+  console.clear();
   console.group('on load');
   objGeoJ = sessionStorage.getItem('objGeoJ');
   // objGeoJ = objGeoJ ? objGeoJ : objSource.getFeatures();
@@ -248,34 +249,46 @@ let objGeoJ;
   //  style의 갯수만큼 objSource는 change 된다.
   let length = objGeoJ.features.length;
   if ( length > 0 ) {
+    console.log( 'features.length : ' + length );
     for( var i = 0; i < length; i++ ) {
       let feature = objGeoJ.features[i];
-      console.log( feature )
+      // console.log( feature )
       // console.log( feature.id )
       if ( feature.properties !== null &&feature.properties.style ) {
+        // console.log( 'style' );
         let style = feature.properties.style;
-        // console.log( style );
-        // console.log( style.stroke_.lineDash_ );
-        // console.log( typeof style.stroke_.lineDash_ );
-        style = new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: style.stroke_.color_,
-            lineDash: style.stroke_.lineDash_,
-            width: style.stroke_.width_
-          }),
-          fill: new ol.style.Fill({
-            color: style.fill_.color_,
-          }),
-          text: new ol.style.Text({
-            color: style.text_.color_
-          })
-        });
-        objSource.getFeatureById(feature.id).setStyle(style);
+        // console.log( style.length );
+        try {
+          if( !style.length ) {
+            // console.log( style.stroke_.lineDash_ );
+            // console.log( typeof style.stroke_.lineDash_ );
+            style = new ol.style.Style({
+              stroke: new ol.style.Stroke({
+                color: style.stroke_.color_,
+                lineDash: style.stroke_.lineDash_,
+                width: style.stroke_.width_
+              }),
+              fill: new ol.style.Fill({
+                color: style.fill_.color_,
+              }),
+              text: new ol.style.Text({
+                color: style.text_.color_
+              })
+            });
+            
+            objSource.getFeatureById(feature.id).setStyle(style);
+          } else {
+            // console.log( style );
+            arrowFunction( objSource.getFeatureById( feature.id ) );
+          }
+        } catch( e ) {
+          console.log( e );
+        }
       }
     }
   }
-
   console.groupEnd('on load');
+  // console.clear();
 })();
 //  onload
 
@@ -411,6 +424,7 @@ const editPoint = function(uid) {
 const rgb2rgba = function( rgb, opa ) {
   // console.log( rgb );
   if( !rgb ) return null;
+  if( !opa ) opa = 1;
   rgb = rgb.replace('#', '').trim();
   r = parseInt( rgb.substring( 0 , 2 ), 16);
   g = parseInt( rgb.substring( 2 , 4 ), 16);

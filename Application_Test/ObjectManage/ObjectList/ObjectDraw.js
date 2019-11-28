@@ -69,11 +69,14 @@ const drawObj = function( evt ) {
       objModify = new ol.interaction.Modify({ source: objSource });
       map.addInteraction( objModify );
       return;
-    case 'Arrow':
     case 'Line':
       type = 'LineString';
       maxPoints = 2;
       break;
+    case 'Arrow':
+      // console.log( 'vector' );
+      // console.log( vector );
+      // vector.styleFunction_=arrowFunction;
     case 'MultiLine' :
       type = 'LineString';
       break;
@@ -128,24 +131,6 @@ const drawObj = function( evt ) {
 
   objDraw.on('drawend', function( evt ) {
     console.group( 'draw end' );
-    // console.log( evt )
-    console.log( evt.feature )
-    console.log( evt.feature.getId() )
-    // target = objSource.getFeatureById(evt.feature.getId());
-    // objSource.removeFeature(target);
-    console.log( evt.feature.ol_uid )
-    // target = objSource.getFeatureByUid(evt.feature.ol_uid);
-    // objSource.removeFeature(target);
-
-    // vector.getSource().removeFeature(evt.feature);
-
-    // try{
-    //   objSource.removeFeature(evt.feature);
-    // } catch (e) {
-    //   console.log( e )
-    // }
-
-    // objSource.removeFeature(evt.target.feature);
     
     if( selectedType == 'CircleP' ) {
       // console.log( sketch );
@@ -171,7 +156,7 @@ const drawObj = function( evt ) {
             'objLastEditor': 'USER'
           },
           // id: TimeStamp.getMiliTime()
-          id: 'ASDF'
+          id: TimeStamp.getDateTime()
         }
       }
       //  원의 반지름 거리
@@ -187,7 +172,7 @@ const drawObj = function( evt ) {
       circle.getGeometry().transform('EPSG:4326', 'EPSG:3857');
 
       
-      circle.setId( 'QWER' );
+      circle.setId( TimeStamp.getDateTime() );
       /**
        * !! sketch의 uid는 db랑 연결 해줘야 함 !!
        */
@@ -206,13 +191,15 @@ const drawObj = function( evt ) {
       setCoordsAtProps( circle );
       
       objSource.addFeature( circle );
-      console.log( circle )
+      // console.log( circle )
     } else {
       setCoordsAtProps( sketch );
-      sketch.on('change', function(evt) {
-        console.log(evt)
-
-      });
+      // sketch.on('change', function(evt) {
+      //   console.log(evt)
+      // });
+    }
+    if( selectedType == 'Arrow' ) {
+      arrowFunction(sketch)
     }
 
     
@@ -318,8 +305,45 @@ const escape = function( evt ) {
   //  z = 122
   switch( charCode ) {
     case 120 :
-        drawObjInit();
-        console.clear();
-        return;
+      drawObjInit();
+      console.clear();
+      return;
   }
-}
+};
+
+const arrowFunction = function(feature) {
+  console.group( 'Arrow Function' );
+  let geometry = feature.getGeometry();
+  // console.log( geometry );
+  let styles = [
+    // linestring
+    new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: "rgba(255, 204, 51, 1)",
+        width: 4
+      })
+    })
+  ];
+
+  geometry.forEachSegment(function(start, end) {
+    let dx = end[0] - start[0];
+    let dy = end[1] - start[1];
+    let rotation = Math.atan2(dy, dx);
+    // arrows
+    styles.push(new ol.style.Style({
+      geometry: new ol.geom.Point(end),
+      image: new ol.style.Icon({
+        src: 'arrow.png',
+        anchor: [0.75, 0.5],
+        rotateWithView: true,
+        rotation: -rotation
+      })
+    }));
+  });
+
+  feature.setStyle(styles);
+  feature.setProperties({style: styles});
+  // console.log( feature.getProperties().style );
+  console.groupEnd( 'Arrow Function' );
+  // return styles;
+};

@@ -34,6 +34,7 @@ var styleFunction = function(feature) {
 
   return styles;
 };
+
 var vector = new ol.layer.Vector({
   source: source,
   style: styleFunction
