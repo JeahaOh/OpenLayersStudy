@@ -8,26 +8,6 @@ let raster = new ol.layer.Tile({
 let objSource = new ol.source.Vector({wrapX: false});
 let vector = new ol.layer.Vector({
   source: objSource,
-  // style: new ol.style.Style({
-  //   fill: new ol.style.Fill({
-  //     color: 'rgba(255, 255, 255, 0.1)'
-  //   }),
-  //   stroke: new ol.style.Stroke({
-  //     color: '#000000',
-  //     width: 2
-  //   }),
-  //   image: new ol.style.Circle({
-  //     radius: 7,
-  //     fill: new ol.style.Fill({
-  //       color: '#ffcc33'
-  //     })
-  //   }),
-  //   text: new ol.style.Text({
-  //     font: '12px Verdana',
-  //     scale: 3,
-  //     text: '',
-  //   })
-  // })
 });
 
 let measureSource = new ol.source.Vector({wrapX: false});

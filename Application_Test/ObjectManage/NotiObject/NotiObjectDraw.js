@@ -75,8 +75,7 @@ const drawNoti = function( evt ) {
       break;
     case 'Mark':
       type = 'Point';
-      icon = '/Application_Test/ObjectManage/NotiObject/icon/' + evt.dataset.ico_no + '.png';
-      console.log( icon );
+      console.log( icon = '/Application_Test/ObjectManage/NotiObject/icon/' + evt.dataset.ico_no + '.png' )
       break;
     case 'Image':
       type='Point';
@@ -327,3 +326,17 @@ Handlebars.registerHelper( 'loopForMarkImgLi', loopForMarkImgLi );
   $('#mark_img_ul').append( Handlebars.compile( $('#mark_img_template').html() ) );
 })();
 
+/**
+ * #obj_img에 파일이 변하면 호출.
+ * 서버에서 파일을 새 이름으로 저장한다.
+ * 저장 성공시 -> 새 이름을 돌려준다.
+ * 새 이름을 가지고 draw를 호출한다.
+ * input에서 파일을 지워준다.
+ * 
+ * 저장 실패시 -> 실패 이유를 알려준다.
+ * input에서 파일을 지워준다.
+ * 
+ */
+const objImg = function() {
+
+}
