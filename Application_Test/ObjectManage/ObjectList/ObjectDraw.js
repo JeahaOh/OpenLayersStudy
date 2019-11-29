@@ -243,9 +243,9 @@ const drawObj = function( evt ) {
       // });
       defaultStyler( sketch );
     }
-    if( selectedType == 'Arrow' ) {
-      arrowFunction(sketch)
-    }
+    // if( selectedType == 'Arrow' ) {
+    //   arrowFunction(sketch)
+    // }
 
     
     drawObjInit( true );
@@ -355,74 +355,80 @@ const escape = function( evt ) {
   }
 };
 
-/**
- * 화살표 Feature를 만들 시 사용하는 styleFunction.
- * LineString feature를 받으면, 그 feature에 스타일을 적용한다.
- * @param {*} feature 
- */
-const arrowFunction = function(feature) {
-  console.group( 'Arrow Function' );
-  let geometry = feature.getGeometry();
-  // console.log( geometry );
-  let styles = [
-    // linestring
-    new ol.style.Style({
-      stroke: new ol.style.Stroke({
-        color: "rgba(255, 204, 51, 1)",
-        width: 4
-      }),
-      text: new ol.style.Text({
-        text: 'Arrow',
-        scale: 3
-      })
-    })
-  ];
-
-  geometry.forEachSegment(function(start, end) {
-    let dx = end[0] - start[0];
-    let dy = end[1] - start[1];
-    let rotation = Math.atan2(dy, dx);
-    // arrows
-    styles.push(new ol.style.Style({
-      geometry: new ol.geom.Point(end),
-      image: new ol.style.Icon({
-        src: 'arrow.png',
-        anchor: [0.75, 0.5],
-        rotateWithView: true,
-        rotation: -rotation
-      })
-    }));
-  });
-
-  feature.setStyle(styles);
-  feature.setProperties({style: styles});
-  // console.log( feature.getProperties().style );
-  console.groupEnd( 'Arrow Function' );
-  // return styles;
-};
 
 const defaultStyler = function( feature ) {
-  let style = new ol.style.Style({
-    fill: new ol.style.Fill({
-      color: 'rgba(255, 255, 255, 0.1)'
-    }),
-    stroke: new ol.style.Stroke({
-      color: 'rgba(0, 0, 0, 1)',
-      width: 2
-    }),
-    // image: new ol.style.Circle({
-    //   radius: 7,
-    //   fill: new ol.style.Fill({
-    //     color: '#ffcc33'
-    //   })
-    // }),
-    text: new ol.style.Text({
-      font: '12px Verdana',
-      scale: 3,
-      text: objText,
-    })
-  });
+  let style;
+  let type = feature.values_.info.selectedType;
+  console.log( type );
+
+  switch( type ) {
+
+    case 'Mark' :
+      style = new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 7,
+          fill: new ol.style.Fill({
+            color: '#ffcc33'
+          })
+        }),
+      });
+      break;
+
+    case 'Arrow' :
+      style = [
+        // linestring
+        new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: "rgba(255, 204, 51, 1)",
+            width: 4
+          }),
+          text: new ol.style.Text({
+            text: 'Arrow',
+            scale: 3
+          })
+        })
+      ];
+      
+      feature.getGeometry().forEachSegment(function(start, end) {
+        let dx = end[0] - start[0];
+        let dy = end[1] - start[1];
+        let rotation = Math.atan2(dy, dx);
+        // arrows
+        style.push(new ol.style.Style({
+          geometry: new ol.geom.Point(end),
+          image: new ol.style.Icon({
+            src: 'arrow.png',
+            anchor: [0.75, 0.5],
+            rotateWithView: true,
+            rotation: -rotation
+          })
+        }));
+      });
+      break;
+
+    default :
+      style = new ol.style.Style({
+        fill: new ol.style.Fill({
+          color: 'rgba(255, 255, 255, 0.1)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'rgba(0, 0, 0, 1)',
+          width: 2
+        }),
+        // image: new ol.style.Circle({
+        //   radius: 7,
+        //   fill: new ol.style.Fill({
+        //     color: '#ffcc33'
+        //   })
+        // }),
+        text: new ol.style.Text({
+          font: '12px Verdana',
+          scale: 3,
+          text: objText,
+        })
+      });
+  }
 
   feature.setStyle( style );
-  feature.setProperties( {style: style} )
+  feature.setProperties( {style: style})
 }

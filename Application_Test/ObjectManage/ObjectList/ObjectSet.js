@@ -260,6 +260,7 @@ let objGeoJ;
         console.log( style );
         // console.log( style.length );
         try {
+          
           if( !style.length ) {
             // console.log( style.stroke_.lineDash_ );
             // console.log( typeof style.stroke_.lineDash_ );
@@ -283,7 +284,8 @@ let objGeoJ;
             objSource.getFeatureById(feature.id).setStyle(style);
           } else {
             // console.log( style );
-            arrowFunction( objSource.getFeatureById( feature.id ) );
+            // arrowFunction( objSource.getFeatureById( feature.id ) );
+            defaultStyler( objSource.getFeatureById(feature.id) );
           }
         } catch( e ) {
           console.log( e );
