@@ -543,7 +543,8 @@ const sendAsArea = function() {
       },
       error: function( data ) {
         console.error( 'ERR' );
-        // console.log( data );
+        console.log( data );
+        alert( data.statusText );
       }
     })
   }

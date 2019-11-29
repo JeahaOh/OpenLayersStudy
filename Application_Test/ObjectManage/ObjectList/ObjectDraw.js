@@ -25,6 +25,8 @@ const drawObjInit = function( flag ) {
     }
   });
 
+  if( !flag ) console.clear();
+
   map.removeInteraction( objDraw );
   map.removeInteraction( objSnap );
   map.removeInteraction( objModify );
@@ -422,5 +424,5 @@ const defaultStyler = function( feature ) {
   });
 
   feature.setStyle( style );
-  feature.setProperties( {style: style})
+  feature.setProperties( {style: style} )
 }

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  <script
+    src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL">
+  </script>
+  <!-- <link rel="stylesheet" type="text/css" href="../../../include/ol_4.6.5.css" /> -->
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <link rel="stylesheet" type="text/css" href="./ObjectManage.css" />
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <!-- <script type="text/javascript" src="../../../include/ol_4.6.5.js"></script> -->
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+  <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
+  <script type="text/javascript" src="../../../include/handlebars-v4.1.2.js"></script>
+
+  <!-- <link type="text/css" rel="stylesheet" href="./rgbaColorPicker.css" /> -->
+  <!-- <script type="text/javascript" src="./rgbaColorPicker.js"></script> -->
+
+  <title> Noti Object </title>
+</head>
+
+<body style="background-color: #222; color: #ddd;">
+  <div id="map" class="map" style="width: 100%; height: 600px;"></div>
+  <section>
+    <h2> Draw Object </h6>
+    <label for="snapSensitivity">Snap Sensitivity</label>
+    <input type="number" name="snapSensitivity" id="snapSensitivity" min="0" max="50" value="25">
+    <!-- 
+    <ul id="draw_obj_type_li">
+      <li data-val="None" onclick="drawObj(this);">None</li>
+      <li data-val="Line" onclick="drawObj(this);">단선</li>
+      <li data-val="Arrow" onclick="drawObj(this);">화살표</li>
+      <li data-val="MultiLine" onclick="drawObj(this);">다선</li>
+
+      <li data-val="Square" onclick="drawObj(this);">사각형</li>
+      <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
+      <li data-val="CircleP" onclick="drawObj(this);">원</li>
+    </ul>
+     -->
+    
+    <!-- 이 세개의 기능은 map에 오버레이만 얹으면 될것 같음. -->
+    <ul id="noti_obj_type_li">
+      <li data-val="Text" onclick="drawNoti(this);" >텍스트</li>
+      <li data-val="Image" onclick="drawNoti(this);" >이미지</li>
+      <li data-val="Mark" onclick="drawNoti(this);" >마크</li>
+    </ul>
+<!-- 
+    <ul id="measure_obj_type_li">
+      <li data-val="Rular" onclick="measureObj(this);">Rular</li>
+      <li data-val="ESL" onclick="measureObj(this);">ESL</li>
+    </ul>
+-->
+
+  </section>
+  <p>
+
+    <br />
+
+  </p>
+  <!-- <script type="text/javascript" src="./MeasureObject.js"></script> -->
+  <script type="text/javascript" src="./ObjectMap.js"></script>
+  <script type="text/javascript" src="./NotiObjectDraw.js"></script>
+  <!-- <script type="text/javascript" src="./ObjectDraw.js"></script> -->
+  <!-- <script type="text/javascript" src="./ObjectSet.js"></script> -->
+  <!-- <script type="text/javascript" src="./ObjectLoadAndSave.js"></script> -->
+  <script type="text/javascript" src="./TimeStamp.js"></script>
+
+</body>
+
+</html>

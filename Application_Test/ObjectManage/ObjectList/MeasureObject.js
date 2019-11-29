@@ -30,14 +30,14 @@ const measureInit = function( flag ){
     map.removeOverlay( measurePointTooltip );
     console.clear();
   }
-
+  
   map.un('click', measureClick );
   measureLineDistance = '';
   measureStatus = undefined;
   measurePointCNT = 0;
   map.removeInteraction( measureDraw );
   map.removeInteraction( measureSnap );
-
+  
   if( flag !== 'drawObjInit' ) drawObjInit( 'measureInit' );
 } // measureInit
 
