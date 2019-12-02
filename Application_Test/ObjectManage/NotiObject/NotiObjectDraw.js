@@ -385,12 +385,11 @@ const uploadImgAndGetName = function(){
     console.log( img );
     drawNoti( document.getElementById('notiImg'), img );
 
-    /*
     let form = new FormData( $('#img_obj_uploader')[0] );
     form.append('imgObj', img );
     console.log( form );
     $.ajax({
-      url: 'http://localhost:8080/up',
+      url: '/',
       processData: false,
       contentType: false,
       data: form,
@@ -400,6 +399,7 @@ const uploadImgAndGetName = function(){
         return result;
       }
     })
+    /*
     */
    return imgDir + 'test.png';
   }
