@@ -2,6 +2,7 @@
 let notiDraw, notiSnap, objText;
 let sketch;
 const iconDir = '/Application_Test/ObjectManage/NotiObject/icon/';
+const imgDir = '/Application_Test/ObjectManage/NotiObject/img/';
 
 /**
  * @param {*} flag : init 함수를 어디서 호출하는지 확인하기 위한 구분자.
@@ -35,15 +36,16 @@ const drawNotiInit = function( flag ) {
 } // drawNotiInit
 
 
-const drawNoti = function( evt ) {
+const drawNoti = function( evt, imgDir ) {
   //  map의 interaction들을 초기화.
   drawNotiInit();
-  console.log( evt );
-
+  
   //  변수 선언
   // let sketch;
   let className = 'selectedType';
   let menuList = $('#noti_obj_type_li li');
+  
+  console.log( evt );
 
   //  이미 같은 type으로 함수를 한번 호출 했었다면 OFF 시키고 리턴.
   if( evt.classList.contains( className) ) {
@@ -64,7 +66,18 @@ const drawNoti = function( evt ) {
   //  drawObj 작동할 type
   let selectedType = type = evt.dataset.val;
   // console.log( selectedType );
-  if( selectedType == 'Mark' ) $('#mark_img_container').toggle( 300 );
+  if( selectedType == 'Mark' ) {
+    $('#mark_img_container').toggle( 300 );
+    if( $('#upload_img_container').css('display', 'block') ) {
+      $('#upload_img_container').toggle( 300 );  
+    }
+  }
+  if( selectedType == 'Image' ) {
+    $('#upload_img_container').toggle( 300 );
+    if( $('#mark_img_container').css('display', 'block') ) {
+      $('#mark_img_container').toggle( 300 );  
+    }
+  }
   
   //  type에 따라 switch
   let geometryFunction, maxPoints, icon;
@@ -83,8 +96,8 @@ const drawNoti = function( evt ) {
       console.log( icon = iconDir + evt.dataset.ico_no + '.png' );
       break;
     case 'Image':
-      type='Point';
-
+      type = 'Polygon';
+      console.log( imgDir );
       break;
   }
 
@@ -343,5 +356,51 @@ Handlebars.registerHelper( 'loopForMarkImgLi', loopForMarkImgLi );
  * 
  */
 const objImg = function() {
+  imgName = uploadImgAndGetName();
+  console.log( imgName );
+}
 
+const uploadImgAndGetName = function(){
+  var input, img, fr;
+
+  if( typeof window.FileReader !== 'function' ) {
+    alert( '브라우져에서 파일 API를 지원하지 않습니다.' );
+    return;
+  }
+
+  input = document.getElementById('obj_img');
+  if (!input) {
+    alert("Um, couldn't find the fileinput element.");
+  } else if (!input.files) {
+    alert("This browser doesn't seem to support the `files` property of file inputs.");
+  } else if (!input.files[0]) {
+    alert("파일이 없습니다.");
+  } else if( input.files[0].type.indexOf('image') < 0 || input.files[0].size < 1 ) {
+    alert('올바른 형식의 파일이 아닙니다.');
+    return false;
+  } else {
+    // console.log( input.files[0].type );
+    // console.log( input.files[0].type.indexOf('image') );
+    img = input.files[0];
+    console.log( img );
+    drawNoti( document.getElementById('notiImg'), img );
+
+    /*
+    let form = new FormData( $('#img_obj_uploader')[0] );
+    form.append('imgObj', img );
+    console.log( form );
+    $.ajax({
+      url: 'http://localhost:8080/up',
+      processData: false,
+      contentType: false,
+      data: form,
+      type: 'POST',
+      success: function(result){
+        console.log( result )
+        return result;
+      }
+    })
+    */
+   return imgDir + 'test.png';
+  }
 }
