@@ -1,6 +1,7 @@
 //  Global
 let notiDraw, notiSnap, objText;
 let sketch;
+const iconDir = '/Application_Test/ObjectManage/NotiObject/icon/';
 
 /**
  * @param {*} flag : init 함수를 어디서 호출하는지 확인하기 위한 구분자.
@@ -71,11 +72,15 @@ const drawNoti = function( evt ) {
     case 'Text':
       objText = prompt('Text 내용을 입력하세요');
       console.log( objText );
+      if( !objText.length ) {
+        drawNotiInit();
+        return;
+      }
       type = 'Point';
       break;
     case 'Mark':
       type = 'Point';
-      console.log( icon = '/Application_Test/ObjectManage/NotiObject/icon/' + evt.dataset.ico_no + '.png' )
+      console.log( icon = iconDir + evt.dataset.ico_no + '.png' );
       break;
     case 'Image':
       type='Point';
