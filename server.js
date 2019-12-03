@@ -41,7 +41,7 @@ const collectRequestData = function( req, callback ) {
   console.log( 'req.headers' );
   console.log( req.headers );
   console.log( 'req.body' );
-  console.log( req );
+  // console.log( req );
   // if( req.headers[ 'content-type' ] === FORM_URLENCODED ) {
     let body = '';
     req.on( 'data', chunk => {

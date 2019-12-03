@@ -1,5 +1,5 @@
 //  Global
-let notiDraw, notiSnap, objText;
+let notiDraw, notiSnap, objText, notiCnv, notiCtx, notiImg, notiPattern;
 let sketch;
 const iconDir = '/Application_Test/ObjectManage/NotiObject/icon/';
 const imgDir = '/Application_Test/ObjectManage/NotiObject/img/';
@@ -16,14 +16,8 @@ const imgDir = '/Application_Test/ObjectManage/NotiObject/img/';
  * map에 있는 Draw, Snap, Interaction을 지운다.
  */
 const drawNotiInit = function( flag ) {
-  let className = 'selectedType';
-  let menuList = $('#draw_noti_type_li li');
   objText = '';
-  $.each(menuList, function( idx ){
-    if( menuList.eq( idx ).hasClass( className )) {
-      menuList.eq( idx ).removeClass( className );
-    }
-  });
+  $('.selectedType').removeClass( 'selectedType' );
 
   if( !flag ) console.clear();
 
@@ -37,15 +31,16 @@ const drawNotiInit = function( flag ) {
 
 
 const drawNoti = function( evt, imgDir ) {
+  console.log( evt );
   //  map의 interaction들을 초기화.
   drawNotiInit();
   
   //  변수 선언
   // let sketch;
   let className = 'selectedType';
+  /*
   let menuList = $('#noti_obj_type_li li');
   
-  console.log( evt );
 
   //  이미 같은 type으로 함수를 한번 호출 했었다면 OFF 시키고 리턴.
   if( evt.classList.contains( className) ) {
@@ -59,33 +54,21 @@ const drawNoti = function( evt, imgDir ) {
       menuList.eq( idx ).removeClass( className );
     }
   });
-
   //  선택한 type에 class를 넣어서 css 컨트롤
-  evt.classList.add( className );
+  */
+ evt.classList.add( className );
+
   
   //  drawObj 작동할 type
   let selectedType = type = evt.dataset.val;
-  // console.log( selectedType );
-  if( selectedType == 'Mark' ) {
-    $('#mark_img_container').toggle( 300 );
-    if( $('#upload_img_container').css('display', 'block') ) {
-      $('#upload_img_container').toggle( 300 );  
-    }
-  }
-  if( selectedType == 'Image' ) {
-    $('#upload_img_container').toggle( 300 );
-    if( $('#mark_img_container').css('display', 'block') ) {
-      $('#mark_img_container').toggle( 300 );  
-    }
-  }
   
   //  type에 따라 switch
   let geometryFunction, maxPoints, icon;
   switch( type ) {
     case 'Text':
-      objText = prompt('Text 내용을 입력하세요');
+      objText = prompt('Text 내용을 입력하세요').trim();
       console.log( objText );
-      if( !objText.length ) {
+      if( !objText  ) {
         drawNotiInit();
         return;
       }
@@ -97,7 +80,16 @@ const drawNoti = function( evt, imgDir ) {
       break;
     case 'Image':
       type = 'Polygon';
-      console.log( imgDir );
+      // notiCnv, notiCtx, notiImg
+      notiCnv = document.createElement('canvas');
+      notiCtx = notiCnv.getContext('2d');
+      notiImg = new Image();
+      notiImg.src = 'https://www.w3schools.com/w3css/img_lights.jpg';
+      notiImg.onload = function () {
+        notiPattern = notiCtx.createPattern(notiImg, 'no-repeat');
+      };
+      // console.log( 'imgDir' );
+      // console.log( imgDir );
       break;
   }
 
@@ -143,7 +135,16 @@ const drawNoti = function( evt, imgDir ) {
     console.group( 'draw end' );
     
     setCoordsAtProps( sketch );
-    defaultStyler( sketch, icon );
+
+    switch( selectedType ) {
+      case 'Mark': 
+        defaultStyler( sketch, icon );
+        break;
+      case 'Image' :
+        defaultStyler( sketch, imgDir );
+      default :
+        defaultStyler( sketch );
+    }
     
     drawNotiInit( true );
 
@@ -200,6 +201,33 @@ const defaultStyler = function( feature, icon ) {
           })
         }));
       });
+      break;
+
+    case 'Image' : 
+      style = new ol.style.Style({
+        fill: notiPattern
+      });
+      /*
+      let retGeom = feature.getGeometry().getInteriorPoint();
+      console.log( retGeom );
+      style = new ol.style.Style({
+        geometry: retGeom,
+        image: new ol.style.Icon({
+          src: imgDir,
+          anchor: [ 0.75, 0.5 ],
+          rotateWithView: true
+        })
+      });
+      */
+      /*
+     style = new ol.style.Style({
+       image: new ol.style.Image({
+         image: imgDir,
+         anchor: [ 0.75, 0.5 ],
+         rotateWithView: true
+        })
+      });
+      */
       break;
 
     default :
@@ -357,7 +385,8 @@ Handlebars.registerHelper( 'loopForMarkImgLi', loopForMarkImgLi );
  */
 const objImg = function() {
   imgName = uploadImgAndGetName();
-  console.log( imgName );
+  // console.log( imgName );
+  drawNoti( document.getElementById('notiImg'), imgName );
 }
 
 const uploadImgAndGetName = function(){
@@ -385,6 +414,7 @@ const uploadImgAndGetName = function(){
     console.log( img );
     drawNoti( document.getElementById('notiImg'), img );
 
+    /*
     let form = new FormData( $('#img_obj_uploader')[0] );
     form.append('imgObj', img );
     console.log( form );
@@ -399,8 +429,35 @@ const uploadImgAndGetName = function(){
         return result;
       }
     })
-    /*
     */
    return imgDir + 'test.png';
+  }
+}
+
+const imgSelect = function() {
+  $('#upload_img_container').toggle( 300 );
+  if( $('#notiImg').hasClass('selectedType') ) {
+    $('#notiImg').removeClass('selectedType');
+    return false;
+  } else {
+    $('#notiImg').addClass('selectedType');
+  }
+  if( $('#mark_img_container').css('display', 'block') ) {
+    $('#mark_img_container').toggle( 300 );  
+  }
+}
+
+
+
+const markSelect = function() {
+  $('#mark_img_container').toggle( 300 );
+  if( $('#notiMark').hasClass('selectedType') ) {
+    $('#notiMark').removeClass('selectedType');
+    return false;
+  } else {
+    $('#notiMark').addClass('selectedType');
+  }
+  if( $('#upload_img_container').css('display', 'block') ) {
+    $('#upload_img_container').toggle( 300 );  
   }
 }

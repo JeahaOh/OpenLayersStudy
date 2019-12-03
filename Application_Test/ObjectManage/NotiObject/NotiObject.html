@@ -69,9 +69,9 @@
     
     <!-- 이 세개의 기능은 map에 오버레이만 얹으면 될것 같음. -->
     <ul id="noti_obj_type_li">
-      <li data-val="Text" onclick="drawNoti(this);" >텍스트</li>
-      <li data-val="Image" onclick="$('#upload_img_container').toggle( 300 );" id="notiImg">이미지</li> <!-- onclick="drawNoti(this);" -->
-      <li data-val="Mark"  onclick="$('#mark_img_container').toggle( 300 );" id="notiMark" >마크</li>
+      <li data-val="Text"  onclick="drawNoti(this);" >텍스트</li>
+      <li data-val="Image" onclick="imgSelect();" id="notiImg">이미지</li> <!-- onclick="drawNoti(this);" -->
+      <li data-val="Mark"  onclick="markSelect();" id="notiMark" >마크</li>
     </ul>
 
     <div id="mark_img_container">
