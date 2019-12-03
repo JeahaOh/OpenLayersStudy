@@ -148,3 +148,100 @@ const imgFillColor = function() {
     drawNotiInit( true );
   });
 };
+
+const staticImg = function() {
+  drawNotiInit(); 
+  
+  notiCnv = document.createElement('canvas');
+  // console.log( notiCnv );
+
+  notiCtx = notiCnv.getContext('2d');
+  // console.log( notiCtx );
+
+  notiImg = new Image();
+  // console.log( notiImg );
+
+  notiImg.src = '/Application_Test/ObjectManage/NotiObject/img/test.png';
+  notiImg.onload = function () {
+    notiPattern = notiCtx.createPattern(notiImg, 'no-repeat');
+    // console.log( notiPattern );
+  };
+
+  notiDraw = new ol.interaction.Draw({
+    source: null,
+    type: 'Polygon'
+  });
+  // console.log( notiDraw.source_ );
+  map.addInteraction( notiDraw );
+
+  notiDraw.on( 'drawstart', function( evt ) {
+    sketch = evt.feature;
+  });
+
+  notiDraw.on( 'drawend', function( evt ) {
+    coords = sketch.getGeometry().getCoordinates();
+    coords = coords[0].splice( coords.length );
+    console.log( coords );
+    // let extent = ol.proj.transformExtent( coords, 'EPSG:4326', 'EPSG:3857' );
+    let extent = ol.proj.transform( coords, 'EPSG:4326', 'EPSG:3857' );
+    console.log( extent );
+    // let imageLayer = new ol.layer.Image({
+    //   source: new ol.source.ImageStatic({
+    //     url: '/Application_Test/ObjectManage/NotiObject/img/test.png',
+    //     crossOrigin: 'anonymous',
+    //     projection: 'EPSG:4326',
+    //     imageExtent: [0, 0, 180, 3]
+    //   })
+    // });
+    // console.log( imageLayer );
+    // map.addLayer( imageLayer );
+    // sketch.setStyle(new ol.style.Style({
+    //   stroke: new ol.style.Stroke({
+    //     color: 'rgba(0, 0, 0, 1)'
+    //   }),
+    //   fill: new ol.style.Fill({
+    //     color: notiPattern
+    //   })
+    // }));
+    // drawNotiInit( true );
+  });
+}
+
+var imageExtent = [0, 0, 180, 35];
+
+let aSource = new ol.source.ImageStatic({
+  url: '/Application_Test/ObjectManage/NotiObject/img/test.png',
+  crossOrigin: 'anonymous',
+  projection: 'EPSG:4326',
+  imageExtent: imageExtent
+});
+
+let func = function(){
+  var imageLayer = new ol.layer.Image({
+    source: aSource
+  });
+  map.addLayer(imageLayer);
+}
+func();
+
+let imageSelect = new ol.interaction.Select({
+  condition: ol.events.condition.click
+});
+
+map.addInteraction( imageSelect );
+
+imageSelect.on('select', function (evt) { console.log(evt) });
+
+map.on('click', function(evt){
+  // console.log( evt );
+  // console.log( evt.target );
+  // console.log( evt.coordinate );
+  // console.log( evt.pixel );
+  var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+    return reature;
+  });
+  console.log( feature );
+});
+
+
+  
