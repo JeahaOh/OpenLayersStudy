@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  <script
+    src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL">
+  </script>
+  <!-- <link rel="stylesheet" type="text/css" href="../../../include/ol_4.6.5.css" /> -->
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <link rel="stylesheet" type="text/css" href="./ObjectManage.css" />
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <!-- <script type="text/javascript" src="../../../include/ol_4.6.5.js"></script> -->
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+  <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
+  <script type="text/javascript" src="../../../include/handlebars-v4.1.2.js"></script>
+
+  <title> Image Feature </title>
+</head>
+
+<body style="background-color: #222; color: #ddd;">
+  <div id="map" class="map" style="width: 100%; height: 600px;"></div>
+  <section>
+    <h2> Image Feature </h6>
+    <label for="snapSensitivity">Snap Sensitivity</label>
+    <input type="number" name="snapSensitivity" id="snapSensitivity" min="0" max="50" value="25" />
+    <br>
+    <button onclick="imgFillColor();">EX 01 : Image By Fill Color </button>
+    <button onclick="drawImg();">EX 02 : Image By </button>
+
+  </section>
+  <p>
+
+    <br />
+
+  </p>
+  <script type="text/javascript" src="./ObjectMap.js"></script>
+  <script type="text/javascript" src="./ImageFeature.js"></script>
+  <script type="text/javascript" src="./TimeStamp.js"></script>
+
+</body>
+
+</html>
