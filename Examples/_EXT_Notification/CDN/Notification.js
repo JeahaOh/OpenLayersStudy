@@ -26,7 +26,7 @@ map.addInteraction( draw );
 
 draw.on('drawend', function( e ) {
   let div = $('<div>').text('One Feature added to the map - ');
-  $('<a>').text( 'cancel')
+  $('<a>').text( 'cancel' )
   .click( function() {
     vector.getSource().removeFeature( e.feature );
     notification.hide();

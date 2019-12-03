@@ -61,7 +61,7 @@ const loadFile = function() {
   } else if (!input.files) {
     alert("This browser doesn't seem to support the `files` property of file inputs.");
   } else if (!input.files[0]) {
-    alert("Please select a file before clicking 'Load'");
+    alert("파일이 없습니다.");
   } else if( input.files[0].type != 'application/json' ) {
     alert('올바른 형식의 파일이 아닙니다.');
     return false;
@@ -99,6 +99,9 @@ const receivedText = function(e) {
           let style = feature.properties.style;
           // console.log( style );
           // console.log( style.stroke_.lineDash_ );
+          /**
+           * 이 블럭 없이 적용해도 될듯 한데?
+           */
           style = new ol.style.Style({
             stroke: new ol.style.Stroke({
               color: style.stroke_.color_,
