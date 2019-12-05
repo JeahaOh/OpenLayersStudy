@@ -249,7 +249,7 @@ let objGeoJ;
   //  style의 갯수만큼 objSource는 change 된다.
   let length = objGeoJ.features.length;
   if ( length > 0 ) {
-    console.log( 'features.length : ' + length );
+    console.log( length + ' Features Have Loaded From Session Storage.' );
     for( var i = 0; i < length; i++ ) {
       let feature = objGeoJ.features[i];
       // console.log( feature )
@@ -257,7 +257,7 @@ let objGeoJ;
       if ( feature.properties !== null &&feature.properties.style ) {
         // console.log( 'style' );
         let style = feature.properties.style;
-        console.log( style );
+        // console.log( style );
         // console.log( style.length );
         try {
           

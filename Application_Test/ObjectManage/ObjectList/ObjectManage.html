@@ -44,20 +44,20 @@
       <li data-val="Square" onclick="drawObj(this);">사각형</li>
       <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
       <li data-val="CircleP" onclick="drawObj(this);">원</li>     
+      
+      <li data-val="Text"  onclick="drawObj(this);" >텍스트</li>
+      <li data-val="Image" onclick="imgSelect();" id="notiImg">이미지</li>
+      <li data-val="Mark"  onclick="drawObj(this);" id="notiMark" >마크</li>
     </ul>
+
+    <!-- <ul id="noti_obj_type_li">    </ul> -->
+    
     <ul id="measure_obj_type_li">
       <li data-val="Rular" onclick="measureObj(this);">Rular</li>
       <li data-val="ESL" onclick="measureObj(this);">ESL</li>
-      <!-- <input type="text" class="color"> -->
-    </ul>
-    <ul id="noti_obj_type_li">
-      <li data-val="Text"  onclick="drawNoti(this);" >텍스트</li>
-      <li data-val="Image" onclick="imgSelect();" id="notiImg">이미지</li> <!-- onclick="drawNoti(this);" -->
-      <li data-val="Mark"  onclick="markSelect();" id="notiMark" >마크</li>
     </ul>
 
     <div id="mark_img_container">
-      <!-- <input type="hidden" name="markerImg" id="markerImg"> -->
       <ul id="mark_img_ul">
         <script id="mark_img_template" type="text/x-handlebars-template">
           {{#loopForMarkImgLi}}
