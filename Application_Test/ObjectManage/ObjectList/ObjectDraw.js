@@ -1,5 +1,7 @@
 //  Global
 let objDraw, objSnap, objModify, pointTooltip, status, pointCNT;
+let = '';
+const selectedObjClassName = 'selectedType';
 let rw = new ol.format.GeoJSON();
 const areaType = ['Polygon', 'CircleP', 'Square'];
 const iconDir = '/Application_Test/ObjectManage/NotiObject/icon/';
@@ -18,26 +20,36 @@ let sketch;
  */
 const drawObjInit = function( flag ) {
   objText = '';
-  let className = 'selectedType';
-  let menuList = $('#draw_obj_type_li li');
-  
-  $.each(menuList, function( idx ){
-    if( menuList.eq( idx ).hasClass( className )) {
-      menuList.eq( idx ).removeClass( className );
-    }
-  });
 
+  if( flag ) {
+    let selectedList = $('.' + selectedObjClassName );
+    //  다른 type으로 함수를 한번 호출했다면 이전 type의 css 를 되돌림.
+    $.each( selectedList, function( idx ){
+      if( selectedList.eq( idx ).hasClass( selectedObjClassName )) {
+        selectedList.eq( idx ).removeClass( selectedObjClassName );
+      }
+    });
+
+    if( $('#upload_img_container').css('display', 'block') ) {
+      $('#upload_img_container').toggle( 300 );  
+    }
+    if( $('#mark_img_container').css('display', 'block') ) {
+      $('#mark_img_container').toggle( 300 );  
+    }
+  }
   // if( !flag ) console.clear();
 
   map.removeInteraction( objDraw );
   map.removeInteraction( objSnap );
   map.removeInteraction( objModify );
-  map.removeInteraction( select );
+  // map.removeInteraction( select );
 
   //  초기화 함수를 measureInit에서 호출 하지 않았다면 measureInit 함수를 호출함.
   if( flag !== 'measureInit' ) measureInit( 'drawObjInit' );
-  if( !flag ) console.clear();
+  // if( !flag ) console.clear();
   $(window).unbind('keypress', escape);
+
+
 } // drawObjInit
 
 //  Line을 그리면 사각형으로 변환한 geometry를 반환한다.
@@ -54,20 +66,13 @@ const squareFunction = function( coordinates, geometry ) {
   return geometry;
 } //  squareFunction
 
-const select = new ol.interaction.Select({ wrapx: false });
+// const select = new ol.interaction.Select({ wrapx: false });
 // map.addInteraction( select );
 
-const drawObj = function( evt ) {
-  //  변수 선언
-  // let sketch;
-  let className = 'selectedType';
-  let menuList = $('#obj_mng_li li');
+// const drawObj = function( evt ) {
+const drawObj = function( type, imgDir ) {
+  console.log( type )
 
-  //  이미 같은 type으로 함수를 한번 호출 했었다면 OFF 시키고 리턴.
-  if( evt.classList.contains( className) ) {
-    $('.' + className ).removeClass( className);
-    return false;
-  }
   //  map의 interaction들을 초기화.
   drawObjInit();
 
@@ -79,11 +84,10 @@ const drawObj = function( evt ) {
     }
   });
 */
-  //  선택한 type에 class를 넣어서 css 컨트롤
-  evt.classList.add( className );
   
   //  drawObj 작동할 type
-  let selectedType = type = evt.dataset.val;
+  // let selectedType = type = evt.dataset.val;
+  let selectedType = type;
   
   //  type에 따라 switch
   let geometryFunction, maxPoints;
@@ -142,7 +146,8 @@ const drawObj = function( evt ) {
       break;
     case 'Mark':
       type = 'Point';
-      console.log( icon = iconDir + evt.dataset.ico_no + '.png' );
+      console.log( imgDir );
+      
       break;
     case 'Image':
       return;
@@ -253,7 +258,7 @@ const drawObj = function( evt ) {
     break;
     case 'Mark': 
       setCoordsAtProps( sketch );
-      defaultStyler( sketch, icon );
+      defaultStyler( sketch, imgDir );
       break;
     case 'Image' :
       // defaultStyler( sketch, imgDir );
@@ -277,7 +282,16 @@ const defaultStyler = function( feature, icon ) {
   // console.log( type );
 
   switch( type ) {
-
+    case 'Text' :
+      style = new ol.style.Style({
+          text: new ol.style.Text({
+          font: '12px Verdana',
+          scale: 3,
+          text: objText,
+        })
+      });
+      break;
+      
     case 'Mark' :
       style = new ol.style.Style({
         image: new ol.style.Icon({
@@ -341,11 +355,11 @@ const defaultStyler = function( feature, icon ) {
         //     color: '#ffcc33'
         //   })
         // }),
-        text: new ol.style.Text({
-          font: '12px Verdana',
-          scale: 3,
-          text: objText,
-        })
+        // text: new ol.style.Text({
+        //   font: '12px Verdana',
+        //   scale: 3,
+        //   text: objText,
+        // })
       });
   }
 
@@ -560,5 +574,43 @@ const markSelect = function() {
 }
 
 const hndlObjDraw = function( target ) {
+  console.log( target );
+  // console.log( target.className );
+  // console.log( target.classList );
+  let val = target.dataset.val;
 
+  if( !target.dataset.ico_no ) {
+    //  이미 같은 type으로 함수를 한번 호출 했었다면 OFF 시키고 리턴.
+    if( target.classList.contains( selectedObjClassName ) ) {
+      $('.' + selectedObjClassName ).removeClass( selectedObjClassName );
+      return false;
+    }
+    
+    let selectedList = $('.' + selectedObjClassName );
+
+    //  다른 type으로 함수를 한번 호출했다면 이전 type의 css 를 되돌림.
+    $.each( selectedList, function( idx ){
+      if( selectedList.eq( idx ).hasClass( selectedObjClassName )) {
+        selectedList.eq( idx ).removeClass( selectedObjClassName );
+      }
+    });
+    // //  선택한 type에 class를 넣어서 css 컨트롤
+    target.classList.add( selectedObjClassName );
+  }
+
+  if( val == 'Mark' && !target.dataset.ico_no ) {
+    $('#mark_img_container').toggle( 300 );
+  }
+
+
+  // console.log( val );
+  switch( val ) {
+    case 'Mark':
+      // console.log( icon = iconDir + evt.dataset.ico_no + '.png' );
+      console.log( target.dataset.ico_no );
+      drawObj( val, iconDir + target.dataset.ico_no + '.png' );
+      return;
+    default:
+      drawObj( val );
+  }
 }

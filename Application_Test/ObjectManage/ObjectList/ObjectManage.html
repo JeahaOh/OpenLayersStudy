@@ -34,20 +34,20 @@
     <label for="snapSensitivity">Snap Sensitivity</label>
     <input type="number" name="snapSensitivity" id="snapSensitivity" min="0" max="50" value="25">
     <ul id="draw_obj_type_li">
-      <li data-val="None" onclick="drawObj(this);">None</li>
+      <li data-val="None" onclick="hndlObjDraw(this);">None</li>
       <!-- <li data-val="Modify" onclick="drawObj(this);">Modify</li> -->
 
-      <li data-val="Line" onclick="drawObj(this);">단선</li>
-      <li data-val="Arrow" onclick="drawObj(this);">화살표</li>
-      <li data-val="MultiLine" onclick="drawObj(this);">다선</li>
+      <li data-val="Line" onclick="hndlObjDraw(this);">단선</li>
+      <li data-val="Arrow" onclick="hndlObjDraw(this);">화살표</li>
+      <li data-val="MultiLine" onclick="hndlObjDraw(this);">다선</li>
 
-      <li data-val="Square" onclick="drawObj(this);">사각형</li>
-      <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
-      <li data-val="CircleP" onclick="drawObj(this);">원</li>     
+      <li data-val="Square" onclick="hndlObjDraw(this);">사각형</li>
+      <li data-val="Polygon" onclick="hndlObjDraw(this);">다각형</li>
+      <li data-val="CircleP" onclick="hndlObjDraw(this);">원</li>     
       
-      <li data-val="Text"  onclick="drawObj(this);" >텍스트</li>
+      <li data-val="Text"  onclick="hndlObjDraw(this);" >텍스트</li>
       <li data-val="Image" onclick="imgSelect();" id="notiImg">이미지</li>
-      <li data-val="Mark"  onclick="drawObj(this);" id="notiMark" >마크</li>
+      <li data-val="Mark"  onclick="hndlObjDraw(this);" id="notiMark" >마크</li>
     </ul>
 
     <!-- <ul id="noti_obj_type_li">    </ul> -->
@@ -62,7 +62,7 @@
         <script id="mark_img_template" type="text/x-handlebars-template">
           {{#loopForMarkImgLi}}
             <li class="mark_img_li">
-              <img src="./icon/{{this}}.png" data-val="Mark" data-ico_no="{{this}}" onclick="drawNoti(this);" alt="">
+              <img src="./icon/{{this}}.png" data-val="Mark" data-ico_no="{{this}}" onclick="hndlObjDraw(this);" alt="">
             </li>
           {{/loopForMarkImgLi}}
         </script>
@@ -76,6 +76,15 @@
       </form>
     </div>
   </section>
+
+  
+
+
+
+
+
+
+
   <section class="obj_management_section">
     <div>
       <h2>Object Management</h2>
@@ -383,7 +392,6 @@
   <script type="text/javascript" src="./ObjectSet.js"></script>
   <script type="text/javascript" src="./ObjectLoadAndSave.js"></script>
   <script type="text/javascript" src="./TimeStamp.js"></script>
-  <script type="text/javascript" src="./NotiObjectDraw.js"></script>
 
 </body>
 
