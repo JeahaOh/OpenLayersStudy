@@ -206,7 +206,7 @@ const staticImg = function() {
     // drawNotiInit( true );
   });
 }
-
+/*
 var imageExtent = [0, 0, 180, 35];
 
 let aSource = new ol.source.ImageStatic({
@@ -223,25 +223,4 @@ let func = function(){
   map.addLayer(imageLayer);
 }
 func();
-
-let imageSelect = new ol.interaction.Select({
-  condition: ol.events.condition.click
-});
-
-map.addInteraction( imageSelect );
-
-imageSelect.on('select', function (evt) { console.log(evt) });
-
-map.on('click', function(evt){
-  // console.log( evt );
-  // console.log( evt.target );
-  // console.log( evt.coordinate );
-  // console.log( evt.pixel );
-  var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-    return reature;
-  });
-  console.log( feature );
-});
-
-
-  
+*/
