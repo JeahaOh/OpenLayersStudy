@@ -43,20 +43,38 @@
 
       <li data-val="Square" onclick="drawObj(this);">사각형</li>
       <li data-val="Polygon" onclick="drawObj(this);">다각형</li>
-      <li data-val="CircleP" onclick="drawObj(this);">원</li>
-
-      <!-- 이 세개의 기능은 map에 오버레이만 얹으면 될것 같음. -->
-      
-      <li data-val="Text" onclick="drawObj(this);" >텍스트</li>
-      <li data-val="" >이미지</li>
-      <li data-val="" >마크</li>
-      
+      <li data-val="CircleP" onclick="drawObj(this);">원</li>     
     </ul>
     <ul id="measure_obj_type_li">
       <li data-val="Rular" onclick="measureObj(this);">Rular</li>
       <li data-val="ESL" onclick="measureObj(this);">ESL</li>
       <!-- <input type="text" class="color"> -->
     </ul>
+    <ul id="noti_obj_type_li">
+      <li data-val="Text"  onclick="drawNoti(this);" >텍스트</li>
+      <li data-val="Image" onclick="imgSelect();" id="notiImg">이미지</li> <!-- onclick="drawNoti(this);" -->
+      <li data-val="Mark"  onclick="markSelect();" id="notiMark" >마크</li>
+    </ul>
+
+    <div id="mark_img_container">
+      <!-- <input type="hidden" name="markerImg" id="markerImg"> -->
+      <ul id="mark_img_ul">
+        <script id="mark_img_template" type="text/x-handlebars-template">
+          {{#loopForMarkImgLi}}
+            <li class="mark_img_li">
+              <img src="./icon/{{this}}.png" data-val="Mark" data-ico_no="{{this}}" onclick="drawNoti(this);" alt="">
+            </li>
+          {{/loopForMarkImgLi}}
+        </script>
+      </ul>
+    </div>
+
+    <div id="upload_img_container">
+      <form action="#" method="POST" id="img_obj_uploader">
+        <label for="obj_img" class="btn_cell">이미지 올리기</label>
+        <input type="file" name="obj_img" id="obj_img" class="input_hidden" onchange="objImg();">
+      </form>
+    </div>
   </section>
   <section class="obj_management_section">
     <div>
@@ -365,6 +383,7 @@
   <script type="text/javascript" src="./ObjectSet.js"></script>
   <script type="text/javascript" src="./ObjectLoadAndSave.js"></script>
   <script type="text/javascript" src="./TimeStamp.js"></script>
+  <script type="text/javascript" src="./NotiObjectDraw.js"></script>
 
 </body>
 

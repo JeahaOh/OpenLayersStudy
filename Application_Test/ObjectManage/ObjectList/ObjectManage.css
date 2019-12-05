@@ -24,6 +24,13 @@ hr {
   display: inline-block;
 }
 
+#noti_obj_type_li li {
+  cursor: pointer;
+  padding: 10px;
+  border: 0;
+  display: inline-block;
+}
+
 .selectedType {
   color: slategrey;
 }
@@ -121,3 +128,22 @@ tr li {
 #colorpicker {left: 0; right: 0; }
 
 
+#mark_img_container {
+  background-color: white;
+  display: none;
+}
+/* .mark_img_ul li {
+} */
+.mark_img_li {
+  cursor: pointer;
+  padding: 10px;
+  border: 0;
+  display: inline-block;
+}
+
+#upload_img_container {
+  display: none;
+}
+.input_hidden {
+  display: none;
+}

@@ -1,5 +1,5 @@
 //  Global
-let objDraw, objSnap, objModify, pointTooltip, status, pointCNT, objText;
+let objDraw, objSnap, objModify, pointTooltip, status, pointCNT;
 let rw = new ol.format.GeoJSON();
 const areaType = ['Polygon', 'CircleP', 'Square'];
 let sketch;
@@ -18,7 +18,7 @@ let sketch;
 const drawObjInit = function( flag ) {
   let className = 'selectedType';
   let menuList = $('#draw_obj_type_li li');
-  objText = '';
+  
   $.each(menuList, function( idx ){
     if( menuList.eq( idx ).hasClass( className )) {
       menuList.eq( idx ).removeClass( className );
@@ -256,121 +256,21 @@ const drawObj = function( evt ) {
 }
 //  drawObj
 
-const setCoordsAtProps = function( feature ) {
-  console.group('set coords at props');
-  
-  // console.log( 'BEFORE' );
-  // console.log( feature.getProperties().coords );
 
-  let coords3857 = feature.getGeometry().getCoordinates();
-
-
-  // console.log(coords3857);
-  if( coords3857.length && coords3857.length == 1 ) {
-    coords3857 = coords3857[0];
-  }
-  let coords4326 = [];
-  // let coordsDms = [];
-  for( var i = 0; i < coords3857.length; i++){
-    coords4326.push(ol.proj.transform( coords3857[i], 'EPSG:3857', 'EPSG:4326' ));
-    // coordsDms.push( [toDmsAsMap( coords4326[i][0], toDmsAsMap(coords3857[i][1]) )] );
-  }
-  
-  // console.log( sketch );
-  feature.setProperties({
-    coords : {
-      'wkt': toWKT(feature),
-      'coords3857': coords3857,
-      'coords4326': coords4326,
-      // 'coordsDms': coordsDms
-    }
-  });
-
-  // console.log( 'AFTER' );
-  // console.log( feature.getProperties().coords );
-
-  console.groupEnd('set coords at props');
-}
-
-/**
- * feature를 WKT로 변환함.
- */
-let toWKT = function (feature) {
-  return (new ol.format.WKT()).writeFeature(feature);
-}
-
-/**
- * 3857 좌표를 DMS 좌표계 형식의 객체로 변환하기 위해서 사용.
- * lat, lon 따로 계산 해야 함.
- * @param {*} coordinate lat이나 lon
- */
-const toDmsAsMap = function(coordinate) {
-  var absolute = Math.abs(coordinate);
-  var degrees = Math.floor(absolute);
-  var minutesNotTruncated = (absolute - degrees) * 60;
-  var minutes = Math.floor(minutesNotTruncated);
-  var seconds = Math.floor((minutesNotTruncated - minutes) * 60);
-  
-  return {
-    origin: coordinate,
-    d: degrees,
-    m: minutes,
-    s: seconds };
-};
-
-/**
- * DMS 좌표계 형식의 객체를 3857 좌표계로 변환하기 위해서 사용.
- * lat lon 한번에 계산 함.
- * @param {*} coordMap 
- */
-const dmsMapTo3857 = function( coordMap ) {
-  let lat = coordMap.lat;
-  console.log( lat );
-  let lon = coordMap.lon;
-  console.log( lon );
-  
-  lat = lat.d + ' ' +  lat.m + ' ' + lat.s;
-  lon = lon.d + ' ' +  lon.m + ' ' + lon.s;
-
-  coord = [ lat, lon ];
-  console.log( coord );
-  coord = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
-  console.log( coord );
-  return coordMap;
-}
-// mapdirective에서
-
-// 그리기 도중 취소하기.
-const escape = function( evt ) {
-  let charCode = (evt.keyCode) ? evt.keyCode : evt.which;
-  console.log( charCode );
-
-  //  X = 120
-  //  z = 122
-  switch( charCode ) {
-    case 120 :
-      drawObjInit();
-      console.clear();
-      return;
-  }
-};
-
-
-const defaultStyler = function( feature ) {
+const defaultStyler = function( feature, icon ) {
   let style;
   let type = feature.values_.info.selectedType;
-  console.log( type );
+  // console.log( type );
 
   switch( type ) {
 
     case 'Mark' :
       style = new ol.style.Style({
-        image: new ol.style.Circle({
-          radius: 7,
-          fill: new ol.style.Fill({
-            color: '#ffcc33'
-          })
-        }),
+        image: new ol.style.Icon({
+          anchor: [0.5, 0.75],
+          // crossOrigin: 'anonymous',
+          src: icon
+        })
       });
       break;
 
@@ -403,6 +303,12 @@ const defaultStyler = function( feature ) {
             rotation: -rotation
           })
         }));
+      });
+      break;
+
+    case 'Image' : 
+      style = new ol.style.Style({
+        fill: notiPattern
       });
       break;
 
