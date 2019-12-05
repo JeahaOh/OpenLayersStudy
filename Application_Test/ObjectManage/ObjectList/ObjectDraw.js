@@ -289,6 +289,8 @@ const drawObj = function( type, imgDir ) {
           imageExtent: coords
         })
       }));
+      setCoordsAtProps( sketch );
+      defaultStyler( sketch );
       break;
 
     default:
@@ -364,7 +366,7 @@ const defaultStyler = function( feature, icon ) {
 
     case 'Image' : 
       style = new ol.style.Style({
-        fill: notiPattern
+        
       });
       break;
 
@@ -377,17 +379,6 @@ const defaultStyler = function( feature, icon ) {
           color: 'rgba(0, 0, 0, 1)',
           width: 2
         }),
-        // image: new ol.style.Circle({
-        //   radius: 7,
-        //   fill: new ol.style.Fill({
-        //     color: '#ffcc33'
-        //   })
-        // }),
-        // text: new ol.style.Text({
-        //   font: '12px Verdana',
-        //   scale: 3,
-        //   text: objText,
-        // })
       });
   }
 
@@ -589,12 +580,14 @@ const imgSelect = function() {
 
 
 const hndlObjDraw = function( target, imgDir ) {
-  console.log( target );
+  // console.log( target );
   // console.log( target.className );
   // console.log( target.classList );
+  console.log( imgDir );
   let val = target.dataset.val;
 
-  if( !target.dataset.ico_no ) {
+  //  분기 처리하기전에 변수에 담아보자
+  if( !target.dataset.ico_no || imgDir == undefined ) {
     //  이미 같은 type으로 함수를 한번 호출 했었다면 OFF 시키고 리턴.
     if( target.classList.contains( selectedObjClassName ) ) {
       $('.' + selectedObjClassName ).removeClass( selectedObjClassName );

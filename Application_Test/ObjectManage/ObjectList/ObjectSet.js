@@ -290,6 +290,8 @@ let objGeoJ;
         } catch( e ) {
           console.log( e );
         }
+      } else {
+        defaultStyler( feature );
       }
     }
   }
