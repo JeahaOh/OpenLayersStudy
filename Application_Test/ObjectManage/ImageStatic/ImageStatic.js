@@ -1,9 +1,8 @@
-//  Global
-let imgSttDraw;
-const imgDir = '/Application_Test/ObjectManage/imgSttObject/img/';
-
+/**
+ * ImageStatic을 4각형 Polygon과 함께 그리는 Function.
+ */
 const drawImageStatic = function() {
-  imgSttDraw = new ol.interaction.Draw({
+  let imgSttDraw = new ol.interaction.Draw({
     source: objSource,
     type: 'Circle',
     geometryFunction: function( coordinates, geometry ) {
@@ -22,6 +21,10 @@ const drawImageStatic = function() {
 
   map.addInteraction( imgSttDraw );
 
+  /**
+   * Polygon을 다 그린 후, Polygon의 좌표에서 동서남북의 좌표를 구한 뒤,
+   * 동서남북의 좌표를 가지고 ImageStatic Layer를 그린다.
+   */
   imgSttDraw.on('drawend', ( evt ) => {
     map.removeInteraction( imgSttDraw );
 
@@ -37,29 +40,27 @@ const drawImageStatic = function() {
     // console.log( coords );
     latLi.sort();
     lonLi.sort();
-    //   [left, bottom, right, top] 
-    //  서 남 동 북
-    //  위 lat 경 lon
-    //  동경 서경
-    //  북위 남위
-    coords =
-      [
+    /**
+     * [left, bottom, right, top] = [서, 남, 동, 북]
+     * lat에서 제일 낮은 좌표가 최 서단
+     * lon에서 제일 낮은 좌표가 최 남단
+     */
+    console.log( coords = [
         latLi[0],
         lonLi[0],
         latLi[ latLi.length - 1 ],
         lonLi[ lonLi.length - 1 ],
-      ];
-    console.log( coords );
+      ]
+    );
   
-    var imageLayer = new ol.layer.Image({
+    // var imageLayer = ;
+    map.addLayer(new ol.layer.Image({
       source: new ol.source.ImageStatic({
         url: '/Application_Test/ObjectManage/imageStatic/img/test.png',
         crossOrigin: 'anonymous',
         projection: 'EPSG:4326',
         imageExtent: coords
       })
-    });
-    map.addLayer(imageLayer);
-
+    }));
   });
 }

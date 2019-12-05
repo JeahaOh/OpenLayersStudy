@@ -266,7 +266,7 @@ const setCoordsAtProps = function( feature ) {
 
 
   // console.log(coords3857);
-  if( coords3857.length && coords3857.length == 1) {
+  if( coords3857.length && coords3857.length == 1 ) {
     coords3857 = coords3857[0];
   }
   let coords4326 = [];
