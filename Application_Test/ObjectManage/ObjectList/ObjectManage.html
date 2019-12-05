@@ -46,8 +46,8 @@
       <li data-val="CircleP" onclick="hndlObjDraw(this);">원</li>     
       
       <li data-val="Text"  onclick="hndlObjDraw(this);" >텍스트</li>
-      <li data-val="Image" onclick="imgSelect();" id="notiImg">이미지</li>
-      <li data-val="Mark"  onclick="hndlObjDraw(this);" id="notiMark" >마크</li>
+      <li data-val="Image" onclick="hndlObjDraw(this);" >이미지</li>
+      <li data-val="Mark"  onclick="hndlObjDraw(this);" >마크</li>
     </ul>
 
     <!-- <ul id="noti_obj_type_li">    </ul> -->
@@ -72,7 +72,7 @@
     <div id="upload_img_container">
       <form action="#" method="POST" id="img_obj_uploader">
         <label for="obj_img" class="btn_cell">이미지 올리기</label>
-        <input type="file" name="obj_img" id="obj_img" class="input_hidden" onchange="objImg();">
+        <input type="file" name="obj_img" id="obj_img" class="input_hidden" data-val="Image" onchange="hndlObjDraw(this, this.value);">
       </form>
     </div>
   </section>

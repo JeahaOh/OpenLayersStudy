@@ -215,10 +215,7 @@ const measureObj = function( evt ) {
 
   //  선택한 type에 class를 넣어서 css 컨트롤
   evt.classList.add( className );
-  
-  //  drawObj 작동할 type
-  let selectedType = type = evt.dataset.val;
-  
+   
   //  type에 따라 switch
   let geometryFunction;
   switch( type ) {
@@ -237,7 +234,7 @@ const measureObj = function( evt ) {
 
   //  draw 선언.
   measureDraw = new ol.interaction.Draw({
-    source: !measureStatus ? objSource: measureSource,
+    source: !measureStatus ? objSource : measureSource,
     type: type,
     geometryFunction: geometryFunction,
   });
@@ -251,7 +248,10 @@ const measureObj = function( evt ) {
   }
 
   //  snap 넣어줌.
-  measureSnap = new ol.interaction.Snap({ source: objSource, pixelTolerance: $('#snapSensitivity').val() });
+  measureSnap = new ol.interaction.Snap({
+    source: objSource,
+    pixelTolerance: $('#snapSensitivity').val()
+  });
   map.addInteraction( measureSnap );
 
   measureDraw.on('drawstart', function( evt ) {
@@ -330,7 +330,7 @@ const measureObj = function( evt ) {
  * lat, lon 따로 계산 해야 함.
  * @param {*} coordinate lat이나 lon
  */
-function toDegreesMinutesAndSeconds(coordinate) {
+function toDegreesMinutesAndSeconds( coordinate ) {
   var absolute = Math.abs(coordinate);
   var degrees = Math.floor(absolute);
   var minutesNotTruncated = (absolute - degrees) * 60;

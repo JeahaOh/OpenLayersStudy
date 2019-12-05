@@ -4,7 +4,7 @@ let = '';
 const selectedObjClassName = 'selectedType';
 let rw = new ol.format.GeoJSON();
 const areaType = ['Polygon', 'CircleP', 'Square'];
-const iconDir = '/Application_Test/ObjectManage/NotiObject/icon/';
+const iconDir = '/Application_Test/ObjectManage/ObjectList/icon/';
 let sketch;
 
 /**
@@ -71,22 +71,12 @@ const squareFunction = function( coordinates, geometry ) {
 
 // const drawObj = function( evt ) {
 const drawObj = function( type, imgDir ) {
-  console.log( type )
+  console.log( type );
 
   //  map의 interaction들을 초기화.
   drawObjInit();
 
-/*
-  //  다른 type으로 함수를 한번 호출했다면 이전 type의 css 를 되돌림.
-  $.each(menuList, function( idx ){
-    if( menuList.eq( idx ).hasClass( className )) {
-      menuList.eq( idx ).removeClass( className );
-    }
-  });
-*/
-  
   //  drawObj 작동할 type
-  // let selectedType = type = evt.dataset.val;
   let selectedType = type;
   
   //  type에 따라 switch
@@ -150,7 +140,10 @@ const drawObj = function( type, imgDir ) {
       
       break;
     case 'Image':
-      return;
+      type = 'Circle';
+      geometryFunction = squareFunction;
+      console.log( selectedType );
+      break;
   }
 
   //  draw 선언.
@@ -261,8 +254,43 @@ const drawObj = function( type, imgDir ) {
       defaultStyler( sketch, imgDir );
       break;
     case 'Image' :
-      // defaultStyler( sketch, imgDir );
+        
+      let coords = evt.feature.getGeometry().getCoordinates()[0];
+      let latLi = [];
+      let lonLi = [];
+
+      for( c in coords ) {
+        coords[c] = ol.proj.transform( coords[c], 'EPSG:3857', 'EPSG:4326' );
+        latLi.push( coords[c][0] );
+        lonLi.push( coords[c][1] );
+      }
+      // console.log( coords );
+      latLi.sort();
+      lonLi.sort();
+      /**
+       * [left, bottom, right, top] = [서, 남, 동, 북]
+       * lat에서 제일 낮은 좌표가 최 서단
+       * lon에서 제일 낮은 좌표가 최 남단
+       */
+      console.log( coords = [
+          latLi[0],
+          lonLi[0],
+          latLi[ latLi.length - 1 ],
+          lonLi[ lonLi.length - 1 ],
+        ]
+      );
+    
+      // var imageLayer = ;
+      map.addLayer(new ol.layer.Image({
+        source: new ol.source.ImageStatic({
+          url: imgDir,
+          crossOrigin: 'anonymous',
+          projection: 'EPSG:4326',
+          imageExtent: coords
+        })
+      }));
       break;
+
     default:
       setCoordsAtProps( sketch );
       defaultStyler( sketch );
@@ -546,7 +574,7 @@ const uploadImgAndGetName = function(){
 }
 
 const imgSelect = function() {
-  $('#upload_img_container').toggle( 300 );
+  
   if( $('#notiImg').hasClass('selectedType') ) {
     $('#notiImg').removeClass('selectedType');
     return false;
@@ -560,20 +588,7 @@ const imgSelect = function() {
 
 
 
-const markSelect = function() {
-  $('#mark_img_container').toggle( 300 );
-  if( $('#notiMark').hasClass('selectedType') ) {
-    $('#notiMark').removeClass('selectedType');
-    return false;
-  } else {
-    $('#notiMark').addClass('selectedType');
-  }
-  if( $('#upload_img_container').css('display', 'block') ) {
-    $('#upload_img_container').toggle( 300 );  
-  }
-}
-
-const hndlObjDraw = function( target ) {
+const hndlObjDraw = function( target, imgDir ) {
   console.log( target );
   // console.log( target.className );
   // console.log( target.classList );
@@ -583,11 +598,11 @@ const hndlObjDraw = function( target ) {
     //  이미 같은 type으로 함수를 한번 호출 했었다면 OFF 시키고 리턴.
     if( target.classList.contains( selectedObjClassName ) ) {
       $('.' + selectedObjClassName ).removeClass( selectedObjClassName );
+      drawObjInit();
       return false;
     }
     
     let selectedList = $('.' + selectedObjClassName );
-
     //  다른 type으로 함수를 한번 호출했다면 이전 type의 css 를 되돌림.
     $.each( selectedList, function( idx ){
       if( selectedList.eq( idx ).hasClass( selectedObjClassName )) {
@@ -600,17 +615,27 @@ const hndlObjDraw = function( target ) {
 
   if( val == 'Mark' && !target.dataset.ico_no ) {
     $('#mark_img_container').toggle( 300 );
-  }
 
+  } else if ( val == 'Mark' && target.dataset.ico_no ) {
+    $('#mark_img_container').toggle( 300 );
+    // console.log( icon = iconDir + evt.dataset.ico_no + '.png' );
+    console.log( target.dataset.ico_no );
+    drawObj( val, iconDir + target.dataset.ico_no + '.png' );
 
-  // console.log( val );
-  switch( val ) {
-    case 'Mark':
-      // console.log( icon = iconDir + evt.dataset.ico_no + '.png' );
-      console.log( target.dataset.ico_no );
-      drawObj( val, iconDir + target.dataset.ico_no + '.png' );
-      return;
-    default:
-      drawObj( val );
+  } else if ( val == 'Image' && !imgDir ) {
+    $('#upload_img_container').toggle( 300 );
+
+  } else if ( val == 'Image' && imgDir ) {
+    /**
+     * 임시 호출 방식 input file에서 onchnage시 다른 펑션을 부른 뒤,
+     * hndlObjDraw( document.getElementById('obj_img'), '이미지 이름 혹은 경로');
+     * 로 호출 해 줘야 함.
+     */
+    $('#upload_img_container').toggle( 300 );
+    console.log( imgDir );
+    drawObj( val, '/Application_Test/ObjectManage/ObjectList/img/test.png' );
+  
+  } else {
+    drawObj( val );
   }
 }
