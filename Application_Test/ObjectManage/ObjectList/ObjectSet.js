@@ -226,11 +226,54 @@ $.ajax({
 });
 */
 
+const propStyleToStyle = function( feature ) {
+  console.clear();
+  console.group( 'propStyleToStyle' );
+  let propStyle = feature.values_.style;
+  let style;
+  // console.log( propStyle );
+  
+  try {
+
+    // console.log( typeof style.stroke_.lineDash_ );
+    style = new ol.style.Style({
+      stroke: propStyle.stroke_? new ol.style.Stroke({
+        color: propStyle.stroke_.color_ ? propStyle.stroke_.color_ : null ,
+        lineDash: propStyle.stroke_.lineDash_ ? propStyle.stroke_.lineDash_ : null,
+        width: propStyle.stroke_.width_ ? propStyle.stroke_.width_ : null
+      }) : null,
+      fill: propStyle.fill_ ? new ol.style.Fill({
+        color: propStyle.fill_.color_ ? propStyle.fill_.color_ : null,
+      }) : null,
+      text: propStyle.text_? new ol.style.Text({
+        color: propStyle.text_.color_ ? propStyle.text_.color_ : null,
+        font: '12px Verdana',
+        scale: 3,
+        text: propStyle.text_.text_ ? propStyle.text_.text_ : null
+      })  : null
+    });
+
+    
+    // feature.setStyle( style );
+  } catch( e ) {
+    // console.log( feature );
+    console.log( e );
+    style = new ol.style.Style();
+  }
+    
+  console.log( style );
+  console.groupEnd( 'propStyleToStyle' );
+  return style;
+}
 /**
  * onLoad
  * 화면을 로드하면 세션에서 Feature들을 가져옴.
- * 있으면 화면에 표출.
  * 없으면 아무 처리 안함.
+ * 있으면 화면에 표출.
+ * -> 있다면,
+ *    각 피쳐의 타입을 확인한다.
+ *    피쳐의 타입에 따라
+ *    하나하나 스타일등을 먹인 뒤 적용한다.
  */
 let objGeoJ;
 (function () {
@@ -243,8 +286,27 @@ let objGeoJ;
   
   //  sessionStorage에 Feature가 있다면 objSource에 넣어준다.
   objGeoJ = rw.readFeatures(objGeoJ);
-  objSource.addFeatures(objGeoJ);
+  console.log( objGeoJ );
+  console.log( objGeoJ.length + ' Features Have Loaded From Session Storage.' );
 
+  for(var i = 0; i < objGeoJ.length; i++ ){
+    let feature = objGeoJ[i];
+    let type = feature.values_.info.selectedType;
+    console.log( i + ' : ' + type );
+    // console.log( feature );
+    if( type == 'Mark' || type == 'Text' || type == 'Arrow' ) {
+      defaultStyler( feature );
+      continue;
+    }
+   
+    if( type == 'Image' ) imgLayerFunc( feature );
+    
+    if( feature.values_.style ) feature.setStyle( propStyleToStyle( feature ) );
+    console.log( feature );
+  }
+  
+  objSource.addFeatures(objGeoJ);
+/*
   //  Feature가 style을 갖고 있다면 적용 해 준다.
   //  style의 갯수만큼 objSource는 change 된다.
   let length = objGeoJ.features.length;
@@ -255,11 +317,6 @@ let objGeoJ;
       // console.log( feature )
       let type = feature.properties.info.selectedType;
       console.log( type );
-      if( type == 'Image' ) imgLayerFunc( feature );
-      if( type == 'Mark' || type == 'Text' ) {
-        defaultStyler( objSource.getFeatureById(feature.id) );
-        break;
-      }
       // console.log( feature.id )
       if ( feature.properties !== null && feature.properties.style ) {
         // console.log( 'style' );
@@ -300,6 +357,7 @@ let objGeoJ;
       }
     }
   }
+  */
   console.groupEnd('on load');
   // console.clear();
 })();
