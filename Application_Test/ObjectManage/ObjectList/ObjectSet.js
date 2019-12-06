@@ -253,14 +253,20 @@ let objGeoJ;
     for( var i = 0; i < length; i++ ) {
       let feature = objGeoJ.features[i];
       // console.log( feature )
+      let type = feature.properties.info.selectedType;
+      console.log( type );
+      if( type == 'Image' ) imgLayerFunc( feature );
+      if( type == 'Mark' || type == 'Text' ) {
+        defaultStyler( objSource.getFeatureById(feature.id) );
+        break;
+      }
       // console.log( feature.id )
-      if ( feature.properties !== null &&feature.properties.style ) {
+      if ( feature.properties !== null && feature.properties.style ) {
         // console.log( 'style' );
         let style = feature.properties.style;
         // console.log( style );
         // console.log( style.length );
         try {
-          
           if( !style.length ) {
             // console.log( style.stroke_.lineDash_ );
             // console.log( typeof style.stroke_.lineDash_ );
@@ -288,10 +294,9 @@ let objGeoJ;
             defaultStyler( objSource.getFeatureById(feature.id) );
           }
         } catch( e ) {
+          console.log( feature )
           console.log( e );
         }
-      } else {
-        defaultStyler( feature );
       }
     }
   }

@@ -1,6 +1,6 @@
 //  Global
 let objDraw, objSnap, objModify, pointTooltip, status, pointCNT;
-let = '';
+let objText = '';
 const selectedObjClassName = 'selectedType';
 let rw = new ol.format.GeoJSON();
 const areaType = ['Polygon', 'CircleP', 'Square'];
@@ -254,43 +254,10 @@ const drawObj = function( type, imgDir ) {
       defaultStyler( sketch, imgDir );
       break;
     case 'Image' :
-        
-      let coords = evt.feature.getGeometry().getCoordinates()[0];
-      let latLi = [];
-      let lonLi = [];
-
-      for( c in coords ) {
-        coords[c] = ol.proj.transform( coords[c], 'EPSG:3857', 'EPSG:4326' );
-        latLi.push( coords[c][0] );
-        lonLi.push( coords[c][1] );
-      }
-      // console.log( coords );
-      latLi.sort();
-      lonLi.sort();
-      /**
-       * [left, bottom, right, top] = [서, 남, 동, 북]
-       * lat에서 제일 낮은 좌표가 최 서단
-       * lon에서 제일 낮은 좌표가 최 남단
-       */
-      console.log( coords = [
-          latLi[0],
-          lonLi[0],
-          latLi[ latLi.length - 1 ],
-          lonLi[ lonLi.length - 1 ],
-        ]
-      );
-    
-      // var imageLayer = ;
-      map.addLayer(new ol.layer.Image({
-        source: new ol.source.ImageStatic({
-          url: imgDir,
-          crossOrigin: 'anonymous',
-          projection: 'EPSG:4326',
-          imageExtent: coords
-        })
-      }));
       setCoordsAtProps( sketch );
-      defaultStyler( sketch );
+      imgLayerFunc( sketch, imgDir );
+      // defaultStyler( sketch );
+      
       break;
 
     default:
@@ -307,12 +274,15 @@ const drawObj = function( type, imgDir ) {
 
 
 const defaultStyler = function( feature, icon ) {
+  console.group( 'defaultStyler' );
   let style;
-  let type = feature.values_.info.selectedType;
+  // let type = feature.values_.info.selectedType;
+  let type = feature.values_ ? feature.values_.info.selectedType : feature.properties.info.selectedType;
   // console.log( type );
 
   switch( type ) {
     case 'Text' :
+      if( !objText ) objText = feature.values_.style.text_.text_
       style = new ol.style.Style({
           text: new ol.style.Text({
           font: '12px Verdana',
@@ -323,6 +293,7 @@ const defaultStyler = function( feature, icon ) {
       break;
       
     case 'Mark' :
+      if( !icon ) icon = feature.values_.style.image_.iconImage_.src_;
       style = new ol.style.Style({
         image: new ol.style.Icon({
           anchor: [0.5, 0.75],
@@ -364,11 +335,11 @@ const defaultStyler = function( feature, icon ) {
       });
       break;
 
-    case 'Image' : 
-      style = new ol.style.Style({
+    // case 'Image' : 
+    //   style = new ol.style.Style({
         
-      });
-      break;
+    //   });
+    //   break;
 
     default :
       style = new ol.style.Style({
@@ -381,9 +352,10 @@ const defaultStyler = function( feature, icon ) {
         }),
       });
   }
-
+  // console.log( style );
   feature.setStyle( style );
   feature.setProperties( {style: style})
+  console.groupEnd( 'defaultStyler' );
 }
 
 
@@ -391,7 +363,8 @@ const setCoordsAtProps = function( feature ) {
   console.group('set coords at props');
   
   // console.log( 'BEFORE' );
-  // console.log( feature.getProperties().coords );
+  // // console.log( feature.getProperties().coords );
+  // console.log( feature.getGeometry().getCoordinates() );
 
   let coords3857 = feature.getGeometry().getCoordinates();
 
@@ -418,7 +391,8 @@ const setCoordsAtProps = function( feature ) {
   });
 
   // console.log( 'AFTER' );
-  // console.log( feature.getProperties().coords );
+  // // console.log( feature.getProperties().coords );
+  // console.log( feature.getGeometry().getCoordinates() );
 
   console.groupEnd('set coords at props');
 }
@@ -631,4 +605,54 @@ const hndlObjDraw = function( target, imgDir ) {
   } else {
     drawObj( val );
   }
+}
+
+const imgLayerFunc = function( feature, imgDir ){
+  console.group( 'imgLayerFunc ');
+  if( !imgDir ) {
+    imgDir = feature.properties.imgLayer.values_.source.url_
+  }
+  console.log( feature );
+  let coords = (feature.values_ ? feature.values_.coords.coords3857 : feature.geometry.coordinates[0])
+  // let coords = feature.values_.coords.coords3857;
+  // console.log( coords );
+  let latLi = [];
+  let lonLi = [];
+
+  for( c in coords ) {
+    coords[c] = ol.proj.transform( coords[c], 'EPSG:3857', 'EPSG:4326' );
+    latLi.push( coords[c][0] );
+    lonLi.push( coords[c][1] );
+  }
+  // console.log( coords );
+  latLi.sort();
+  lonLi.sort();
+  /**
+   * [left, bottom, right, top] = [서, 남, 동, 북]
+   * lat에서 제일 낮은 좌표가 최 서단
+   * lon에서 제일 낮은 좌표가 최 남단
+   */
+  console.log( coords = [
+      latLi[0],
+      lonLi[0],
+      latLi[ latLi.length - 1 ],
+      lonLi[ lonLi.length - 1 ],
+    ]
+  );
+
+  let imageLayer = new ol.layer.Image({
+    source: new ol.source.ImageStatic({
+      url: imgDir,
+      crossOrigin: 'anonymous',
+      projection: 'EPSG:4326',
+      imageExtent: coords
+    })
+  });
+  if( feature.values_ ) {
+    feature.setProperties({
+      imgLayer: imageLayer
+    });
+  }
+  map.addLayer( imageLayer );
+  console.groupEnd( 'imgLayerFunc ');
 }
