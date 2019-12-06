@@ -160,9 +160,12 @@ const removeObjList = function() {
 
 //  sessionStorage에 objSource의 피쳐들을 저장한다.
 const syncObjGeoj = function () {
-  objGeoJ = rw.writeFeatures(objSource.getFeatures());
-  sessionStorage.setItem('objGeoJ', objGeoJ);
-  objGeoJ = JSON.parse(objGeoJ);
+  try {
+    objGeoJ = rw.writeFeatures(objSource.getFeatures());
+    // objGeoJ = JSON.stringify( objSource.getFeatures() );
+    sessionStorage.setItem('objGeoJ', objGeoJ);
+    objGeoJ = JSON.parse(objGeoJ);
+  } catch( e ) { console.log( e ) }
 }
 
 /**
@@ -177,8 +180,8 @@ objSource.on('change', function () {
   // objList = list;
   // console.log( list );
   $('#obj_management_table').empty();
-  for (let obj in list) {
-    _objFeature = list[obj];
+  for (idx in list) {
+    _objFeature = list[idx];
 
     // console.log( _objFeature );
     // console.log( _objFeature.ol_uid );

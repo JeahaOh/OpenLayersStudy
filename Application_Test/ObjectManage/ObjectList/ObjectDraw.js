@@ -609,12 +609,18 @@ const hndlObjDraw = function( target, imgDir ) {
 
 const imgLayerFunc = function( feature, imgDir ){
   console.group( 'imgLayerFunc ');
+  // console.log( feature );
+  // console.log( feature.getGeometry().getCoordinates()[0] );
   if( !imgDir ) {
-    imgDir = feature.properties.imgLayer.values_.source.url_
+    imgDir = feature.values_.imgDir
+  } else {
+    feature.setProperties({
+      imgDir: imgDir
+    });
   }
-  console.log( feature );
-  let coords = (feature.values_ ? feature.values_.coords.coords3857 : feature.geometry.coordinates[0])
-  // let coords = feature.values_.coords.coords3857;
+  // console.log( feature );
+  // let coords = (feature.values_ ? feature.values_.coords.coords3857 : feature.geometry.coordinates[0]);
+  let coords = feature.getGeometry().getCoordinates()[0];
   // console.log( coords );
   let latLi = [];
   let lonLi = [];
@@ -648,11 +654,7 @@ const imgLayerFunc = function( feature, imgDir ){
       imageExtent: coords
     })
   });
-  if( feature.values_ ) {
-    feature.setProperties({
-      imgLayer: imageLayer
-    });
-  }
+
   map.addLayer( imageLayer );
   console.groupEnd( 'imgLayerFunc ');
 }
