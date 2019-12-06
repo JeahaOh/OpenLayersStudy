@@ -85,46 +85,25 @@ const receivedText = function(e) {
   // console.log( loadedFeatures );
   console.log( loadedFeatures.length + ' Features Have Loaded From File.');
 
-  
-
   let length = 0;
   try { length = loadedFeatures.length; } catch( e ) { console.log( e ) }
 
   if ( length > 0 ) {
     for( var i = 0; i < length; i++ ) {
       let feature = loadedFeatures[i];
-      // console.log( feature);
+      console.log( feature );
       // console.log( feature.id );
+      let type = feature.values_.info.selectedType;
+      console.log( i + ' : ' + type );
+      if( type == 'Mark' || type == 'Text' || type == 'Arrow' ) {
+        defaultStyler( feature );
+        continue;
+      }
+     
+      if( type == 'Image' ) imgLayerFunc( feature );
+      
       try{
         if ( feature.values_.style ) {
-          /*
-          let style = feature.values_.style;
-          console.log( style );
-          style = new ol.style.Style({
-            stroke: style.stroke_ ?
-              new ol.style.Stroke({
-                color: style.stroke_.color_ ? style.stroke_.color_ : null,
-                lineDash: style.stroke_.lineDash_ ? style.stroke_.lineDash_ : null,
-                width: style.stroke_.width_ ? style.stroke_.width_ : null
-              })
-              : null,
-            fill: style.fill_ ?
-              new ol.style.Fill({
-                color: style.fill_.color_ ? style.fill_.color_ : null
-              })
-              : null,
-            text: style.text_ ?
-              new ol.style.Text({
-                color: style.text_.color_ ? style.text_.color_ : null,
-                font: '12px Verdana',
-                scale: 3,
-                text: style.text_.text_ ? style.text_.text_ : null
-              })
-              : null
-          });
-          // objSource.getFeatureById(feature.id).setStyle(style);
-          feature.setStyle( style );
-          */
           feature.setStyle( propStyleToStyle( feature ) );
         }
       } catch( e ) { console.log( e ); }
