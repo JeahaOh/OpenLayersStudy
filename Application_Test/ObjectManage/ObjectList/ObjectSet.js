@@ -227,7 +227,6 @@ $.ajax({
 */
 
 const propStyleToStyle = function( feature ) {
-  console.clear();
   console.group( 'propStyleToStyle' );
   let propStyle = feature.values_.style;
   let style;
@@ -237,20 +236,26 @@ const propStyleToStyle = function( feature ) {
 
     // console.log( typeof style.stroke_.lineDash_ );
     style = new ol.style.Style({
-      stroke: propStyle.stroke_? new ol.style.Stroke({
-        color: propStyle.stroke_.color_ ? propStyle.stroke_.color_ : null ,
-        lineDash: propStyle.stroke_.lineDash_ ? propStyle.stroke_.lineDash_ : null,
-        width: propStyle.stroke_.width_ ? propStyle.stroke_.width_ : null
-      }) : null,
-      fill: propStyle.fill_ ? new ol.style.Fill({
-        color: propStyle.fill_.color_ ? propStyle.fill_.color_ : null,
-      }) : null,
-      text: propStyle.text_? new ol.style.Text({
-        color: propStyle.text_.color_ ? propStyle.text_.color_ : null,
-        font: '12px Verdana',
-        scale: 3,
-        text: propStyle.text_.text_ ? propStyle.text_.text_ : null
-      })  : null
+      stroke: propStyle.stroke_ ?
+          new ol.style.Stroke({
+            color: propStyle.stroke_.color_ ? propStyle.stroke_.color_ : null ,
+            lineDash: propStyle.stroke_.lineDash_ ? propStyle.stroke_.lineDash_ : null,
+            width: propStyle.stroke_.width_ ? propStyle.stroke_.width_ : null
+          })
+          : null,
+      fill: propStyle.fill_ ?
+          new ol.style.Fill({
+            color: propStyle.fill_.color_ ? propStyle.fill_.color_ : null,
+          })
+          : null,
+      text: propStyle.text_ ?
+          new ol.style.Text({
+            color: propStyle.text_.color_ ? propStyle.text_.color_ : null,
+            font: '12px Verdana',
+            scale: 3,
+            text: propStyle.text_.text_ ? propStyle.text_.text_ : null
+          })
+          : null
     });
 
     
@@ -261,7 +266,7 @@ const propStyleToStyle = function( feature ) {
     style = new ol.style.Style();
   }
     
-  console.log( style );
+  // console.log( style );
   console.groupEnd( 'propStyleToStyle' );
   return style;
 }
@@ -302,62 +307,9 @@ let objGeoJ;
     if( type == 'Image' ) imgLayerFunc( feature );
     
     if( feature.values_.style ) feature.setStyle( propStyleToStyle( feature ) );
-    console.log( feature );
   }
   
   objSource.addFeatures(objGeoJ);
-/*
-  //  Feature가 style을 갖고 있다면 적용 해 준다.
-  //  style의 갯수만큼 objSource는 change 된다.
-  let length = objGeoJ.features.length;
-  if ( length > 0 ) {
-    console.log( length + ' Features Have Loaded From Session Storage.' );
-    for( var i = 0; i < length; i++ ) {
-      let feature = objGeoJ.features[i];
-      // console.log( feature )
-      let type = feature.properties.info.selectedType;
-      console.log( type );
-      // console.log( feature.id )
-      if ( feature.properties !== null && feature.properties.style ) {
-        // console.log( 'style' );
-        let style = feature.properties.style;
-        // console.log( style );
-        // console.log( style.length );
-        try {
-          if( !style.length ) {
-            // console.log( style.stroke_.lineDash_ );
-            // console.log( typeof style.stroke_.lineDash_ );
-            style = new ol.style.Style({
-              stroke: new ol.style.Stroke({
-                color: style.stroke_.color_,
-                lineDash: style.stroke_.lineDash_,
-                width: style.stroke_.width_
-              }),
-              fill: new ol.style.Fill({
-                color: style.fill_.color_,
-              }),
-              text: new ol.style.Text({
-                color: style.text_.color_,
-                font: '12px Verdana',
-                scale: 3,
-                text: style.text_.text_
-              })
-            });
-            
-            objSource.getFeatureById(feature.id).setStyle(style);
-          } else {
-            // console.log( style );
-            // arrowFunction( objSource.getFeatureById( feature.id ) );
-            defaultStyler( objSource.getFeatureById(feature.id) );
-          }
-        } catch( e ) {
-          console.log( feature )
-          console.log( e );
-        }
-      }
-    }
-  }
-  */
   console.groupEnd('on load');
   // console.clear();
 })();

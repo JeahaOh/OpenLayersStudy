@@ -79,47 +79,58 @@ const loadFile = function() {
 
 const receivedText = function(e) {
   let lines = e.target.result;
-  var newArr = lines;
-  console.log( newArr );
-  newArr = rw.readFeatures( newArr );
-  console.log( newArr.features );
+  var loadedFeatures = lines;
+  // console.log( loadedFeatures );
+  loadedFeatures = rw.readFeatures( loadedFeatures );
+  // console.log( loadedFeatures );
+  console.log( loadedFeatures.length + ' Features Have Loaded From File.');
 
-  objSource.addFeatures( newArr );
+  
 
   let length = 0;
-  try { length = newArr.features.length; } catch( e ) { console.log( e ) }
+  try { length = loadedFeatures.length; } catch( e ) { console.log( e ) }
 
   if ( length > 0 ) {
     for( var i = 0; i < length; i++ ) {
-      let feature = newArr.features[i];
+      let feature = loadedFeatures[i];
       // console.log( feature);
       // console.log( feature.id );
       try{
-        if ( feature.properties.style ) {
-          let style = feature.properties.style;
-          // console.log( style );
-          // console.log( style.stroke_.lineDash_ );
-          /**
-           * 이 블럭 없이 적용해도 될듯 한데?
-           */
+        if ( feature.values_.style ) {
+          /*
+          let style = feature.values_.style;
+          console.log( style );
           style = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-              color: style.stroke_.color_,
-              lineDash: style.stroke_.lineDash_,
-              width: style.stroke_.width_
-            }),
-            fill: new ol.style.Fill({
-              color: style.fill_.color_,
-            }),
-            text: new ol.style.Text({
-              color: style.text_.color_
-            })
+            stroke: style.stroke_ ?
+              new ol.style.Stroke({
+                color: style.stroke_.color_ ? style.stroke_.color_ : null,
+                lineDash: style.stroke_.lineDash_ ? style.stroke_.lineDash_ : null,
+                width: style.stroke_.width_ ? style.stroke_.width_ : null
+              })
+              : null,
+            fill: style.fill_ ?
+              new ol.style.Fill({
+                color: style.fill_.color_ ? style.fill_.color_ : null
+              })
+              : null,
+            text: style.text_ ?
+              new ol.style.Text({
+                color: style.text_.color_ ? style.text_.color_ : null,
+                font: '12px Verdana',
+                scale: 3,
+                text: style.text_.text_ ? style.text_.text_ : null
+              })
+              : null
           });
-          objSource.getFeatureById(feature.id).setStyle(style);
+          // objSource.getFeatureById(feature.id).setStyle(style);
+          feature.setStyle( style );
+          */
+          feature.setStyle( propStyleToStyle( feature ) );
         }
       } catch( e ) { console.log( e ); }
     }
   }
+  objSource.addFeatures( loadedFeatures );
 }
 
 $('#loadFeaturesFromFile').on('click', function( evt ){
