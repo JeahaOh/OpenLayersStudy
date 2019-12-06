@@ -419,20 +419,21 @@ const editPoint = function(uid) {
   
   let inputs = $('#obj_' + uid + '_coord').serializeArray();
   let newCoords = [];
-  // console.log( inputs );
+  console.log( inputs );
   
   for( var i = 0; i < inputs.length; i +=2 ) {
     // console.log( inputs[i].inputs );
     // console.log( inputs[i + 1].inputs );
     coord = [ parseFloat( inputs[i].value ), parseFloat( inputs[i + 1].value ) ];
     newCoords.push( ol.proj.transform( coord, 'EPSG:4326', 'EPSG:3857') );
+    console.log( i );
   }
   
   // console.log( newCoords );
   
   let tgtFeature = objSource.getFeatureByUid( uid );
   type = tgtFeature.values_.info.selectedType;
-  
+  console.log( tgtFeature );
   ctrlObjProp(uid);
   let geo;
   switch( type ) {
@@ -451,11 +452,13 @@ const editPoint = function(uid) {
       // console.log( newCoords );
       tgtFeature.getGeometry().setCoordinates( [newCoords] );
       break;
-    
+    case 'Mark':
+    case 'Text':
+      tgtFeature.getGeometry().setCoordinates( newCoords );
   }
   setCoordsAtProps( tgtFeature );
   if( style ) defaultStyler( tgtFeature );
-  console.groupEnd( 'edit point');
+  console.groupEnd( 'edit point ' + uid);
 }
 //  editPoint
 

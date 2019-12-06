@@ -369,9 +369,7 @@ const setCoordsAtProps = function( feature ) {
   // console.log( feature.getGeometry().getCoordinates() );
 
   let coords3857 = feature.getGeometry().getCoordinates();
-
-
-  console.log(coords3857);
+  // console.log(coords3857);
   if( type != 'Mark' || type != 'Text' ) {
     if( coords3857.length && coords3857.length == 1) {
       coords3857 = coords3857[0];
@@ -380,7 +378,7 @@ const setCoordsAtProps = function( feature ) {
 
   let coords4326 = [];
   // let coordsDms = [];
-  if( type != 'Mark' || type != 'Text' ) {
+  if( type == 'Mark' || type == 'Text' ) {
     coords4326 = (ol.proj.transform( coords3857, 'EPSG:3857', 'EPSG:4326' ));
   } else {
     for( var i = 0; i < coords3857.length; i++){
@@ -388,8 +386,10 @@ const setCoordsAtProps = function( feature ) {
     }
     // coordsDms.push( [toDmsAsMap( coords4326[i][0], toDmsAsMap(coords3857[i][1]) )] );
   }
-  console.log( coords3857 )
-  console.log( coords4326 )
+  // console.log( 'coords3857' )
+  // console.log( coords3857 )
+  // console.log( 'coords4326' )
+  // console.log( coords4326 )
   
   // console.log( sketch );
   feature.setProperties({
@@ -402,7 +402,7 @@ const setCoordsAtProps = function( feature ) {
   });
 
   // console.log( 'AFTER' );
-  console.log( feature.getProperties().coords );
+  // console.log( feature.getProperties().coords );
   // console.log( feature.getGeometry().getCoordinates() );
 
   console.groupEnd('set coords at props');
