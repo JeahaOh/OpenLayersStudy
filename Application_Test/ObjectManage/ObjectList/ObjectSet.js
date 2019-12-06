@@ -39,25 +39,37 @@ const loopForCoords = function (ol_uid, block) {
   console.group('Loop For Coords');
   let cont = '';
   let coords = objSource.getFeatureByUid( ol_uid ).values_.coords.coords4326;
+  let type = objSource.getFeatureByUid( ol_uid ).values_.info.selectedType;
 
-  // console.log( coords );
-  
-  let leng = coords.length;
-  // console.log( leng );
-  // console.log( _coordinates_ )
-  if( coords[0][0] == coords[leng-1][0]
-      && coords[0][1] == coords[leng-1][1]) {
-    leng -=1;
-  }
-
-  for ( var i = 0; i < leng; i++) {
-    //  fn의 인자로 객체를 넣어 주어야 템플릿에 지정된 값을 넣어줄 수 있다.
+  console.log( coords );
+  console.log( type );
+  if( type == 'Mark' || type == 'Text' ) {
+    console.log( coords )
     cont += block.fn({
       ol_uid: ol_uid,
-      idx: i + 1,
-      lat: coords[i][0],
-      lon: coords[i][1]
+      idx: 1,
+      lat: coords[0],
+      lon: coords[1]
     });
+  } else if( type != 'Mark' || type != 'Text' ) {
+    let leng = coords.length;
+    console.log( leng );
+    console.log( coords )
+    if( coords[0][0] == coords[leng-1][0]
+        && coords[0][1] == coords[leng-1][1]) {
+      leng -=1;
+    }
+
+    for ( var i = 0; i < leng; i++) {
+      //  fn의 인자로 객체를 넣어 주어야 템플릿에 지정된 값을 넣어줄 수 있다.
+      cont += block.fn({
+        ol_uid: ol_uid,
+        idx: i + 1,
+        lat: coords[i][0],
+        lon: coords[i][1]
+      });
+    }
+    console.log( 'ASDF' )
   }
   console.groupEnd('Loop For Coords');
   return cont;
@@ -403,6 +415,7 @@ const ctrlObjProp = function (uid) {
  */
 const editPoint = function(uid) {
   console.group( 'edit point ' + uid);
+  let style = false;
   
   let inputs = $('#obj_' + uid + '_coord').serializeArray();
   let newCoords = [];
@@ -423,20 +436,25 @@ const editPoint = function(uid) {
   ctrlObjProp(uid);
   let geo;
   switch( type ) {
+    case 'Arrow':
+      style = true;
     case 'Line':
     case 'MultiLine':
       geo = new ol.geom.LineString( newCoords );
       tgtFeature.setGeometry( geo );
       break;
     case 'Square' :
+    case 'CircleP':
     case 'Polygon':
       newCoords.push( newCoords[0] );
       newCoords = newCoords;
       // console.log( newCoords );
       tgtFeature.getGeometry().setCoordinates( [newCoords] );
       break;
+    
   }
   setCoordsAtProps( tgtFeature );
+  if( style ) defaultStyler( tgtFeature );
   console.groupEnd( 'edit point');
 }
 //  editPoint

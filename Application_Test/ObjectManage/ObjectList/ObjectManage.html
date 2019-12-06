@@ -46,8 +46,8 @@
       <li data-val="CircleP" onclick="hndlObjDraw(this);">원</li>     
       
       <li data-val="Text"  onclick="hndlObjDraw(this);" >텍스트</li>
-      <li data-val="Image" onclick="hndlObjDraw(this);" >이미지</li>
       <li data-val="Mark"  onclick="hndlObjDraw(this);" >마크</li>
+      <li data-val="Image" onclick="hndlObjDraw(this);" >이미지</li>
     </ul>
 
     <!-- <ul id="noti_obj_type_li">    </ul> -->
@@ -362,7 +362,7 @@
                         </div>
                         {{/loopForCoords}}
                       </form>   
-                      <button id="{{ol_uid}}_edit" onclick="editPoint( {{this.ol_uid}});" > 좌표 변경 적용</button>
+                      <button id="{{ol_uid}}_edit" onclick="editPoint({{this.ol_uid}});" > 좌표 변경 적용</button>
                     </div>
                   </div>
                   {{/if}}
