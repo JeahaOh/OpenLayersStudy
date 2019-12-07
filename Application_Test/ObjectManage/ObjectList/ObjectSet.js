@@ -454,7 +454,7 @@ const editPoint = function(uid) {
       break;
     case 'Mark':
     case 'Text':
-      tgtFeature.getGeometry().setCoordinates( newCoords );
+      tgtFeature.getGeometry().setCoordinates( newCoords[0] );
   }
   setCoordsAtProps( tgtFeature );
   if( style ) defaultStyler( tgtFeature );
