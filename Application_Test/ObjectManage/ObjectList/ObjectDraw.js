@@ -549,20 +549,6 @@ const uploadImgAndGetName = function(){
   }
 }
 
-const imgSelect = function() {
-  
-  if( $('#notiImg').hasClass('selectedType') ) {
-    $('#notiImg').removeClass('selectedType');
-    return false;
-  } else {
-    $('#notiImg').addClass('selectedType');
-  }
-  if( $('#mark_img_container').css('display', 'block') ) {
-    $('#mark_img_container').toggle( 300 );  
-  }
-}
-
-
 
 const hndlObjDraw = function( target, imgDir ) {
   // console.log( target );

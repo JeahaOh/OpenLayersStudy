@@ -1,3 +1,6 @@
+/**
+ * 관리창에서 선택된 Features 목록을 배열에 담아서 리턴.
+ */
 const getSelectedObjList = function() {
   console.group( 'get Selected Obj List');
   let allLi = $('.select_obj_mng_li');
@@ -20,12 +23,8 @@ const getSelectedObjList = function() {
 }
 
 /**
- * Session Storage에 저장된 Features를 File로 저장, 다시 Session에 저장하기 위한 js 파일.
- * Read시 스타일이 바로 적용되지 않는 문제가 있고,
- * 문제 해결을 추후에 하기 위해 이 부분만 따로 분리해둠.
- * 
+ * Session Storage에 저장된 Features를 Client에서 다운로드 하기 위한 함수.
  */
-
 const saveSelectedObjList = function() {
   let target = getSelectedObjList();
   
@@ -47,6 +46,9 @@ const saveSelectedObjList = function() {
   }
 }
 
+/**
+ * 사용자가 업로드한 객체를 읽기위한 함수
+ */
 const loadFile = function() {
   var input, file, fr;
 
@@ -72,11 +74,13 @@ const loadFile = function() {
     fr.onload = receivedText;
     fr.readAsText(file);
   }
-
-  //  객체 로드 완료시 페이지를 재 로드 시키는건 어떨까?
-  // location.reload();
 };
 
+/**
+ * 업로드 된 파일을 읽어서 스타일을 적용한 뒤,
+ * 객체들을 objSource에 addFeature 한다.
+ * @param {} e 
+ */
 const receivedText = function(e) {
   let lines = e.target.result;
   var loadedFeatures = lines;

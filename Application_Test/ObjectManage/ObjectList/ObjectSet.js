@@ -15,7 +15,7 @@ const loopForNo = function (from, to, incr, block) {
 Handlebars.registerHelper('loopForNo', loopForNo);
 //  loopForNo
 
-const loopForStrokeWidth = function (from, to, incr, selected, block) {
+const loopForStrokeWidth = function (from, to, incr, selected) {
   cont = '';
   if( !selected ) selected = 2;
   for (var i = from; i < to; i += incr) {
@@ -181,30 +181,26 @@ const syncObjGeoj = function () {
 }
 
 /**
- * objSource 가 변하면
+ * objSource가 변하면,
+ * feature를 sessionStoreage에 저장, HTML을 다시 만든다.
  */
-let _objFeature, objList;
-objSource.on('change', function () {
+let _objFeature;
+objSource.on('change', function ( evt ) {
   console.group(' objSource.on change');
+  //  sessionStorage에 저장.
   syncObjGeoj();
 
+  //  objSource의
+  //  feature 하나씩, HTML에 다시 뿌린다.
   list = objSource.getFeatures();
-  // objList = list;
-  // console.log( list );
   $('#obj_management_table').empty();
   for (idx in list) {
     _objFeature = list[idx];
 
-    // console.log( _objFeature );
-    // console.log( _objFeature.ol_uid );
-
-    let templateSource = $('#obj_table_template').html();
-    let template = Handlebars.compile(templateSource);
-    let html = template(_objFeature);
-    // console.log(_objFeature);
-    // console.log( html )
-
-    $('#obj_management_table').append(html);
+    //  Handelbars를 이용해서 화면에 보여질 HTML Template을 준비
+    let template = Handlebars.compile( $('#obj_table_template').html() );
+    //  객체를 담아서 렌더링, document에 render.
+    $('#obj_management_table').append( template(_objFeature) );
   }
   console.groupEnd(' objSource.on change');
 });
@@ -241,15 +237,18 @@ $.ajax({
 });
 */
 
+/**
+ * 인자로 받은 객체에 담겨있는 스타일을 가져와서 화면에 스타일을 적용해 준다.
+ * @param {*} feature 
+ */
 const propStyleToStyle = function( feature ) {
   console.group( 'propStyleToStyle' );
-  let propStyle = feature.values_.style;
   let style;
+  let propStyle = feature.values_.style;
   // console.log( propStyle );
   
+  // 3항 연산자를 이용해서, 객체에 해당 스타일 데이터가 있다면 넣어주고 없다면 null 처리.
   try {
-
-    // console.log( typeof style.stroke_.lineDash_ );
     style = new ol.style.Style({
       stroke: propStyle.stroke_ ?
           new ol.style.Stroke({
@@ -272,8 +271,6 @@ const propStyleToStyle = function( feature ) {
           })
           : null
     });
-
-    
     // feature.setStyle( style );
   } catch( e ) {
     // console.log( feature );
@@ -285,15 +282,16 @@ const propStyleToStyle = function( feature ) {
   console.groupEnd( 'propStyleToStyle' );
   return style;
 }
+
 /**
  * onLoad
  * 화면을 로드하면 세션에서 Feature들을 가져옴.
  * 없으면 아무 처리 안함.
- * 있으면 화면에 표출.
  * -> 있다면,
  *    각 피쳐의 타입을 확인한다.
  *    피쳐의 타입에 따라
- *    하나하나 스타일등을 먹인 뒤 적용한다.
+ *    하나하나 스타일 등을 적용한다.
+ *    리소스를 위해 모든 객체에 스타일을 적용한 뒤, objSource에 담아준다.
  */
 let objGeoJ;
 (function () {
@@ -306,21 +304,25 @@ let objGeoJ;
   
   //  sessionStorage에 Feature가 있다면 objSource에 넣어준다.
   objGeoJ = rw.readFeatures(objGeoJ);
-  console.log( objGeoJ );
+  // console.log( objGeoJ );
   console.log( objGeoJ.length + ' Features Have Loaded From Session Storage.' );
 
-  for(var i = 0; i < objGeoJ.length; i++ ){
+  for( var i = 0; i < objGeoJ.length; i++ ){
     let feature = objGeoJ[i];
     let type = feature.values_.info.selectedType;
     console.log( i + ' : ' + type );
     // console.log( feature );
+
+    //  특정 타입의 객체라면 기본 스타일을 적용한다.
     if( type == 'Mark' || type == 'Text' || type == 'Arrow' ) {
       defaultStyler( feature );
       continue;
     }
    
+    //  이미지 타입이라면 이미지 레이어를 띄워주는 함수를 실행한다.
     if( type == 'Image' ) imgLayerFunc( feature );
     
+    //  객체 안에 담겨있는 스타일을 적용한다.
     if( feature.values_.style ) feature.setStyle( propStyleToStyle( feature ) );
   }
   

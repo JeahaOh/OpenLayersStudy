@@ -5,14 +5,14 @@ let measureLineDistance = '';
 
 /**
  * @param {*} flag : init 함수를 어디서 호출하는지 확인하기 위한 구분자.
+ * false라면 draw 하는 도중, 하기 전에 호출.
+ * 이전 측정에 사용된 자원들을 초기화 함.
+ * 
  * true라면 draw가 끝났을 때 호출,
  * 리스트에 선택 된 항목을 선택 해제한다.
  * 
- * false라면 draw 하지 않았을 때 호출.
- * 이전 측정에 사용된 자원들을 초기화 함.
- * 
  * 공통적으로
- * map에 있는 Draw, Snap, Modify Interaction을 지운다.
+ * map에 있는 Interaction들과 자원들을 지운다.
  */
 const measureInit = function( flag ){
   let className = 'selectedType';
@@ -43,7 +43,8 @@ const measureInit = function( flag ){
 
 
 /**
- * 인자로 받은 좌표 지점에 측정 Overlay와 Point Feature를 찍어주는 함수.
+ * 인자로 받은 좌표 지점에 측정 Overlay와 Point Feature를 찍어주고,
+ * 거리를 재도록 해준다.
  * @param {*} coord [14365024.794099694, 4219904.888355112] ('EPSG:4326')형식의 좌표
  */
 const measureFunc = function(coord, feature) {
@@ -184,13 +185,16 @@ let formatLength = function(line, rough) {
 };  //  formatLength
 
 const measureClick = function() { 
-  //  Snap을 쓰고 있기 때문에 evt.coordinate는 내가 원하는 좌표 값이 아님.
+  //  Snap을 쓰고 있기 때문에 evt.coordinate는 내가 원하는 좌표 값이 아닐 수 있음.
   //  measureDraw.finishCoordinate_는 현재 그리고 있는 feature의 마지막 클릭 좌표 값임.
   //  따라서 snap의 사용 여부를 떠나 원하는 좌표 값은 이놈이 갖고 있음.
   measureFunc( measureDraw.finishCoordinate_ );
 }
 
-
+/**
+ * 측정용 Feature를 그리는 함수.
+ * @param {*} evt 
+ */
 const measureObj = function( evt ) {
   //  map의 interaction들을 초기화.
   measureInit();
@@ -218,7 +222,6 @@ const measureObj = function( evt ) {
   evt.classList.add( className );
    
   //  type에 따라 switch
-  let geometryFunction;
   switch( type ) {
     case 'None':
       return;
@@ -237,16 +240,13 @@ const measureObj = function( evt ) {
   measureDraw = new ol.interaction.Draw({
     source: !measureStatus ? objSource : measureSource,
     type: type,
-    geometryFunction: geometryFunction,
   });
   map.addInteraction( measureDraw );
   
   //  측정을 한다면 거리를 보여줄 tooltip을 띄움.
   //  measureFeature를 보여줄 layer를 띄움.
-  if( measureStatus ) {
-    createMeasureTooltip();
-    map.addLayer(measureVector);
-  }
+  createMeasureTooltip();
+  map.addLayer(measureVector);
 
   //  snap 넣어줌.
   measureSnap = new ol.interaction.Snap({
@@ -263,12 +263,12 @@ const measureObj = function( evt ) {
     //  type이 measure일 경우.
     if( measureStatus ) {
       //  선이라면 측정 시 클릭마다 측정하기 위한 함수.
-      if( type == 'LineString') map.on('click', measureClick );
+      if( type == 'LineString') map.on( 'click', measureClick );
       //  원이라면 중앙점을 찍음.
       if( type == 'Circle') measureFunc( evt.feature.getGeometry().getCenter() );
       
       /** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
-      listener = sketch.getGeometry().on('change', function (evt) {
+      listener = sketch.getGeometry().on( 'change', function( evt ) {
         let tooltipCoord;
         let geom = evt.target;
         let output;
@@ -289,34 +289,34 @@ const measureObj = function( evt ) {
 
   measureDraw.on('drawend', function( evt ) {
     console.group( 'draw end' );
-    //  측정일 경우
-    if( measureStatus ) {
-      //  원이라면
-      if( type == 'Circle' ) {
-        //  원 그리기가 끝나면, 반지름 선분을 만든다.
-        let radiusLine = new ol.Feature({
-          geometry: new ol.geom.LineString(evt.target.sketchCoords_)
-        })
-        measureSource.addFeature(radiusLine);
-        measureFunc(radiusLine.getGeometry().getLastCoordinate() , radiusLine);
-      }
-
-      sketch.setStyle(new ol.style.Style({
-        stroke: new ol.style.Stroke({
-          color: 'rgba(255, 0, 0, 0.5)',
-          width: 2,
-          lineDash: [3, 7]
-        })
-      }));
-      map.removeOverlay( measureTooltip );
-      
-      // unset sketch
-      sketch = null;
-      // unset tooltip so that a new one can be created
-      measureTooltipElement = null;
-      createMeasureTooltip();
-      ol.Observable.unByKey(listener);
+  
+    //  원이라면
+    if( type == 'Circle' ) {
+      //  원 그리기가 끝나면, 반지름 선분을 만들어 보여준다.
+      let radiusLine = new ol.Feature({
+        geometry: new ol.geom.LineString(evt.target.sketchCoords_)
+      });
+      measureSource.addFeature( radiusLine );
+      //  반지름의 거리와 선분의 두 포인트간의 각을 구하기 위해 반지름 객체를 넘긴다.
+      measureFunc( radiusLine.getGeometry().getLastCoordinate() , radiusLine );
     }
+
+    sketch.setStyle(new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: 'rgba(255, 0, 0, 0.5)',
+        width: 2,
+        lineDash: [3, 7]
+      })
+    }));
+    map.removeOverlay( measureTooltip );
+    
+    // unset sketch
+    sketch = null;
+    // unset tooltip so that a new one can be created
+    measureTooltipElement = null;
+    createMeasureTooltip();
+    ol.Observable.unByKey(listener);
+
     measureInit( true );
     console.groupEnd( 'draw end' );
     console.clear();

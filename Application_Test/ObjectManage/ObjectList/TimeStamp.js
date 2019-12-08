@@ -1,7 +1,7 @@
 /**
  * 2019.07.26
  * Date & Time을 간단한 문자열로 반환하기 위한 객체.
- * GMT Time 인듯?
+ * GMT Time
  */
 const TimeStamp = {
   ZeroLeader: function (n, d) {
