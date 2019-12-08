@@ -199,6 +199,7 @@ const measureObj = function( evt ) {
   let sketch, listener;
   let className = 'selectedType';
   let menuList = $('#obj_mng_li li');
+  let type = evt.dataset.val;
 
   //  이미 같은 type으로 함수를 한번 호출 했었다면 OFF 시키고 리턴.
   if( evt.classList.contains( className) ) {

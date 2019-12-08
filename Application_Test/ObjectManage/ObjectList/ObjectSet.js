@@ -455,6 +455,12 @@ const editPoint = function(uid) {
     case 'Mark':
     case 'Text':
       tgtFeature.getGeometry().setCoordinates( newCoords[0] );
+      break;
+    case 'Image':
+      newCoords.push( newCoords[0] );
+      newCoords = newCoords;
+      tgtFeature.getGeometry().setCoordinates( [newCoords] );
+      imgLayerFunc( tgtFeature );
   }
   setCoordsAtProps( tgtFeature );
   if( style ) defaultStyler( tgtFeature );
