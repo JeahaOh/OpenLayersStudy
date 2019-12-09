@@ -53,8 +53,7 @@ const loopForCoords = function (ol_uid, block) {
   } else if( type != 'Mark' || type != 'Text' ) {
     // console.log( coords );
     let leng = coords.length;
-    console.log( type );
-    console.log( leng );
+    console.log( 'type : ' + type + '\nlength : ' + leng );
     
     //  Polygon 형태일 경우 마지막 좌표는 화면에 보여주지 않는다.
     if( coords[0][0] == coords[leng-1][0]
@@ -64,7 +63,7 @@ const loopForCoords = function (ol_uid, block) {
 
     for ( var i = 0; i < leng; i++) {
       //  fn의 인자로 객체를 넣어 주어야 템플릿에 지정된 값을 넣어줄 수 있다.
-      console.log( coords[i] );
+      // console.log( coords[i] );
       cont += block.fn({
         ol_uid: ol_uid,
         idx: i + 1,
@@ -72,7 +71,6 @@ const loopForCoords = function (ol_uid, block) {
         lon: coords[i][1]
       });
     }
-    console.log( 'ASDF' )
   }
   console.groupEnd('Loop For Coords');
   return cont;
@@ -148,6 +146,160 @@ const lineDashFunc = function(type) {
 }
 Handlebars.registerHelper( 'lineDashFunc', lineDashFunc );
 //  lineDashFunc
+
+//  표출 정보 수정을 위한 Handlebars Helper
+//  Image, Text, Mark는 작동하지 않는다.
+const styleInfoFunc = function( uid ) {
+  console.group( 'styleInfoFunc' );
+  let feature = objSource.getFeatureByUid( uid );
+  let type = feature.values_.info.selectedType;
+  let stroke, fill, text;
+  switch( type ) {
+    case 'Image':
+    case 'Mark':
+    case 'Arrow': return;
+
+    case 'Square':
+    case 'Polygon':
+    case 'CircleP':
+      fill = true;
+
+    case 'Line':
+    case 'MultiLine':
+      stroke = true;
+      break;
+
+    case 'Text':
+      text = true;
+      break;
+
+    default :
+      alert('ERR!!!!');
+      console.log( '!! ERR type ' + type );
+  }
+  let cont = `<div class="obj_ctrl_catg">
+  <span>표출 정보</span>
+    <hr>
+    <div class="obj_ctrl_content">
+    <form action="#" onsubmit="return false;" id="obj_style_`+ uid + `">
+    <ul>`;
+
+  if( stroke ) {
+    cont += strokeStyler( feature, uid );
+    cont += `<li>
+              <label for="obj_stroke_line_dash">선 대시 종류</label>
+              <select name="strokeLineDash" id="obj_stroke_line_dash">`;
+    cont += lineDashFunc( feature.style_.stroke_.lineDash_ );
+    cont += `</select>
+          </li>
+          <li>
+            <label for="obj_stroke_width">선 두께</label>
+            <select name="strokeWidth" id="obj_stroke_width" >`;
+    cont += loopForStrokeWidth( 1, 10, 1, feature.style_.stroke_.width_ );
+    cont += `</select>
+          </li>`;
+  }
+
+  if( fill ) {
+    cont += fillStyler( feature, uid );
+  }
+
+  if( text ) {
+    cont += textStyler( feature, uid );
+  }
+
+  cont += `<hr>
+          <li>
+            <button onclick="editStyle( ` + uid + `)">스타일 적용</button>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>`;
+  console.groupEnd( 'styleInfoFunc' );
+  return cont;
+}
+Handlebars.registerHelper( 'styleInfoFunc', styleInfoFunc );
+
+
+const strokeStyler = function( feature, uid ) {
+  let cont = '';
+  if( !feature.style_.stroke_.color_ ) {
+    // cont += block.fn({rgb: defaultRGB, opa: defaultOpa, ol_uid: uid});
+    cont += `
+      <li>
+        <label for="obj_stroke_RGB">선 색상</label>
+        <input type="color" name="strokeRGB" id="obj_stroke_RGB" value="#000000" />
+      </li>
+      <li>
+        <label for="obj_stroke_opacity">선 투명도</label>
+        <input type="number" name="strokeOpacity" id="obj_stroke_opacity" value="10" min="0" max="10"/>
+      </li>
+      <input type="hidden" name="strokeRGBA" id="` + uid + `_strokeRGBA" />`;
+  } else {
+    let rgb = rgba2rgb(feature.style_.stroke_.color_);
+    // console.log( rgb );
+    cont += `
+      <li>
+        <label for="obj_stroke_RGB">선 색상</label>
+        <input type="color" name="strokeRGB" id="obj_stroke_RGB" value="` + rgb.rgb + `" />
+      </li>
+      <li>
+        <label for="obj_stroke_opacity">선 투명도</label>
+        <input type="number" name="strokeOpacity" id="obj_stroke_opacity" value="` + ((rgb.opa) == 0 ? 0 : (rgb.opa) * 10) + `" min="0" max="10"/>
+      </li>
+      <input type="hidden" name="strokeRGBA" id="` + uid + `_strokeRGBA" value="` + rgb.rgba + `" />`;
+  }
+  return cont;
+}
+
+const fillStyler = function( feature, uid ) {
+  let cont = '';
+  if( !feature.style_.fill_.color_ ) {
+    cont += `
+      <hr>
+      <li>
+        <label for="obj_fill_RGB">채우기 색상</label>
+        <input type="color" name="fillRGB" id="obj_fill_RGB" value="#FFFFFF"/>
+      </li>
+      <li>
+        <label for="obj_fill_opacity">채우기 투명도</label>
+        <input type="number" name="fillOpacity" id="obj_fill_opacity" value="1" min="0" max="10" />
+      </li>
+      <input type="hidden" name="fillRGBA" id="` + uid + `_fillRGBA" />`;
+  } else {
+    let rgb = rgba2rgb(feature.style_.fill_.color_);
+    // console.log( rgb );
+    cont += `
+      <hr>
+      <li>
+        <label for="obj_fill_RGB">채우기 색상</label>
+        <input type="color" name="fillRGB" id="obj_fill_RGB" value="` + rgb.rgb + `"/>
+      </li>
+      <li>
+        <label for="obj_fill_opacity">채우기 투명도</label>
+        <input type="number" name="fillOpacity" id="obj_fill_opacity" value="` + ((rgb.opa) == 0 ? 0 : (rgb.opa) * 10) + `" min="0" max="10" />
+      </li>
+      <input type="hidden" name="fillRGBA" id="` + uid + `_fillRGBA" value="` + rgb.rgba + `">`;
+  }
+  return cont;
+}
+
+const textStyler = function( feature, uid ) {
+  // console.log( feature.style_.text_.font_ );
+  let font = feature.style_.text_.font_;
+  let size = feature.style_.text_.font_.split('px')[0].trim();
+  font = font.split('px')[1].trim();
+  // console.log( font )
+  // console.log( size );
+  let cont = '';
+  cont += `
+        <li>
+          <label for="obj_font_size">폰트 싸이즈</label>
+          <input type="number" name="fontSize" id="obj_font_size" value="` + size + `"/>
+        </li>`;
+  return cont;
+}
 
 /**
  * feature의 uid를 받아서 해당 feature를 삭제한다.
@@ -270,8 +422,8 @@ const propStyleToStyle = function( feature ) {
       text: propStyle.text_ ?
           new ol.style.Text({
             color: propStyle.text_.color_ ? propStyle.text_.color_ : null,
-            font: '12px Verdana',
-            scale: 3,
+            font: propStyle.text_.font_ ? propStyle.text_.font_ : null,
+            scale: propStyle.text_.scale_ ? propStyle.text_.scale : null,
             text: propStyle.text_.text_ ? propStyle.text_.text_ : null
           })
           : null
@@ -521,24 +673,30 @@ const editStyle = function( uid ) {
   let input = $('#obj_style_' + uid).serializeObject();
   let target = objSource.getFeatureByUid( uid );
   // console.log( input.strokeLineDash );
+  let font = target.style_.text_.font_;
+  // console.log( font );
 
-  input.strokeRGBA = rgb2rgba( input.strokeRGB, input.strokeOpacity );
-  input.fillRGBA = rgb2rgba( input.fillRGB, input.fillOpacity );
-  input.strokeLineDash = input.strokeLineDash;
+  // console.log( input.fontSize );
+  if( input.strokeRGBA ) input.strokeRGBA = rgb2rgba( input.strokeRGB, input.strokeOpacity );
+  if( input.fillRGBA ) input.fillRGBA = rgb2rgba( input.fillRGB, input.fillOpacity );
+  if( input.fontSize ) input.fontSize = font.replace(/\d{1,2}/i, input.fontSize);
   // input.textRGBA = rgb2rgba( input.textRGB, input.textOpacity );
-  // console.log( input );
+  // console.log( input.fontSize );
 
   let style = new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: input.strokeRGBA,
-      lineDash: JSON.parse(input.strokeLineDash),
+      lineDash: input.strokeLineDash ? JSON.parse(input.strokeLineDash) : null,
       width: input.strokeWidth
     }),
     fill: new ol.style.Fill({
-      color: input.fillRGBA,
+      color: input.fillRGBA
     }),
     text: new ol.style.Text({
-      color: input.textRGBA
+      color: target.style_.text_.color_ ? target.style_.text_.color_ : null,
+      font: input.fontSize,
+      scale: target.style_.text_.scale_ ? target.style_.text_.scale_ : null,
+      text: target.style_.text_.text_
     })
   });
   // console.log( style );

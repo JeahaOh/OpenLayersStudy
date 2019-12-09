@@ -66,12 +66,9 @@ const squareFunction = function( coordinates, geometry ) {
   return geometry;
 } //  squareFunction
 
-// const select = new ol.interaction.Select({ wrapx: false });
-// map.addInteraction( select );
-
-// const drawObj = function( evt ) {
 const drawObj = function( type, imgDir ) {
-  console.log( type );
+  console.group( 'drawObj' );
+  // console.log( type );
 
   //  map의 interaction들을 초기화.
   drawObjInit();
@@ -127,7 +124,7 @@ const drawObj = function( type, imgDir ) {
     case 'Text':
       objText = prompt('Text 내용을 입력하세요');
       if( objText.length > 0 ) objText = objText.trim();
-      console.log( objText );
+      // console.log( objText );
       if( !objText  ) {
         drawNotiInit();
         return;
@@ -142,7 +139,7 @@ const drawObj = function( type, imgDir ) {
     case 'Image':
       type = 'Circle';
       geometryFunction = squareFunction;
-      console.log( selectedType );
+      // console.log( selectedType );
       break;
   }
 
@@ -253,6 +250,7 @@ const drawObj = function( type, imgDir ) {
     console.groupEnd( 'draw end' );
   });
   //  drawend
+  console.groupEnd( 'drawObj' );
 }
 //  drawObj
 
@@ -266,14 +264,25 @@ const defaultStyler = function( feature, icon ) {
 
   switch( type ) {
     case 'Text' :
-      if( !objText ) objText = feature.values_.style.text_.text_
-      style = new ol.style.Style({
+      // if( !objText ) objText = feature.values_.style.text_.text_
+      // console.log( feature.values_.style.text_ );
+      if( objText ) {
+        style = new ol.style.Style({
           text: new ol.style.Text({
-          font: '12px Verdana',
-          scale: 3,
-          text: objText,
-        })
-      });
+            font: "12px Verdana",
+            scale: 3,
+            text: objText,
+          })
+        });
+      } else {
+        style = new ol.style.Style({
+          text: new ol.style.Text({
+            font: feature.values_.style.text_ ? feature.values_.style.text_.font_ : "12px Verdana",
+            scale: feature.values_.style.text_ ? feature.values_.style.text_.scale_ : 3,
+            text: feature.values_.style.text_.text_
+          })
+        });
+      }
       break;
       
     case 'Mark' :
@@ -552,7 +561,7 @@ const hndlObjDraw = function( target, imgDir ) {
   // console.log( target );
   // console.log( target.className );
   // console.log( target.classList );
-  console.log( imgDir );
+  // console.log( imgDir );
   let val = target.dataset.val;
 
   //  분기 처리하기전에 변수에 담아보자
@@ -581,7 +590,7 @@ const hndlObjDraw = function( target, imgDir ) {
   } else if ( val == 'Mark' && target.dataset.ico_no ) {
     $('#mark_img_container').toggle( 300 );
     // console.log( icon = iconDir + evt.dataset.ico_no + '.png' );
-    console.log( target.dataset.ico_no );
+    // console.log( target.dataset.ico_no );
     drawObj( val, iconDir + target.dataset.ico_no + '.png' );
 
   } else if ( val == 'Image' && !imgDir ) {
@@ -594,7 +603,7 @@ const hndlObjDraw = function( target, imgDir ) {
      * 로 호출 해 줘야 함.
      */
     $('#upload_img_container').toggle( 300 );
-    console.log( imgDir );
+    // console.log( imgDir );
     drawObj( val, '/Application_Test/ObjectManage/ObjectList/img/test.png' );
   
   } else {
