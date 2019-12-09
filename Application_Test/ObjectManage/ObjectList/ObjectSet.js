@@ -513,7 +513,10 @@ const rgba2rgb = function( rgba ) {
 }
 //  rgba2rgb
 
-
+/**
+ * control panel에서 스타일 수정 버튼 클릭시 실행.
+ * @param {}} uid 
+ */
 const editStyle = function( uid ) {
   let input = $('#obj_style_' + uid).serializeObject();
   let target = objSource.getFeatureByUid( uid );
@@ -525,7 +528,19 @@ const editStyle = function( uid ) {
   // input.textRGBA = rgb2rgba( input.textRGB, input.textOpacity );
   // console.log( input );
 
-  let style = map2style( input );
+  let style = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: input.strokeRGBA,
+      lineDash: JSON.parse(input.strokeLineDash),
+      width: input.strokeWidth
+    }),
+    fill: new ol.style.Fill({
+      color: input.fillRGBA,
+    }),
+    text: new ol.style.Text({
+      color: input.textRGBA
+    })
+  });
   // console.log( style );
   // console.log( style.strokeLineDash )
   //  객체에 따로 style을 저장 하려면 주석을 풀어야 함.
@@ -534,27 +549,10 @@ const editStyle = function( uid ) {
 }
 //  editStyle
 
-const map2style = function( map ) {
-  // console.log( map.strokeLineDash );
-  style = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: map.strokeRGBA,
-      lineDash: JSON.parse(map.strokeLineDash),
-      width: map.strokeWidth
-    }),
-    fill: new ol.style.Fill({
-      color: map.fillRGBA,
-    }),
-    text: new ol.style.Text({
-      color: map.textRGBA
-    })
-  });
-
-  // console.log( style );
-  return style;
-}
-//  map2style
-
+/**
+ * 영역 등록 버튼 클릭시 작동,
+ * Server가 없어서 AJAX 작동하지 않음. 
+ */
 const sendAsArea = function() {
   console.group( 'Send As Area ');
   let targetList = getSelectedObjList();

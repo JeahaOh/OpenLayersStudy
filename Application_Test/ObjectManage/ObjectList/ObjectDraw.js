@@ -228,20 +228,6 @@ const drawObj = function( type, imgDir ) {
         circle = rw.readFeature( circle );
         circle.getGeometry().transform('EPSG:4326', 'EPSG:3857');
         circle.setId( TimeStamp.getDateTime() );
-        /**
-         * !! sketch의 uid는 db랑 연결 해줘야 함 !!
-         */
-        // sketch.setId( TimeStamp.getMiliTime() );
-        // sketch.setProperties({
-        //   info: {
-        //     'objName': selectedType + '_' + sketch.ol_uid,
-        //     'objGroup': '기본',
-        //     'selectedType': selectedType,
-        //     'realType': type,
-        //     'objCreateDate': TimeStamp.getDateTime(),
-        //     'objLastEditor': 'USER'
-        //   }
-        // });
 
         setCoordsAtProps( circle );
         defaultStyler( circle );
@@ -255,9 +241,7 @@ const drawObj = function( type, imgDir ) {
       break;
     case 'Image' :
       setCoordsAtProps( sketch );
-      imgLayerFunc( sketch, imgDir );
-      // defaultStyler( sketch );
-      
+      imgLayerFunc( sketch, imgDir );   
       break;
 
     default:
@@ -335,12 +319,6 @@ const defaultStyler = function( feature, icon ) {
       });
       break;
 
-    // case 'Image' : 
-    //   style = new ol.style.Style({
-        
-    //   });
-    //   break;
-
     default :
       style = new ol.style.Style({
         fill: new ol.style.Fill({
@@ -359,6 +337,11 @@ const defaultStyler = function( feature, icon ) {
 }
 
 
+/**
+ * Feature의 좌표를 3857, 4326, wkt 형식으로 Feature coords라는 속성에 다시 저장해 준다.
+ * DMS 형식을 쓸 필요가 있다면 주석을 해제 해 주어야 한다.
+ * @param {*} feature 
+ */
 const setCoordsAtProps = function( feature ) {
   console.group('set coords at props');
   let type = feature.values_.info.selectedType;
@@ -471,7 +454,11 @@ const escape = function( evt ) {
   }
 };
 
-
+/**
+ * Mark 이미지를 렌더링 하기 위한 반복문.
+ * JSP를 쓴다면 대체 가능하다.
+ * @param {*} block 
+ */
 const loopForMarkImgLi = function( block ) {
   cont = '';
   for( var i = 0; i <= 30; i++ ) {
@@ -489,13 +476,16 @@ Handlebars.registerHelper( 'loopForMarkImgLi', loopForMarkImgLi );
 
 /**
  * #obj_img에 파일이 변하면 호출.
- * 서버에서 파일을 새 이름으로 저장한다.
- * 저장 성공시 -> 새 이름을 돌려준다.
- * 새 이름을 가지고 draw를 호출한다.
- * input에서 파일을 지워준다.
+ * 작동 해야 할 로직
+ *    서버에서 파일을 새 이름으로 저장한다.
+ *    저장 성공시 -> 새 이름을 돌려준다.
+ *    새 이름을 가지고 draw를 호출한다.
+ *    input에서 파일을 지워준다.
  * 
- * 저장 실패시 -> 실패 이유를 알려준다.
- * input에서 파일을 지워준다.
+ *    저장 실패시 -> 실패 이유를 알려준다.
+ *    input에서 파일을 지워준다.
+ * 
+ * 현제 상태는 이미지 임력만 받고 지정된 이미지 린크를 리턴함.
  * 
  */
 const objImg = function() {
@@ -549,7 +539,15 @@ const uploadImgAndGetName = function(){
   }
 }
 
-
+/**
+ * Draw 하기 전에 Mark나 Image 분기처리를 위해 만든 함수.
+ * draw type을 선책하면 Switch 역할도 한다.
+ * 
+ * imgDir이 없다면 이미지 선택하는 function을 실행하고, imgDir이 있다면 Draw를 호출한다.
+ * 이미지가 아닌경우 draw를 바로 호출한다.
+ * @param {*} target 
+ * @param {*} imgDir 
+ */
 const hndlObjDraw = function( target, imgDir ) {
   // console.log( target );
   // console.log( target.className );
@@ -604,10 +602,18 @@ const hndlObjDraw = function( target, imgDir ) {
   }
 }
 
+/**
+ * 인자로 받은 feature의 좌표로 imageLayer를 띄우기 위한 함수.
+ * @param {*} feature 
+ * @param {*} imgDir 
+ */
 const imgLayerFunc = function( feature, imgDir ){
   console.group( 'imgLayerFunc ');
   // console.log( feature );
   // console.log( feature.getGeometry().getCoordinates()[0] );
+
+  // feature 생성시라면 imgDir을 인자로 주고,
+  // page load때 호출한다면 feature에서 imgDir을 꺼낸다.
   if( !imgDir ) {
     imgDir = feature.values_.imgDir
   } else {
