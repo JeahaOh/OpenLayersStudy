@@ -41,10 +41,9 @@ const loopForCoords = function (ol_uid, block) {
   let coords = objSource.getFeatureByUid( ol_uid ).values_.coords.coords4326;
   let type = objSource.getFeatureByUid( ol_uid ).values_.info.selectedType;
 
-  console.log( coords );
-  console.log( type );
   if( type == 'Mark' || type == 'Text' ) {
-    console.log( coords )
+    // console.log( type );
+    // console.log( coords );
     cont += block.fn({
       ol_uid: ol_uid,
       idx: 1,
@@ -52,9 +51,12 @@ const loopForCoords = function (ol_uid, block) {
       lon: coords[1]
     });
   } else if( type != 'Mark' || type != 'Text' ) {
+    // console.log( coords );
     let leng = coords.length;
+    console.log( type );
     console.log( leng );
-    console.log( coords )
+    
+    //  Polygon 형태일 경우 마지막 좌표는 화면에 보여주지 않는다.
     if( coords[0][0] == coords[leng-1][0]
         && coords[0][1] == coords[leng-1][1]) {
       leng -=1;
@@ -62,6 +64,7 @@ const loopForCoords = function (ol_uid, block) {
 
     for ( var i = 0; i < leng; i++) {
       //  fn의 인자로 객체를 넣어 주어야 템플릿에 지정된 값을 넣어줄 수 있다.
+      console.log( coords[i] );
       cont += block.fn({
         ol_uid: ol_uid,
         idx: i + 1,
@@ -80,7 +83,9 @@ Handlebars.registerHelper('loopForCoords', loopForCoords);
 const colorize = function(rgba, uid, where, block) {
   cont = '';
   feature = objSource.getFeatureByUid(uid);
+  let type = feature.values_.info.selectedType;
   // console.log( feature.values_.info.selectedType );
+  if( type == 'Mark' || type == 'Text' ) return;
   // console.log( rgba );
   switch( where ) {
     case 'stroke' :
