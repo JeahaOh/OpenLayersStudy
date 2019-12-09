@@ -157,7 +157,8 @@ const styleInfoFunc = function( uid ) {
   switch( type ) {
     case 'Image':
     case 'Mark':
-    case 'Arrow': return;
+    case 'Arrow':
+      return;
 
     case 'Square':
     case 'Polygon':
@@ -667,43 +668,76 @@ const rgba2rgb = function( rgba ) {
 
 /**
  * control panel에서 스타일 수정 버튼 클릭시 실행.
+ * feature의 type에 따라 작동함.
  * @param {}} uid 
  */
 const editStyle = function( uid ) {
+  console.group( 'editStyle' );
   let input = $('#obj_style_' + uid).serializeObject();
   let target = objSource.getFeatureByUid( uid );
+  let type = target.values_.info.selectedType;
+  console.log( type );
   // console.log( input.strokeLineDash );
-  let font = target.style_.text_.font_;
+  let style;
   // console.log( font );
 
-  // console.log( input.fontSize );
-  if( input.strokeRGBA ) input.strokeRGBA = rgb2rgba( input.strokeRGB, input.strokeOpacity );
-  if( input.fillRGBA ) input.fillRGBA = rgb2rgba( input.fillRGB, input.fillOpacity );
-  if( input.fontSize ) input.fontSize = font.replace(/\d{1,2}/i, input.fontSize);
-  // input.textRGBA = rgb2rgba( input.textRGB, input.textOpacity );
-  // console.log( input.fontSize );
+  switch( type ) {
+    case 'Image':
+    case 'Mark':
+    case 'Arrow':
+      return;
 
-  let style = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: input.strokeRGBA,
-      lineDash: input.strokeLineDash ? JSON.parse(input.strokeLineDash) : null,
-      width: input.strokeWidth
-    }),
-    fill: new ol.style.Fill({
-      color: input.fillRGBA
-    }),
-    text: new ol.style.Text({
-      color: target.style_.text_.color_ ? target.style_.text_.color_ : null,
-      font: input.fontSize,
-      scale: target.style_.text_.scale_ ? target.style_.text_.scale_ : null,
-      text: target.style_.text_.text_
-    })
-  });
-  // console.log( style );
-  // console.log( style.strokeLineDash )
-  //  객체에 따로 style을 저장 하려면 주석을 풀어야 함.
+    case 'Square':
+    case 'Polygon':
+    case 'CircleP':
+
+      if( input.strokeRGBA ) input.strokeRGBA = rgb2rgba( input.strokeRGB, input.strokeOpacity );
+      if( input.fillRGBA ) input.fillRGBA = rgb2rgba( input.fillRGB, input.fillOpacity );
+      style = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: input.strokeRGBA,
+          lineDash: input.strokeLineDash ? JSON.parse(input.strokeLineDash) : null,
+          width: input.strokeWidth
+        }),
+        fill: new ol.style.Fill({
+          color: input.fillRGBA
+        })
+      });
+      break;
+    case 'Line':
+    case 'MultiLine':
+
+    if( input.strokeRGBA ) input.strokeRGBA = rgb2rgba( input.strokeRGB, input.strokeOpacity );
+      style = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: input.strokeRGBA,
+          lineDash: input.strokeLineDash ? JSON.parse(input.strokeLineDash) : null,
+          width: input.strokeWidth
+        })
+      });
+
+      break;
+    case 'Text':
+      let font = target.style_.text_.font_;
+      if( input.fontSize ) input.fontSize = font.replace(/\d{1,2}/i, input.fontSize);
+      style = new ol.style.Style({
+        text: new ol.style.Text({
+          color: target.style_.text_.color_ ? target.style_.text_.color_ : null,
+          font: input.fontSize,
+          scale: target.style_.text_.scale_ ? target.style_.text_.scale_ : null,
+          text: target.style_.text_.text_
+        })
+      });
+      break;
+
+    default :
+      alert('ERR!!!!');
+      console.log( '!! ERR type ' + type );
+  }
+  
   target.setProperties( {style: style} );
   target.setStyle( style );
+  console.groupEnd( 'editStyle' );
 }
 //  editStyle
 
