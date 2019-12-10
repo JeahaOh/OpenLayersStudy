@@ -3,8 +3,8 @@ let globalTemp, miningSmallArea, effectiveRange;
 //  기본 맵 설정. -->
 let raster = new ol.layer.Tile({
   source: new ol.source.OSM({
-    // url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
-    url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
+    url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+    // url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
     // url: 'https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png'
   })
 });
@@ -36,9 +36,8 @@ let map = new ol.Map({
   ],
   target: 'map',
   view: new ol.View({
-    center: ol.proj.fromLonLat([128.4, 35.7]),
-    zoom: 7
-    
+    center: ol.proj.fromLonLat([131.5, 37.4]),
+    zoom: 10
   })
 });
 //  <-- 기본 맵 설정.
@@ -60,56 +59,22 @@ const formatLength = function ( line ) {
 
 //  global
 let draw, snap;
-//  Line을 그리면 사각형으로 변환한 geometry를 반환한다.
-let squareFunction = function( coordinates, geometry ) {
-  if( !geometry ) {
-    geometry = new ol.geom.Polygon(null);
-  }
-  let start = coordinates[0];
-  let end = coordinates[1];
 
-  geometry.setCoordinates([
-    [start, [start[0], end[1]], end, [end[0], start[1]], start]
-  ]);
-  return geometry;
-}
-
-let doInteraction = function(dist, unit) {
+let doInteraction = function( dist, unit ) {
+  let criteria = source.getFeatureById(1111);
+  console.log( criteria );
   //  소광구
   draw = new ol.interaction.Draw({
-    source: source,
+    source: null,
     type: 'Polygon'
-    // type: 'LineString',
-    // geometryFunction: squareFunction,
-    // maxPoints: 2
   });
   map.addInteraction( draw );
+
   snap = new ol.interaction.Snap({ source: source });
   map.addInteraction( snap );
 
   draw.on('drawstart', function( evt ) {
     console.group('Draw Start');
-    // let sketch = evt.feature;
-
-    // console.log(sketch.getGeometry());
-    // sketch.getGeometry().on('change', function( evt ){
-    //   console.group('Sketch on change');
-    //   let geom = evt.target;
-    //   console.log('geom : ');
-    //   console.log(geom);
-
-    //   let coord = geom.getLastCoordinate();
-    //   console.log('coord : ');
-    //   console.log( coord );
-
-    //   let output = formatLength( geom );
-    //   console.log('output : ');
-    //   console.log( output );
-
-    //   overlayPopupElement.innerHTML = output;
-    //   overlayPopup.setPosition( geom.getLastCoordinates() );
-    //   console.groupEnd();
-    // });
 
     console.groupEnd('Draw Start');
   }); //  drawstart
@@ -118,65 +83,34 @@ let doInteraction = function(dist, unit) {
     console.group('Draw End');
 
     miningSmallArea = evt.feature;
-    evt.feature.setProperties({
+
+    if( !checkValidLocation(criteria, miningSmallArea) ) {
+      alert( '소광구는 대광구 안에 속해 있어야 합니다' );
+      return;
+    }
+    
+    
+    miningSmallArea.setProperties({
       'category': 'Mining Small Area'
     });
     console.log(`miningSmallArea : `);
     // console.log(miningSmallArea);
     
-
-    /*
-    // miningSmallArea를 복제.
-    globalTemp = miningSmallArea.clone();
-    console.log(`globalTemp : `);
-    // console.log(globalTemp);
-    // miningSmallArea를 복제.
-    */
-
-    
-
     //  --> 유효범위 Feature 생성
     // source.addFeature(createEffectiveRangeByTransformScale(miningSmallArea));
-    source.addFeature(createEffectiveRangeByBuffer(miningSmallArea, dist, unit));
+    let effectiveRange = createEffectiveRangeByBuffer(miningSmallArea, dist, unit);
+    effectiveRange = trimPolygon( criteria, effectiveRange );
     //  <-- Feature 생성
-
-
-
-
-
-    //  Feature의 정 중앙 좌표를 가져오는 함수.
-    // console.log(`miningSmallArea.getGeometry().getInteriorPoint().A : `);
-    // console.log(miningSmallArea.getGeometry().getInteriorPoint().A);
+    effectiveRange.setStyle( new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: 'red',
+        lineDash: [3, 10],
+        width: 2
+      })
+    }));
     
-    // var centerPoint = [
-    //   miningSmallArea.getGeometry().getInteriorPoint().A[0],
-    //   miningSmallArea.getGeometry().getInteriorPoint().A[1]
-    // ];
-
-    // console.log( centerPoint );
-
-    // drawPoint(centerPoint);
-    //  Feature의 정 중앙 좌표를 가져오는 함수.
-
-    
-
-
-    
-    // var coordinate = coordinates[0];
-    // console.log(coordinate[0]);
-
-    // var point1_X = coordinate[0][0];
-    // var point1_Y = coordinate[0][1];
-
-    // var point2_X = coordinate[1][0];
-    // var point2_Y = coordinate[1][1];
-
-    // var point3_X = coordinate[2][0];
-    // var point3_Y = coordinate[2][1];
-
-    // var point4_X = coordinate[3][0];
-    // var point4_Y = coordinate[3][1];
-
+    source.addFeature( effectiveRange );
+    source.addFeature( miningSmallArea );
 
     //  Draw End Finally End.
     map.removeInteraction( draw );
@@ -191,7 +125,7 @@ const createSmallMineLot = function(){
   // let dist = $('#effective_range_distance').val();
   let dist = document.getElementById('effective_range_distance').value;
   console.log( dist + unit );
-  if( confirm('유효범위의 광구와의 거리는 ' + dist + unit + '입니다.') ) {
+  if( confirm('유효범위의 광구와의 거리는 ' + dist + ' ' + unit + '입니다.') ) {
     doInteraction(dist, unit);
   }
   // doInteraction(dist, unit);
@@ -199,12 +133,12 @@ const createSmallMineLot = function(){
 
 
 // Miles 단위를 Kilometers 단위로 변환.
-const mTk = function(miles) {
+const mTk = function( miles ) {
   return miles * 1.6;
 }
 
 // Kilometers 단위를 Miles 단위로 변환.
-const kTm = function(km) {
+const kTm = function( km ) {
   return km / 1.6;
 }
 //  [14365024.794099694, 4219904.888355112] ('EPSG:4326')형식으로 좌표가 들어오면,
@@ -236,59 +170,6 @@ const drawPoint = function(coord) {
   console.groupEnd('Draw Point Func');
 };  //  drawPoint
 
-//  인자로 받은 Feature를 감싸는 transformScale()를 거친 Feature를 리턴.
-const createEffectiveRangeByTransformScale = function(mineLot) {
-  console.group('createEffectiveRangeByTransformScale()');
-  // --> 유효범위를 만들기 위한 좌표값 준비.
-  // mineLot의 좌표체계 변환
-  mineLot.getGeometry().transform('EPSG:3857', 'EPSG:4326');
-
-  var coordinates = mineLot.getGeometry().getCoordinates();
-  console.log(`coordinates : `);
-  // console.log(coordinates);
-  // mineLot의 좌표체계 재변환
-  mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
-  // <-- 유효범위를 만들기 위한 좌표값 준비.
-
-
-  //  --> 유효범위 Feature 생성
-  var poly = turf.polygon(coordinates);
-  console.log(`poly : `);
-  // console.log(poly);
-
-  console.log(`transformScale() : `);
-  // var scaledPoly = turf.transformScale(poly, 1.2);
-  var scaledPoly = turf.transformScale(poly, 1.05, {mutate: true});
-  console.log(`transformScale passed!`);
-  // console.log(scaledPoly);
-
-  effectiveRange = new ol.format.GeoJSON().readFeatures(scaledPoly);
-  console.log(`effectiveRange : `);
-  // console.log(effectiveRange[0]);
-
-  effectiveRange[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
-
-  effectiveRange[0].setStyle( new ol.style.Style({
-    fill: new ol.style.Fill({
-      color: 'rgba(0, 0, 0, 0)'
-    }),
-    stroke: new ol.style.Stroke({
-      color: 'red',
-      lineDash: [4, 4],
-      width: 1
-    })
-  }));
-
-  effectiveRange[0].setProperties({
-    'category': 'Mining Effective Range'
-  });
-
-  console.groupEnd('createEffectiveRangeByTransformScale()');
-  return effectiveRange[0];
-};  //  createEffectiveRangeByTransformScale
-
-
-
 //  인자로 받은 Feature를 감싸는 buffer()를 거친 Feature를 리턴.
 const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   console.group('createEffectiveRangeByBuffer()');
@@ -301,24 +182,67 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   let effectiveRange = new ol.format.GeoJSON().readFeatures(bufferedFeature);
   console.log(`effectiveRange : `);
   // console.log(effectiveRange[0]);
-  effectiveRange[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
-
-  effectiveRange[0].setStyle( new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: 'red',
-      lineDash: [3, 10],
-      width: 2
-    })
-  }));
+  effectiveRange = effectiveRange[0];
+  effectiveRange.getGeometry().transform('EPSG:4326', 'EPSG:3857');
 
   mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
 
-  effectiveRange[0].setProperties({
+  effectiveRange.setProperties({
     'define' : 'Effective Range'
   });
 
-  globalTemp = effectiveRange[0];
+  globalTemp = effectiveRange;
   console.log(globalTemp);
   console.groupEnd('createEffectiveRangeByBuffer()');
-  return effectiveRange[0];
+  return effectiveRange;
 };  //  createEffectiveRangeByBuffer
+
+(function(){
+  coord = '';
+  feature = new ol.Feature({
+    geometry: new ol.geom.Polygon([[
+         [14586230.111968415, 4551333.793843959]
+        ,[14586230.111968415, 4478107.120746762]
+        ,[14728250.11052227,  4478107.120746762]
+        ,[14728250.11052227,  4551333.793843959]
+        ,[14586230.111968415, 4551333.793843959]
+      ]]),
+  });
+  feature.set('name', 'MineLot');
+  feature.setId('1111');
+  source.addFeature( feature );
+  // console.log( feature );
+  // console.log( source.getFeatures()[0] );
+
+  // console.log( feature === source.getFeatures()[0] );
+})();
+
+/**
+ * 두 폴리곤이 겹쳐있는지 확인하기 위한 함수...
+ * @param {*} criteria 
+ * @param {*} newArea 
+ */
+const checkValidLocation = function( criteria, newArea ) {
+  console.group( 'checkValidLocation' );
+  console.groupEnd( 'checkValidLocation' );
+  // return turf.booleanContains(
+  return !turf.booleanDisjoint(
+    turf.polygon( criteria.getGeometry().getCoordinates() )
+  , turf.polygon( newArea.getGeometry().getCoordinates() )
+  );
+}
+
+const trimPolygon = function( criteria, target ) {
+  console.group( 'trimPolygon' );
+
+  // console.log( criteria );
+  criteria = turf.polygon( criteria.getGeometry().getCoordinates() );
+  // console.log( target );
+  target = turf.polygon( target.getGeometry().getCoordinates() );
+
+  target = turf.intersect( criteria, target );
+
+  let rw = new ol.format.GeoJSON();
+  console.groupEnd( 'trimPolygon' );
+  return rw.readFeature( target );
+}
