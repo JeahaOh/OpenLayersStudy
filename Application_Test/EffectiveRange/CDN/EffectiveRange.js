@@ -1,11 +1,9 @@
-let globalTemp, miningSmallArea, effectiveRange;
+// let globalTemp, miningSmallArea, effectiveRange;
 
 //  기본 맵 설정. -->
 let raster = new ol.layer.Tile({
   source: new ol.source.OSM({
     url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
-    // url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
-    // url: 'https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png'
   })
 });
 
@@ -42,30 +40,13 @@ let map = new ol.Map({
 });
 //  <-- 기본 맵 설정.
 
-//  line을 주면 line의 실제 거리를 계산해서 반환한다.
-const formatLength = function ( line ) {
-  var length = ol.Sphere.getLength(line);
-  var output;
-  if (length > 100) {
-    output = (Math.round(length / 1000 * 100) / 100) +
-      ' ' + 'km';
-  } else {
-    output = (Math.round(length * 100) / 100) +
-      ' ' + 'm';
-  }
-  return output;
-};
-//  line을 주면 line의 실제 거리를 계산해서 반환한다.
-
 //  global
 let draw, snap;
-
 let doInteraction = function( dist, unit ) {
   let criteria = source.getFeatureById(1111);
-  console.log( criteria );
+  // console.log( criteria );
   //  소광구
   draw = new ol.interaction.Draw({
-    source: null,
     type: 'Polygon'
   });
   map.addInteraction( draw );
@@ -73,27 +54,23 @@ let doInteraction = function( dist, unit ) {
   snap = new ol.interaction.Snap({ source: source });
   map.addInteraction( snap );
 
-  draw.on('drawstart', function( evt ) {
-    console.group('Draw Start');
-
-    console.groupEnd('Draw Start');
-  }); //  drawstart
-
   draw.on('drawend', function( evt ) {
     console.group('Draw End');
 
-    miningSmallArea = evt.feature;
+    let miningSmallArea = evt.feature;
 
-    if( !checkValidLocation(criteria, miningSmallArea) ) {
+    if( !checkValidLocation( criteria, miningSmallArea ) ) {
       alert( '소광구는 대광구 안에 속해 있어야 합니다' );
       return;
     }
+
+    miningSmallArea = trimPolygon( criteria, miningSmallArea );
     
     
     miningSmallArea.setProperties({
       'category': 'Mining Small Area'
     });
-    console.log(`miningSmallArea : `);
+    // console.log(`miningSmallArea : `);
     // console.log(miningSmallArea);
     
     //  --> 유효범위 Feature 생성
@@ -131,45 +108,6 @@ const createSmallMineLot = function(){
   // doInteraction(dist, unit);
 } //  createSmallMineLot
 
-
-// Miles 단위를 Kilometers 단위로 변환.
-const mTk = function( miles ) {
-  return miles * 1.6;
-}
-
-// Kilometers 단위를 Miles 단위로 변환.
-const kTm = function( km ) {
-  return km / 1.6;
-}
-//  [14365024.794099694, 4219904.888355112] ('EPSG:4326')형식으로 좌표가 들어오면,
-//  그 지점에 Point Feature를 찍어주는 함수.
-const drawPoint = function(coord) {
-  console.group('Draw Point Func');
-  console.log(coord)
-  let point = new ol.Feature({
-    geometry: new ol.geom.Point(
-      ol.proj.fromLonLat(coord, 'EPSG:4326', 'EPSG:3857')
-    )
-  });
-  point.setStyle( new ol.style.Style({
-    image: new ol.style.Circle({
-      radius: 3,
-      fill: new ol.style.Fill({
-        color: '#000000'
-      })
-    }),
-    fill: new ol.style.Fill({
-      color: '#000000'
-    }),
-    stroke: new ol.style.Stroke({
-      color: '#000000',
-      width: 2
-    })
-  }) );
-  source.addFeature( point );
-  console.groupEnd('Draw Point Func');
-};  //  drawPoint
-
 //  인자로 받은 Feature를 감싸는 buffer()를 거친 Feature를 리턴.
 const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   console.group('createEffectiveRangeByBuffer()');
@@ -180,25 +118,21 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   let bufferedFeature = turf.buffer(poly, _dist, {units: _unit});
 
   let effectiveRange = new ol.format.GeoJSON().readFeatures(bufferedFeature);
-  console.log(`effectiveRange : `);
+  // console.log(`effectiveRange : `);
   // console.log(effectiveRange[0]);
   effectiveRange = effectiveRange[0];
-  effectiveRange.getGeometry().transform('EPSG:4326', 'EPSG:3857');
-
-  mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
-
+  
   effectiveRange.setProperties({
     'define' : 'Effective Range'
   });
+  effectiveRange.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+  mineLot.getGeometry().transform('EPSG:4326', 'EPSG:3857');
 
-  globalTemp = effectiveRange;
-  console.log(globalTemp);
   console.groupEnd('createEffectiveRangeByBuffer()');
   return effectiveRange;
 };  //  createEffectiveRangeByBuffer
 
 (function(){
-  coord = '';
   feature = new ol.Feature({
     geometry: new ol.geom.Polygon([[
          [14586230.111968415, 4551333.793843959]
