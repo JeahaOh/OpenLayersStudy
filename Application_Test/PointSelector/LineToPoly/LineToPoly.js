@@ -41,6 +41,9 @@ let map = new ol.Map({
 //  <-- 기본 맵 설정.
 
 
+
+
+
 let lineToSquare = function() {
   draw = new ol.interaction.Draw({
     source: null,
@@ -48,23 +51,15 @@ let lineToSquare = function() {
     maxPoints: 2
   });
   map.addInteraction( draw );
+  
   snap = new ol.interaction.Snap({ source: source });
   map.addInteraction( snap );
-
-  draw.on('drawstart', function( evt ) {
-    console.group('Draw Start');
-
-    console.groupEnd('Draw Start');
-  }); //  drawstart
 
   draw.on('drawend', function( evt ) {
     console.group('Draw End');
 
     let feature = evt.feature;
-    // evt.feature.setProperties({
-    //   'category': 'Point Collector'
-    // });
-    console.log(`feature : `);
+    // console.log(`feature : `);
     // console.log(feature);
     
     let clone = duplicateLine( feature );
@@ -85,10 +80,13 @@ let lineToSquare = function() {
 
     range = createPoly(range);
 
+    let area = toWKT(range)
+    console.log( area );
     source.addFeature(range);
     
-    range = range.getGeometry().getCoordinates();
-    console.log(range);
+    // range = range.getGeometry().getCoordinates();
+    // console.log(range);
+
 
     //  Draw End Finally End.
     map.removeInteraction( draw );
@@ -137,4 +135,12 @@ const createPoly = function( coords ) {
   
   console.groupEnd('Lines To Polygon');
   return feature;
+}
+
+
+/**
+ * feature를 WKT로 변환함.
+ */
+let toWKT = function (feature) {
+  return (new ol.format.WKT()).writeFeature(feature);
 }
