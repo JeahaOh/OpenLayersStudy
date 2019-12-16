@@ -144,3 +144,11 @@ const createPoly = function( coords ) {
 let toWKT = function (feature) {
   return (new ol.format.WKT()).writeFeature(feature);
 }
+
+/**
+ * 로직
+ * LineString을 그린다.
+ * LineString을 복제한다.
+ * 두 라인을 Polygon으로 바꾼다
+ * WKT 문자열로 리턴한다.
+ */
