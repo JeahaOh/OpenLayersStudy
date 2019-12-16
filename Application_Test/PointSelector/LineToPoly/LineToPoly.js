@@ -62,23 +62,41 @@ let lineToSquare = function() {
     // console.log(`feature : `);
     // console.log(feature);
     
-    let clone = duplicateLine( feature );
-
-    let originCoords = feature.getGeometry().getCoordinates();
-    // console.log(originCoords);
-    let cloneCoords = clone.getGeometry().getCoordinates();
-    // console.log(cloneCoords);
-    let range = [];
+    // --> feature를 3미터 띄운 feature'를 만든다
+    console.group('Duplicate Line');
+    feature.getGeometry().transform('EPSG:3857', 'EPSG:4326');
     
-    range.push(originCoords[0]);
-    range.push(cloneCoords[0]);
-    range.push(cloneCoords[1]);
-    range.push(originCoords[1]);
-    range.push(originCoords[0]);
+    let clone = turf.lineString(feature.getGeometry().getCoordinates());
+    //  line 사이의 거리와 단위를 지정한다.
+    clone = turf.lineOffset( clone, 3, { units: 'meters' } );
+  
+    clone = new ol.format.GeoJSON().readFeatures( clone )[0];
+    // console.log( clone );
+    
+    clone.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+    feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+    console.groupEnd('Duplicate Line');
+    // <-- feature를 3미터 띄운 feature'를 만든다
 
+    let range = [
+      feature.getGeometry().getCoordinates()[0]
+      ,clone.getGeometry().getCoordinates()[0]
+      ,clone.getGeometry().getCoordinates()[1]
+      ,feature.getGeometry().getCoordinates()[1]
+      ,feature.getGeometry().getCoordinates()[0]
+    ];
     // console.log(range);
 
-    range = createPoly(range);
+    //  --> Polygon으로 바꾼다.
+    console.group('Lines To Polygon');
+    range = new ol.Feature({
+      geometry: new ol.geom.Polygon( [range] ),
+      name: 'Point Collector'
+    });
+    console.groupEnd('Lines To Polygon');
+    //  <-- Polygon으로 바꾼다.
+
+
 
     let area = toWKT(range)
     console.log( area );
@@ -87,6 +105,16 @@ let lineToSquare = function() {
     // range = range.getGeometry().getCoordinates();
     // console.log(range);
 
+    range.setStyle( new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: 'rgba(0, 0, 0, 0.2)',
+        width: 1
+      })
+    }) );
+    range.setProperties({
+      'category': 'Point Collector'
+    });
+
 
     //  Draw End Finally End.
     map.removeInteraction( draw );
@@ -94,49 +122,6 @@ let lineToSquare = function() {
     console.groupEnd('Draw End');
   }); //  drawend
 }   //  lineToSquare
-
-const duplicateLine = function( originLineString ){
-  console.group('Duplicate Line');
-  originLineString.getGeometry().transform('EPSG:3857', 'EPSG:4326');
-  
-  let clone = turf.lineString(originLineString.getGeometry().getCoordinates());
-  //  line 사이의 거리와 단위를 지정한다.
-  clone = turf.lineOffset( clone, 3, { units: 'meters' } );
-
-  // clone = turf.lineOffset( clone, 100 );
-  // console.log( clone );
-  clone = new ol.format.GeoJSON().readFeatures(clone);
- 
-  clone[0].getGeometry().transform('EPSG:4326', 'EPSG:3857');
-  originLineString.getGeometry().transform('EPSG:4326', 'EPSG:3857');
-  console.groupEnd('Duplicate Line');
-  return clone[0];
-}
-
-const createPoly = function( coords ) {
-  console.group('Lines To Polygon');
-  let feature = new ol.Feature({
-    geometry: new ol.geom.Polygon( [coords] ),
-    name: 'Point Collector'
-  });
-
-  // console.log(feature);
-  // console.log(feature.getGeometry().getCoordinates());
-  
-  feature.setStyle( new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: 'rgba(0, 0, 0, 0.2)',
-      width: 1
-    })
-  }) );
-  feature.setProperties({
-    'category': 'Point Collector'
-  });
-  
-  console.groupEnd('Lines To Polygon');
-  return feature;
-}
-
 
 /**
  * feature를 WKT로 변환함.
@@ -150,5 +135,6 @@ let toWKT = function (feature) {
  * LineString을 그린다.
  * LineString을 복제한다.
  * 두 라인을 Polygon으로 바꾼다
- * WKT 문자열로 리턴한다.
+ * WKT 문자열로 서버에 데이터를 요청한다.
+ * 
  */
