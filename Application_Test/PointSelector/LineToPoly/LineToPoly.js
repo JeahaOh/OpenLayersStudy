@@ -44,7 +44,8 @@ let map = new ol.Map({
 
 
 
-let lineToSquare = function() {
+const drawSurvArea = function() {
+  console.group('draw ');
   draw = new ol.interaction.Draw({
     source: null,
     type: 'LineString',
@@ -138,3 +139,74 @@ let toWKT = function (feature) {
  * WKT 문자열로 서버에 데이터를 요청한다.
  * 
  */
+
+
+
+/**
+ * 사용자가 업로드한 객체를 읽기위한 함수
+ */
+const loadFile = function() {
+  var file, fr;
+
+  if (typeof window.FileReader !== 'function') {
+    alert("The file API isn't supported on this browser yet.");
+    return;
+  }
+
+  // input = document.getElementById('fileinput');
+  console.log(input)
+  if (!input) {
+    alert("Um, couldn't find the fileinput element.");
+  } else if (!input.files) {
+    alert("This browser doesn't seem to support the `files` property of file inputs.");
+  } else if (!input.files[0]) {
+    alert("파일이 없습니다.");
+  } else if( input.files[0].type != 'application/json' ) {
+    alert('올바른 형식의 파일이 아닙니다.');
+    return false;
+  } else {
+    file = input.files[0];
+    console.log( file );
+    fr = new FileReader();
+    fr.onload = receivedText;
+    fr.readAsText(file);
+  }
+};
+
+/**
+ * 업로드 된 파일을 읽어서 스타일을 적용한 뒤,
+ * 객체들을 objSource에 addFeature 한다.
+ * @param {} e 
+ */
+let input;
+const receivedText = function(e) {
+  let lines = JSON.parse(e.target.result);
+  console.log( lines );
+  $.ajax({
+    type : "POST",
+    url : "/postEnvData.do",
+    dataType : "application/json",
+    data : lines,
+    traditional : true,    // or false, your choice
+    async : true,    // or true, your choice
+    beforeSend : function(xhr, opts) {
+        // when validation is false
+        if (false) {
+            xhr.abort();
+        }
+    },
+    success : function( res ) {
+        console.log( res )
+    },
+    error : function( err ) {
+        console.error( err );
+    }
+  });
+}
+//  JSON을 file로 받아서 서버에 전송하기 위한 테스트 코드
+const createLoader = function() {
+  input = document.createElement('input');
+  input.type = "file";
+  input.id = "fileinput"
+  input.click();
+}
