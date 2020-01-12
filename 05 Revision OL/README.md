@@ -9,6 +9,7 @@
 - polygon 그리기
 - 정사각형 그리기
 - 지도에 그린 feature 목록 보기
+- 선택한 feature 삭제하기
 - session에 저장하기
 - style 적용하기
 - 거리 구하기

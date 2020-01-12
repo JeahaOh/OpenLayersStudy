@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <title>Mouse Position</title>
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css" type="text/css">
+</head>
+
+<body style="background-color: black; color: white;">
+
+  <p>커서가 위치한 곳의 좌표를 표출하기.</p>
+  <p>OpenLayers에서 지도상 특정 위치에 대한 좌표를 가져오는 방법 중, 가장 기본적인 마우스 위치에 대한 지도 좌표 보는 방법.<br />OpenLayers에서 기본적으로 제공하는
+    MousePosition이라는 컨트롤 모듈을 사용하면 됨.</p>
+  <p>예제를 진행하기전에,<br />OpenLayers 공식 사이트에서는 import를 사용하는 문법을 추천함.<br />But, 복습 겸 간단하게 코드를 남기는 중이니 CDN 방식으로 하겠음.</p>
+  <p>ES6의 import 문은 다음과 같은 방법으로 대체시키면 됨.</p>
+  <pre class="capnproto"><code>// import Map from 'ol/Map';
+const Map = ol.Map;
+
+// import View from 'ol/View';
+const View = ol.View;
+
+// import {defaults as defaultControls} from 'ol/control';
+const defaultControls = ol.control.defaults;</code></pre>
+  <p>1. 좌표값을 표출하는 div 선언</p>
+  <pre class="applescript"><code>&lt;div id="mouse-position"&gt;&lt;/div&gt;</code></pre>
+  <p>2. 마우스 좌표를 가져오는 OpenLayers의 모듈 선언.</p>
+  <pre class="javascript"><code>let mousePositionCtrl = new ol.control.MousePosition({
+  coordinateFormat: ol.coordinate.createStringXY(4),
+  projection: 'EPSG:4326',
+  className: 'custom-mouse-position',
+  target: document.getElementById('mouse-position'),
+  undefinedHTML: '&amp;nbsp;'
+});</code></pre>
+  <p>이전 예제에서 두 단계만 추가해주면 div 안에 마우스 위치의 좌표를 가져올 수 있음.</p>
+  <p>그런데 마우스의 좌표가 쌩 숫자임...<br />좌표계라는 개념이 있고, 좌표계의 종류는 우리나라에서 사용하는 좌표계만 30개 정도 되는 듯?<br />좌표계에 대한 정리는 <a
+      href="https://jeaha.dev/7?category=818111%5D">여기</a>에 있음.</p>
+  <p>3. 결과 화면</p>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css"
+    type="text/css">
+  <script
+    src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL">
+  </script>
+  <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
+  <div id="map" class="map" style="width: 100%; height: 800px;">&nbsp;</div>
+  <div id="mouse-position" style="font-weight: bold; padding: 10px;">&nbsp;</div>
+  <script>
+    const mousePositionCtrl = new ol.control.MousePosition({
+      coordinateFormat: ol.coordinate.createStringXY(4),
+      projection: 'EPSG:4326',
+      className: 'custom-mouse-position',
+      target: document.getElementById('mouse-position'),
+      undefinedHTML: '&nbsp;'
+    });
+    const map = new ol.Map({
+      controls: ol.control.defaults().extend([mousePositionCtrl]),
+      layers: [new ol.layer.Tile({
+        source: new ol.source.OSM()
+      })],
+      target: 'map',
+      view: new ol.View({
+        center: [0, 0],
+        zoom: 2
+      })
+    });
+  </script>
+  <hr />
+  <p><a href="https://github.com/JeahaOh/OpenLayersStudy/tree/master/Examples/Mouse_Position/CDN" target="_blank"
+      rel="noopener">전체 코드 보기</a></p>
+
+
+
+</body>
+
+</html>
