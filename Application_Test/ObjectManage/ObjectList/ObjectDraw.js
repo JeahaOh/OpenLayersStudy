@@ -232,15 +232,17 @@ const drawObj = function( type, imgDir ) {
         objSource.addFeature( circle );
         // console.log( circle )
     break;
+    
     case 'Mark': 
       setCoordsAtProps( sketch );
       defaultStyler( sketch, imgDir );
       break;
+      
     case 'Image' :
       setCoordsAtProps( sketch );
       imgLayerFunc( sketch, imgDir );   
       break;
-
+      
     default:
       setCoordsAtProps( sketch );
       defaultStyler( sketch );

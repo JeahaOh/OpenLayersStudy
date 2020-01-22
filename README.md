@@ -5,7 +5,7 @@ Open Layers
 - VS Code latest
 - MacOS Mohave 10.15
   - Intel i7 CPU 2.6GHz
-  - 36GB RAM
+  - 32GB RAM
 - Win 10
   - Intel i7 CPU 2.20GHz
   - 16GB RAM
