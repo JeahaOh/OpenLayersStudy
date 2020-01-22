@@ -1,7 +1,8 @@
 //  기본 맵 설정. -->
 let raster = new ol.layer.Tile({
   source: new ol.source.OSM({
-    url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
+    // url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
+    url: 'http://xdworld.vworld.kr:8080/2d/Base/service/{z}/{x}/{y}.png'
   })
 });
 
