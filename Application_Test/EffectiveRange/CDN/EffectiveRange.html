@@ -15,12 +15,53 @@
   <!-- <link rel="stylesheet" href="ol_4.6.5.css"> -->
   <link rel="stylesheet" href="../../../include/ol.css">
 
+  <style>
+    .map {
+      width: 100%;
+      height:400px;
+    }
+    .ol-tooltip {
+      position: relative;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      color: white;
+      padding: 4px 8px;
+      opacity: 0.7;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+    .ol-tooltip-measure {
+      opacity: 1;
+      font-weight: bold;
+    }
+    .ol-tooltip-static {
+      background-color: #ffcc33;
+      color: black;
+      border: 1px solid white;
+    }
+    .ol-tooltip-measure:before,
+    .ol-tooltip-static:before {
+      border-top: 6px solid rgba(0, 0, 0, 0.5);
+      border-right: 6px solid transparent;
+      border-left: 6px solid transparent;
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      margin-left: -7px;
+      left: 50%;
+    }
+    .ol-tooltip-static:before {
+      border-top-color: #ffcc33;
+    }
+  </style>
 
   <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script> -->
   <!-- <script type="text/javascript" src="ol_4.6.5.js"></script> -->
   <script type="text/javascript" src="../../../include/ol.js"></script>
 
   <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
+
+
   
   <title>  Effective Range  </title>
 </head>
@@ -40,8 +81,10 @@
     </div>
     <input type="button" value="Create Feature" onclick="createSmallMineLot()" />
   </form>
+  <button onclick="measure();">Measure</button>
   
   <script type="text/javascript" src="./EffectiveRange.js"></script>
+  <script type="text/javascript" src="./DistanceMeasure.js"></script>
 
 </body>
 </html>

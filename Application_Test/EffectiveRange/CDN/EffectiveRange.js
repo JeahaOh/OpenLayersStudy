@@ -115,7 +115,14 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   mineLot.getGeometry().transform('EPSG:3857', 'EPSG:4326');
   let coordinates = mineLot.getGeometry().getCoordinates();
   let poly = turf.polygon(coordinates);
-  let bufferedFeature = turf.buffer(poly, _dist, {units: _unit});
+  let bufferedFeature = turf.buffer(poly, _dist, { steps: 1, units: _unit,});
+
+  console.log( bufferedFeature );
+  console.log( 'bufferedFeature to Polygon' )
+  bufferedFeature = turf.bbox(bufferedFeature);
+  bufferedFeature = turf.bboxPolygon(bufferedFeature);
+  console.log( bufferedFeature )
+
 
   let effectiveRange = new ol.format.GeoJSON().readFeatures(bufferedFeature);
   // console.log(`effectiveRange : `);
