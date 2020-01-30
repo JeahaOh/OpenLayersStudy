@@ -2,7 +2,7 @@
 let raster = new ol.layer.Tile({
   source: new ol.source.OSM({
     // url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
-    url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
+    // url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
     // url: 'https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png'
   })
 });

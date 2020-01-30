@@ -3,7 +3,8 @@
 //  기본 맵 설정. -->
 let raster = new ol.layer.Tile({
   source: new ol.source.OSM({
-    url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+    // url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+     url: 'http://xdworld.vworld.kr:8080/2d/Base/service/{z}/{x}/{y}.png'
   })
 });
 
@@ -35,7 +36,7 @@ let map = new ol.Map({
   target: 'map',
   view: new ol.View({
     center: ol.proj.fromLonLat([131.5, 37.4]),
-    zoom: 10
+    zoom: 12
   })
 });
 //  <-- 기본 맵 설정.
@@ -115,6 +116,7 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   mineLot.getGeometry().transform('EPSG:3857', 'EPSG:4326');
   let coordinates = mineLot.getGeometry().getCoordinates();
   let poly = turf.polygon(coordinates);
+
   let bufferedFeature = turf.buffer(poly, _dist, { steps: 1, units: _unit,});
 
   console.log( bufferedFeature );
@@ -122,7 +124,6 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   bufferedFeature = turf.bbox(bufferedFeature);
   bufferedFeature = turf.bboxPolygon(bufferedFeature);
   console.log( bufferedFeature )
-
 
   let effectiveRange = new ol.format.GeoJSON().readFeatures(bufferedFeature);
   // console.log(`effectiveRange : `);
