@@ -103,10 +103,9 @@ const createSmallMineLot = function(){
   // let dist = $('#effective_range_distance').val();
   let dist = document.getElementById('effective_range_distance').value;
   console.log( dist + unit );
-  if( confirm('유효범위의 광구와의 거리는 ' + dist + ' ' + unit + '입니다.') ) {
+  // if( confirm('유효범위의 광구와의 거리는 ' + dist + ' ' + unit + '입니다.') ) {
     doInteraction(dist, unit);
-  }
-  // doInteraction(dist, unit);
+  // }
 } //  createSmallMineLot
 
 //  인자로 받은 Feature를 감싸는 buffer()를 거친 Feature를 리턴.
@@ -139,6 +138,8 @@ const createEffectiveRangeByBuffer = function(mineLot, _dist, _unit) {
   console.groupEnd('createEffectiveRangeByBuffer()');
   return effectiveRange;
 };  //  createEffectiveRangeByBuffer
+
+
 
 (function(){
   feature = new ol.Feature({
@@ -176,7 +177,6 @@ const checkValidLocation = function( criteria, newArea ) {
 
 const trimPolygon = function( criteria, target ) {
   console.group( 'trimPolygon' );
-
   // console.log( criteria );
   criteria = turf.polygon( criteria.getGeometry().getCoordinates() );
   // console.log( target );
