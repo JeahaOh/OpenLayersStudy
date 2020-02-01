@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="kor">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <link rel="stylesheet" type="text/css" href="../../../include/ol_4.6.5.css" />
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+  <style>
+  * {
+    margin : 0px;
+    padding : 0px;
+    font: red;
+  }
+  </style>
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+  <!-- <script type="text/javascript" src="../../../include/ol_4.6.5.js"></script> -->
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+  <script type="text/javascript" src="../../../include/turf.v5.1.6.min.js"></script>
+  <title>  Distance Measure By Turf  </title>
+</head>
+
+<body style="background-color: black; color: red;">
+  <h1>  Distance Measure By Turf  </h1>
+  <div id="map" class="map" style="width: 100%; height: 800px;"></div>
+  <button onclick="measure()">distance</button>
+  <p>
+    <br />
+    
+  </p>
+  <script>
+//  기본 맵 설정. -->
+let raster = new ol.layer.Tile({
+  source: new ol.source.OSM({
+    // url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+     url: 'http://xdworld.vworld.kr:8080/2d/Base/service/{z}/{x}/{y}.png'
+  })
+});
+
+let source = new ol.source.Vector({wrapX: false});
+let vector = new ol.layer.Vector({
+  source: source,
+  style: new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(255, 0, 0, 1)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#ff0000',
+      width: 4
+    }),
+    image: new ol.style.Circle({
+      radius: 7,
+      fill: new ol.style.Fill({
+        color: '#ff0000'
+      })
+    })
+  })
+});
+
+let map = new ol.Map({
+  layers: [
+    raster,
+    vector
+  ],
+  target: 'map',
+  view: new ol.View({
+    center: ol.proj.fromLonLat([127.12038783416143, 37.39406226263793]),
+    zoom: 15.8
+  })
+});
+//  <-- 기본 맵 설정.
+  </script>
+  <script type="text/javascript" src="./TurfDistance.js"></script>
+</body>
+
+</html>
