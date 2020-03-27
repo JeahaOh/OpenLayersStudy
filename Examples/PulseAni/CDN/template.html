@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>ol-ext: Map pulse</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <script
+    src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL">
+  </script>
+  <!-- jQuery -->
+  <script type="text/javascript" src="../../../include/jquery-3.3.1.min.js"></script>
+
+  <!-- Openlayers -->
+  <link rel="stylesheet" type="text/css" href="../../../include/ol.css" />
+  <script type="text/javascript" src="../../../include/ol.js"></script>
+
+  <!-- ol-ext -->
+  <script type="text/javascript" src="../../../include/ol-ext.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="../../../include/ol-ext.css" />
+
+</head>
+
+<body>
+  <div id="map" style="width:600px; height:400px;"></div>
+
+  </div>
+
+  <script type="text/javascript">
+
+    var layer = new ol.layer.Tile({
+      source: new ol.source.OSM({
+        wrapX: false
+      })
+    });
+
+    // The map
+    var map = new ol.Map({
+      layers: [layer],
+      target: 'map',
+      view: new ol.View({
+        zoom: 5,
+        center: [0, 0]
+      }),
+    });
+
+
+
+    const pf = function (c) {
+      const f = new ol.Feature(new ol.geom.Point(c));
+      console.log(f.getGeometry());
+      f.setStyle(new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 40,
+          points: 10,
+          stroke: new ol.style.Stroke({
+            color: 'red',
+            width: 10
+          })
+        })
+      }));
+      map.animateFeature(f, new ol.featureAnimation.Zoom({
+        fade: ol.easing.easeIn,
+        duration: 4000,
+      }));
+    }
+
+    const p = function (ll) {
+      console.log(ll);
+      for (let i = 0; i < 5; i++) {
+        setTimeout(function () {
+          pf(ll);
+        }, i * 250);
+      };
+    }
+  </script>
+
+
+</body>
+
+</html>
